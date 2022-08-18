@@ -14,8 +14,50 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool hidePassword = true;
-  final _passwordTextController = TextEditingController();
+  final _storage = const FlutterSecureStorage();
+  bool hidePassword = true, LoginSuccess = false;
+  final TextEditingController _usernameController =
+      TextEditingController(text: "");
+  final TextEditingController _passwordController =
+      TextEditingController(text: "");
+  var UserName, Password;
+
+  _onFormSubmit() async {
+    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
+  }
+
+  Future<void> _readFromStorage() async {
+    // var temp;
+    // temp = await _storage.read(key: "KEY_USERNAME") ?? '';
+    // setState(() {
+    //   UserName = temp;
+    // });
+    // temp = await _storage.read(key: "KEY_PASSWORD") ?? '';
+    // setState(() {
+    //   Password = temp;
+    // });
+    UserName = await _storage.read(key: "KEY_USERNAME") ?? '';
+    Password = await _storage.read(key: "KEY_PASSWORD") ?? '';
+  }
+
+  _login() async {
+    await _readFromStorage();
+    print(UserName + Password);
+    if (UserName != null && Password != null) {
+      if (UserName == _usernameController.text &&
+          Password == _passwordController.text) {
+        setState(() {
+          LoginSuccess = true;
+        });
+        print('login success');
+        return true;
+      }
+    }
+    print('login fail');
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -46,6 +88,7 @@ class _MyAppState extends State<MyApp> {
                     height: 30.0,
                   ),
                   TextField(
+                    controller: _usernameController,
                     decoration: InputDecoration(
                       hintText: 'Email',
                       suffixIcon: Icon(Icons.email),
@@ -58,6 +101,7 @@ class _MyAppState extends State<MyApp> {
                     height: 20.0,
                   ),
                   TextField(
+                    controller: _passwordController,
                     obscureText: hidePassword,
                     decoration: InputDecoration(
                       hintText: 'Password',
@@ -77,10 +121,14 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ),
                   ),
-                  RaisedButton(
+                  ElevatedButton(
                     child: Text('Login'),
-                    color: Color(0xffEE7B23),
-                    onPressed: () {},
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.amber)),
+                    onPressed: () async {
+                      await _login();
+                    },
                   ),
                   SizedBox(height: 20.0),
                   GestureDetector(
@@ -103,10 +151,23 @@ class _MyAppState extends State<MyApp> {
 
 class Second extends StatefulWidget {
   @override
-  _SecondState createState() => _SecondState();
+  State<Second> createState() => _SecondState();
 }
 
 class _SecondState extends State<Second> {
+  bool hidePassword = true;
+  final _storage = const FlutterSecureStorage();
+  final TextEditingController _usernameController =
+      TextEditingController(text: "");
+  final TextEditingController _passwordController =
+      TextEditingController(text: "");
+
+  _onFormSubmit() async {
+    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
+    print('signed up');
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -144,6 +205,7 @@ class _SecondState extends State<Second> {
                 height: 30.0,
               ),
               TextField(
+                controller: _usernameController,
                 decoration: InputDecoration(
                   hintText: 'Email',
                   suffixIcon: Icon(Icons.email),
@@ -156,10 +218,19 @@ class _SecondState extends State<Second> {
                 height: 20.0,
               ),
               TextField(
-                obscureText: true,
+                controller: _passwordController,
+                obscureText: hidePassword,
                 decoration: InputDecoration(
                   hintText: 'Password',
-                  suffixIcon: Icon(Icons.visibility_off),
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          hidePassword = !hidePassword;
+                        });
+                      },
+                      icon: Icon(
+                        hidePassword ? Icons.visibility_off : Icons.visibility,
+                      )),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20.0),
                   ),
@@ -177,10 +248,15 @@ class _SecondState extends State<Second> {
                       'Forget password?',
                       style: TextStyle(fontSize: 12.0),
                     ),
-                    RaisedButton(
+                    ElevatedButton(
                       child: Text('Signup'),
-                      color: Color(0xffEE7B23),
-                      onPressed: () {},
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.amber[900]),
+                      ),
+                      onPressed: () async {
+                        await _onFormSubmit();
+                      },
                     ),
                   ],
                 ),
