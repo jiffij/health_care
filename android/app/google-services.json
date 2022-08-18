@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "712414852523",
+    "project_id": "hola-85371",
+    "storage_bucket": "hola-85371.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712414852523:android:64476c746fd427b2acceee",
+        "android_client_info": {
+          "package_name": "com.example.simple_login"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712414852523-9g80msajcn0el3mlpqogj1p2p5aprej6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi8rvZFAn7wor3MdVuxzOaGaxq0bpRLZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712414852523-9g80msajcn0el3mlpqogj1p2p5aprej6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
