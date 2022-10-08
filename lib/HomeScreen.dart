@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'main.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -8,6 +9,15 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+  var displayName;
+
+  @override
+  void initState() {
+    displayName = auth.currentUser!.displayName;
+    print(displayName);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -17,9 +27,17 @@ class _MainScreenState extends State<MainScreen> {
         height: height,
         width: width,
         child: SingleChildScrollView(
-          child: Text('Hello world'),
+          child: Column(
+          children: [
+          SizedBox(
+            width: width,
+            height: height*0.1,
+            child: Card(child: Text('Hello World!')),
+          ),
+          Text('Hi, ' + displayName),
+          ]
+          )
         ),
-        
       ),
     );
   }

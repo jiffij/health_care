@@ -1,6 +1,13 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:simple_login/HomeScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:simple_login/ImageUpDownload.dart';
+import 'main.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -17,6 +24,8 @@ class _loginScreenState extends State<loginScreen> {
   final TextEditingController _passwordController =
       TextEditingController(text: "");
   var UserName, Password;
+  final CollectionReference Users =
+      FirebaseFirestore.instance.collection('users');
 
   _onFormSubmit() async {
     await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
@@ -35,6 +44,31 @@ class _loginScreenState extends State<loginScreen> {
     // });
     UserName = await _storage.read(key: "KEY_USERNAME") ?? '';
     Password = await _storage.read(key: "KEY_PASSWORD") ?? '';
+  }
+
+  _firestoreLogin() async {
+    var credential;
+    try {
+      credential = await auth.signInWithEmailAndPassword(
+          email: _usernameController.text, password: _passwordController.text);
+      print(credential);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        return false;
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        return false;
+      }
+    }
+    // print(auth.currentUser!);
+    if (credential.user.emailVerified == false) {
+      await auth.currentUser?.sendEmailVerification();
+      if (auth.currentUser?.emailVerified == true) return true;
+      return false;
+    }
+
+    return true;
   }
 
   _login() async {
@@ -123,11 +157,13 @@ class _loginScreenState extends State<loginScreen> {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.amber)),
                     onPressed: () async {
-                      if (await _login()) {
+                      if (_usernameController.text != '' &&
+                          _passwordController.text != '' &&
+                          await _firestoreLogin()) {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MainScreen()));
+                                builder: (context) => const HomePage()));
                       }
                     },
                   ),
@@ -135,7 +171,7 @@ class _loginScreenState extends State<loginScreen> {
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Second()));
+                          MaterialPageRoute(builder: (context) => Signup()));
                     },
                     child: Text.rich(
                       TextSpan(text: 'Don\'t have an account ', children: [
@@ -150,23 +186,73 @@ class _loginScreenState extends State<loginScreen> {
   }
 }
 
-class Second extends StatefulWidget {
+class Signup extends StatefulWidget {
   @override
-  State<Second> createState() => _SecondState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _SecondState extends State<Second> {
+class _SignupState extends State<Signup> {
   bool hidePassword = true;
   final _storage = const FlutterSecureStorage();
   final TextEditingController _usernameController =
       TextEditingController(text: "");
   final TextEditingController _passwordController =
       TextEditingController(text: "");
+  final TextEditingController _nicknameController =
+      TextEditingController(text: "");
 
+  final CollectionReference Users =
+      FirebaseFirestore.instance.collection('users');
+
+  //local storing password
   _onFormSubmit() async {
     await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
     print('signed up');
+  }
+
+  //firestore auth
+  _signup() async {
+    try {
+      final credential = await auth.createUserWithEmailAndPassword(
+        email: _usernameController.text,
+        password: _passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      print(e);
+    }
+    User? user = auth.currentUser;
+
+    if (user != null) {
+        await auth.currentUser?.updateDisplayName(_nicknameController.text);
+      if (!user.emailVerified) await user.sendEmailVerification();
+    }
+  }
+
+  //firestore
+  Future<void> addUser() {
+    // Call the user's CollectionReference to add a new user
+    return Users.doc('IqiiKy77UeuLI4SpjyPb')
+        .set({
+          'users': {
+            _usernameController.text: {'Password': _passwordController.text}
+          }
+        }, SetOptions(merge: true))
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
+    //create a document
+    // return Users.add({
+    //   'Id': _usernameController.text,
+    //   'Password': _passwordController.text,
+    // })
+    //     .then((value) => print("User Added"))
+    //     .catchError((error) => print("Failed to add user: $error"));
   }
 
   @override
@@ -219,6 +305,19 @@ class _SecondState extends State<Second> {
                 height: 20.0,
               ),
               TextField(
+                controller: _nicknameController,
+                decoration: InputDecoration(
+                  hintText: 'User Name',
+                  suffixIcon: Icon(Icons.assignment_ind),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              TextField(
                 controller: _passwordController,
                 obscureText: hidePassword,
                 decoration: InputDecoration(
@@ -256,7 +355,12 @@ class _SecondState extends State<Second> {
                             MaterialStateProperty.all(Colors.amber[900]),
                       ),
                       onPressed: () async {
-                        await _onFormSubmit();
+                        // await _onFormSubmit();
+                        // await addUser();
+                        if (_nicknameController.text != '' &&
+                          _passwordController.text != '' &&
+                          _usernameController.text != '') 
+                        {await _signup();}
                       },
                     ),
                   ],
