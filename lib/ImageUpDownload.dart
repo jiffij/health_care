@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
+import 'AgoraConfig.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -92,8 +93,8 @@ class _HomePageState extends State<HomePage> {
       // appBar: AppBar(
       //   title: const Text('Images'),
       // ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
+      body: Container(
+        margin: const EdgeInsets.symmetric(vertical: 60.0),
         child: Column(
           children: [
             Row(
@@ -107,6 +108,15 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () => _upload('gallery'),
                     icon: const Icon(Icons.library_add),
                     label: const Text('Gallery')),
+                ElevatedButton.icon(
+                    onPressed: () async {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const VideoCall()));
+                    },
+                    icon: const Icon(Icons.video_call),
+                    label: const Text('Video Call')),
               ],
             ),
             Expanded(

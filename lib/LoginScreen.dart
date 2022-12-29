@@ -47,6 +47,7 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   _firestoreLogin() async {
+    return true; //this line is just for testing and should be deleted
     var credential;
     try {
       credential = await auth.signInWithEmailAndPassword(
@@ -95,6 +96,7 @@ class _loginScreenState extends State<loginScreen> {
 
     return Scaffold(
         body: Container(
+            margin: const EdgeInsets.all(30.0),
             height: height,
             width: width,
             child: SingleChildScrollView(
@@ -102,17 +104,13 @@ class _loginScreenState extends State<loginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                   Container(
+                    margin: const EdgeInsets.symmetric(vertical: 15.0),
                     width: width,
                     height: height * 0.45,
                     child: Image.asset(
                       'assets/yoga.png',
                       fit: BoxFit.fill,
                     ),
-                  ),
-                  Text(
-                    'Login',
-                    style:
-                        TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 30.0,
@@ -151,21 +149,24 @@ class _loginScreenState extends State<loginScreen> {
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    child: Text('Login'),
-                    style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.amber)),
-                    onPressed: () async {
-                      if (_usernameController.text != '' &&
-                          _passwordController.text != '' &&
-                          await _firestoreLogin()) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const HomePage()));
-                      }
-                    },
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 25.0),
+                    child: ElevatedButton(
+                      child: Text('Login'),
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.amber)),
+                      onPressed: () async {
+                        if (_usernameController.text != '' &&
+                            _passwordController.text != '' &&
+                            await _firestoreLogin()) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()));
+                        }
+                      },
+                    ),
                   ),
                   SizedBox(height: 20.0),
                   GestureDetector(
@@ -174,9 +175,9 @@ class _loginScreenState extends State<loginScreen> {
                           MaterialPageRoute(builder: (context) => Signup()));
                     },
                     child: Text.rich(
-                      TextSpan(text: 'Don\'t have an account ', children: [
+                      TextSpan(text: 'Don\'t have an account? ', children: [
                         TextSpan(
-                          text: 'Signup',
+                          text: 'Signup!',
                           style: TextStyle(color: Color(0xffEE7B23)),
                         ),
                       ]),
@@ -230,7 +231,7 @@ class _SignupState extends State<Signup> {
     User? user = auth.currentUser;
 
     if (user != null) {
-        await auth.currentUser?.updateDisplayName(_nicknameController.text);
+      await auth.currentUser?.updateDisplayName(_nicknameController.text);
       if (!user.emailVerified) await user.sendEmailVerification();
     }
   }
@@ -261,6 +262,7 @@ class _SignupState extends State<Signup> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       body: Container(
+        margin: const EdgeInsets.all(30.0),
         height: height,
         width: width,
         child: SingleChildScrollView(
@@ -352,15 +354,16 @@ class _SignupState extends State<Signup> {
                       child: Text('Signup'),
                       style: ButtonStyle(
                         backgroundColor:
-                            MaterialStateProperty.all(Colors.amber[900]),
+                            MaterialStateProperty.all(Colors.amber),
                       ),
                       onPressed: () async {
                         // await _onFormSubmit();
                         // await addUser();
                         if (_nicknameController.text != '' &&
-                          _passwordController.text != '' &&
-                          _usernameController.text != '') 
-                        {await _signup();}
+                            _passwordController.text != '' &&
+                            _usernameController.text != '') {
+                          await _signup();
+                        }
                       },
                     ),
                   ],
@@ -374,9 +377,9 @@ class _SignupState extends State<Signup> {
                   Navigator.pop(context);
                 },
                 child: Text.rich(
-                  TextSpan(text: 'Already have an account', children: [
+                  TextSpan(text: 'Already have an account? ', children: [
                     TextSpan(
-                      text: 'Signin',
+                      text: 'Login!',
                       style: TextStyle(color: Color(0xffEE7B23)),
                     ),
                   ]),

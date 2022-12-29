@@ -9,8 +9,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 FirebaseAuth auth = FirebaseAuth.instance;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();// binding with plugin with flutter engine 
-  await Firebase.initializeApp();// make sure firebase is init
+  WidgetsFlutterBinding
+      .ensureInitialized(); // binding with plugin with flutter engine
+  await Firebase.initializeApp(); // make sure firebase is init
   runApp(const MyApp()); //MaterialApp(home: MyApp()));
 }
 
