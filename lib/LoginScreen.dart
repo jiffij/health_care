@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simple_login/ImageUpDownload.dart';
+import 'SendbirdChatView.dart'; // Sendbird Chat Test
 import 'main.dart';
 
 class loginScreen extends StatefulWidget {
@@ -163,7 +164,13 @@ class _loginScreenState extends State<loginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => ChatView(
+                                          appId:
+                                              "2742FF7C-48D1-40CE-B88D-3AE6B49C29A3",
+                                          userId: "test01",
+                                          otherUserIds: [
+                                            "test02"
+                                          ]))); // Sendbird Chat Test
                         }
                       },
                     ),
