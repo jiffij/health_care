@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'package:simple_login/flutter_tflite-master/lib/tflite.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -209,8 +210,6 @@ class _BarChart extends StatelessWidget {
       ];
 }
 
-
-
 class CancerPredict extends StatefulWidget {
   const CancerPredict({super.key});
 
@@ -281,6 +280,15 @@ class _CancerPredictState extends State<CancerPredict> {
     }
   }
 
+  preprocess(File image) async {
+    img.Image image = img.decodeImage(
+            new File('./../assets/ISIC_0024306.jpg').readAsBytesSync())
+        as img.Image;
+    img.Image thumbnail = img.copyResize(image, width: 100, height: 75);
+
+    return thumbnail;
+  }
+
   classifyImage(File image) async {
     var output = await Tflite.runModelOnImage(
       path: image.path,
@@ -293,7 +301,7 @@ class _CancerPredictState extends State<CancerPredict> {
 
   loadModel() async {
     await Tflite.loadModel(
-      model: "assets/My_TFlite_Model.tflite",
+      model: "assets/model.tflite",
       labels: "assets/label.txt",
     );
     print("load model success!");
@@ -358,57 +366,60 @@ class _CancerPredictState extends State<CancerPredict> {
       ? LoadingScreen()
       : Scaffold(
           body: Container(
-            color: Colors.blue[700],
+              color: Colors.blue[700],
               child: SingleChildScrollView(
-          child: Column(
-              // mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    'Skin Cancer Prediction',
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: Colors.white),
-                  ),
-                ),
-                Container(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    child: displayImg),
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    
-                    '''
+                child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          'Skin Cancer Prediction',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ),
+                      Container(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          height: MediaQuery.of(context).size.height * 0.4,
+                          child: displayImg),
+                      Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          '''
                       Patient: ${_getName()}
                       Wound location: ${_getCancerLoc()}
                       Result:
                       ''',
-                    style: TextStyle(fontSize: 18.0, color: Colors.white),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-                AspectRatio(
-                  aspectRatio: 1.7,
-                  child: Card(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                    color: const Color(0xff2c4260),
-                    child: const _BarChart(),
-                  ),
-                ),
-                ElevatedButton(onPressed: pickImage, child: Text('Predict')),
+                          style: TextStyle(fontSize: 18.0, color: Colors.white),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 1.7,
+                        child: Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                          color: const Color(0xff2c4260),
+                          child: const _BarChart(),
+                        ),
+                      ),
+                      ElevatedButton(
+                          onPressed: pickImage, child: Text('Predict')),
 
-                // Text(
-                //   category != null ? category!.label : '',
-                //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                // ),
-                // FloatingActionButton(
-                //   onPressed: _getImage,
-                //   tooltip: 'Pick Image',
-                //   child: Icon(Icons.add_a_photo),
-                // ),
-              ]),
-        )));
+                      // Text(
+                      //   category != null ? category!.label : '',
+                      //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                      // ),
+                      // FloatingActionButton(
+                      //   onPressed: _getImage,
+                      //   tooltip: 'Pick Image',
+                      //   child: Icon(Icons.add_a_photo),
+                      // ),
+                    ]),
+              )));
 }

@@ -31,3 +31,12 @@ follow the comment of dejduu
 
     tflite:
     path: "./lib/flutter_tflite-master"
+
+## Tflite_flutter_helper
+
+The link solves the issue:
+https://stackoverflow.com/questions/73221388/execution-failed-for-task-tflite-flutter-helpercompiledebugkotlin
+
+## Example
+link:
+https://github.com/am15h/object_detection_flutter
