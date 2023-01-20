@@ -6,8 +6,7 @@ import 'package:image/image.dart' as imageLib;
 // import 'package:object_detection/tflite/recognition.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-
-// import 'stats.dart';
+import 'pred_stat.dart';
 
 /// Classifier
 class Classifier {
@@ -42,15 +41,15 @@ class Classifier {
   static const int NUM_RESULTS = 10;
 
   Classifier(
-    Interpreter interpreter,
-    List<String> labels,
+    // Interpreter interpreter,
+    // List<String> labels,
   ) {
-    loadModel(interpreter);
-    loadLabels(labels);
+    loadModel();
+    loadLabels();
   }
 
   /// Loads interpreter from asset
-  void loadModel(Interpreter interpreter) async {
+  void loadModel() async {
     try {
       _interpreter = //interpreter ??
           await Interpreter.fromAsset(
@@ -71,7 +70,7 @@ class Classifier {
   }
 
   /// Loads labels from assets
-  void loadLabels(List<String> labels) async {
+  void loadLabels() async {
     try {
       _labels = //labels ??
           await FileUtil.loadLabels("assets/" + LABEL_FILE_NAME);
@@ -85,20 +84,20 @@ class Classifier {
     // padSize = max(inputImage.height, inputImage.width);
     imageProcessor ??= ImageProcessorBuilder()
         .add(ResizeWithCropOrPadOp(75, 100))
-        .add(ResizeOp(INPUT_SIZE, INPUT_SIZE, ResizeMethod.BILINEAR))
+        // .add(ResizeOp(INPUT_SIZE, INPUT_SIZE, ResizeMethod.BILINEAR))
         .build();
     inputImage = imageProcessor.process(inputImage);
     return inputImage;
   }
 
   /// Runs object detection on the input image
-  Map<String, dynamic> predict(imageLib.Image image) {
+  Stats? predict(imageLib.Image image) {
     var predictStartTime = DateTime.now().millisecondsSinceEpoch;
 
-    if (_interpreter == null) {
-      print("Interpreter not initialized");
-      return null;
-    }
+    // if (_interpreter == null) {
+    //   print("Interpreter not initialized");
+    //   return null;
+    // }
 
     var preProcessStart = DateTime.now().millisecondsSinceEpoch;
 
@@ -154,39 +153,46 @@ class Classifier {
       width: INPUT_SIZE,
     );
 
-    List<Recognition> recognitions = [];
+    // List<Recognition> recognitions = [];
 
-    for (int i = 0; i < resultsCount; i++) {
-      // Prediction score
-      var score = outputScores.getDoubleValue(i);
+    Stats? stat;
 
-      // Label string
-      var labelIndex = outputClasses.getIntValue(i) + labelOffset;
-      var label = _labels.elementAt(labelIndex);
+    // for (int i = 0; i < resultsCount; i++) {
+    // Prediction score
+    var score = outputScores.getDoubleValue(0);
 
-      if (score > THRESHOLD) {
-        // inverse of rect
-        // [locations] corresponds to the image size 300 X 300
-        // inverseTransformRect transforms it our [inputImage]
-        Rect transformedRect = imageProcessor.inverseTransformRect(
-            locations[i], image.height, image.width);
+    // Label string
+    var labelIndex = outputClasses.getIntValue(0) + labelOffset;
+    var label = _labels.elementAt(labelIndex);
 
-        recognitions.add(
-          Recognition(i, label, score, transformedRect),
-        );
-      }
-    }
+    if (score > THRESHOLD) {
+      // inverse of rect
+      // [locations] corresponds to the image size 300 X 300
+      // inverseTransformRect transforms it our [inputImage]
+      // Rect transformedRect = imageProcessor.inverseTransformRect(
+      //     locations[i], image.height, image.width);
 
-    var predictElapsedTime =
-        DateTime.now().millisecondsSinceEpoch - predictStartTime;
-
-    return {
-      "recognitions": recognitions,
-      "stats": Stats(
+      var predictElapsedTime =
+          DateTime.now().millisecondsSinceEpoch - predictStartTime;
+      stat = Stats(
           totalPredictTime: predictElapsedTime,
           inferenceTime: inferenceTimeElapsed,
-          preProcessingTime: preProcessElapsedTime)
-    };
+          preProcessingTime: preProcessElapsedTime,
+          label: label,
+          score: score);
+
+      // recognitions.add(
+      //   Recognition(i, label, score, transformedRect),
+      // );
+    } else {
+      stat = null;
+    }
+    // }
+
+    // var predictElapsedTime =
+    //     DateTime.now().millisecondsSinceEpoch - predictStartTime;
+
+    return stat;
   }
 
   /// Gets the interpreter instance

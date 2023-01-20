@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:simple_login/cancer_model.dart';
+import 'package:simple_login/pred_stat.dart';
 // import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:simple_login/classifier.dart';
 import 'package:logger/logger.dart';
@@ -7,7 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'package:simple_login/flutter_tflite-master/lib/tflite.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+// import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+import 'classifier.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -253,17 +254,21 @@ class _CancerPredictState extends State<CancerPredict> {
   late File _image;
   // String? _imgUrl;
   Image? displayImg;
-  // late List<_ChartData> data;
+  late Classifier _classifier;
 
   @override
   void initState() {
     super.initState();
     _getImg();
-    loadModel().then((value) {
-      setState(() {
-        isLoading = false;
-        // data = [_ChartData('a', 10)];
-      });
+    // loadModel().then((value) {
+    //   setState(() {
+    //     isLoading = false;
+    //     // data = [_ChartData('a', 10)];
+    //   });
+    // });
+    setState(() {
+      _classifier = Classifier();
+      isLoading = false;
     });
   }
 
@@ -274,25 +279,28 @@ class _CancerPredictState extends State<CancerPredict> {
       setState(() {
         _image = File(image.path);
       });
-      classifyImage(_image);
+      // img.Image im = _image.readAsBytes();
+      
+      classifyImage();//TODO
     } catch (e) {
       print(e);
     }
   }
 
-  preprocess(File image) async {
-    img.Image image = img.decodeImage(
-            new File('./../assets/ISIC_0024306.jpg').readAsBytesSync())
-        as img.Image;
-    img.Image thumbnail = img.copyResize(image, width: 100, height: 75);
+  // preprocess(File image) async {
+  //   img.Image image = img.decodeImage(
+  //           new File('./../assets/ISIC_0024306.jpg').readAsBytesSync())
+  //       as img.Image;
+  //   img.Image thumbnail = img.copyResize(image, width: 100, height: 75);
 
-    return thumbnail;
-  }
+  //   return thumbnail;
+  // }
 
-  classifyImage(File image) async {
-    var output = await Tflite.runModelOnImage(
-      path: image.path,
-    );
+  classifyImage(img.Image image) async {
+    // var output = await Tflite.runModelOnImage(
+    //   path: image.path,
+    // );
+    var output = _classifier.predict(image);
     print("predict = " + output.toString());
     setState(() {
       _outputs = output!;
