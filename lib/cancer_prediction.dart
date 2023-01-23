@@ -7,7 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'package:simple_login/flutter_tflite-master/lib/tflite.dart';
-// import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
+import 'package:simple_login/skin_classifier.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 import 'classifier.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -250,7 +251,8 @@ class _CancerPredictState extends State<CancerPredict> {
   // }
   bool isLoading = true;
 
-  late List _outputs;
+  // late Stats? _outputs;
+  Category? category;
   late File _image;
   // String? _imgUrl;
   Image? displayImg;
@@ -267,7 +269,7 @@ class _CancerPredictState extends State<CancerPredict> {
     //   });
     // });
     setState(() {
-      _classifier = Classifier();
+      _classifier = SkinClassifier();
       isLoading = false;
     });
   }
@@ -280,8 +282,10 @@ class _CancerPredictState extends State<CancerPredict> {
         _image = File(image.path);
       });
       // img.Image im = _image.readAsBytes();
-      
-      classifyImage();//TODO
+      // var tmp = _image.openRead();
+      // img.decodeImage(_image.readAsBytesSync());
+
+      classifyImage(img.decodeImage(_image.readAsBytesSync())!);
     } catch (e) {
       print(e);
     }
@@ -303,7 +307,7 @@ class _CancerPredictState extends State<CancerPredict> {
     var output = _classifier.predict(image);
     print("predict = " + output.toString());
     setState(() {
-      _outputs = output!;
+      category = output;
     });
   }
 
@@ -405,6 +409,16 @@ class _CancerPredictState extends State<CancerPredict> {
                           style: TextStyle(fontSize: 18.0, color: Colors.white),
                           textAlign: TextAlign.left,
                         ),
+                      ),
+                      Text(
+                        category != null ? category!.label : '',
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      ),
+                      Text(
+                        category != null? 
+                        'percentage: ${category!.score.toStringAsFixed(3)}'
+                        : '',
+                        style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       AspectRatio(
                         aspectRatio: 1.7,
