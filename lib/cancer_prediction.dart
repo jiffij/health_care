@@ -253,6 +253,7 @@ class _CancerPredictState extends State<CancerPredict> {
 
   // late Stats? _outputs;
   Category? category;
+  Map<String, double>? results;
   late File _image;
   // String? _imgUrl;
   Image? displayImg;
@@ -307,7 +308,9 @@ class _CancerPredictState extends State<CancerPredict> {
     var output = _classifier.predict(image);
     print("predict = " + output.toString());
     setState(() {
-      category = output;
+      results = output;
+      var temp = getTopProbability(results!);
+      category = Category(temp.key,temp.value);
     });
   }
 
@@ -415,9 +418,9 @@ class _CancerPredictState extends State<CancerPredict> {
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       Text(
-                        category != null? 
-                        'percentage: ${category!.score.toStringAsFixed(3)}'
-                        : '',
+                        category != null
+                            ? 'percentage: ${category!.score.toStringAsFixed(3)}'
+                            : '',
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
                       AspectRatio(

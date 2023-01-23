@@ -29,3 +29,4 @@ https://stackoverflow.com/questions/69554879/failed-to-load-dynamic-library-libt
 ## Example
 link:
 https://github.com/am15h/object_detection_flutter
+https://medium.com/@am15hg/updates-to-tensorflow-lite-flutter-support-suite-7076c3fc27a9
