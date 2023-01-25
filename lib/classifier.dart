@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as imageLib;
 import 'package:tflite/tflite.dart';
@@ -77,6 +77,11 @@ abstract class Classifier {
       _inputType = interpreter.getInputTensor(0).type;
       _outputType = interpreter.getOutputTensor(0).type;
 
+      // _inputShape = [1,75,100,3];
+      // _outputShape = [1,7];
+      // _inputType = TfLiteType.float32;
+      // _outputType = TfLiteType.float32;
+
       _outputBuffer = TensorBuffer.createFixedSize(_outputShape, _outputType);
       // _outputBuffer = TensorBuffer.createFixedSize(
       //   <int>[1, 7],
@@ -84,6 +89,8 @@ abstract class Classifier {
       // );
       _probabilityProcessor =
           TensorProcessorBuilder().add(postProcessNormalizeOp).build();
+      // _probabilityProcessor =
+      //     TensorProcessorBuilder().add(preProcessNormalizeOp).build();
     } catch (e) {
       print("Error while creating interpreter: $e");
     }
@@ -150,6 +157,17 @@ abstract class Classifier {
     // Pre-process TensorImage
     inputImage = getProcessedImage(inputImage);
 
+    print(inputImage.getDataType());
+
+    // var tt = Tflite.loadModel(
+    //   model: 'model_3.tflite',
+    //   labels: "assets/" + LABEL_FILE_NAME,
+    // );
+
+    // Tflite.runModelOnImage(path: img.toString(), numResults: 7, threshold: 0.2);
+
+    // print(tt);
+
     final preProcessElapsedTime =
         DateTime.now().millisecondsSinceEpoch - predictStartTime;
     print('Time to load image: $preProcessElapsedTime ms');
@@ -160,10 +178,16 @@ abstract class Classifier {
 
     print('Time to run inference: $run ms');
 
+    print(_outputBuffer.getTypeSize());
+    print(_outputBuffer.getBuffer().asFloat32List());
+
     // TensorBuffers for output tensors
     Map<String, double> labeledProb = TensorLabel.fromList(
             labels, _probabilityProcessor.process(_outputBuffer))
         .getMapWithFloatValue();
+    // Map<String, double> labeledProb = TensorLabel.fromList(
+    //     labels, _outputBuffer)
+    // .getMapWithFloatValue();
     return labeledProb;
     // final pred = getTopProbability(labeledProb);
     // Inputs object for runForMultipleInputs
