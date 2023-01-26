@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:simple_login/d_homepage.dart';
 import 'package:simple_login/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -163,7 +164,7 @@ class _loginScreenState extends State<loginScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const MyHomePage(title: 'Home')));
+                                builder: (context) => const d_HomePage()));
                       }
                     },
                   ),
