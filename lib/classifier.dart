@@ -153,9 +153,12 @@ abstract class Classifier {
     // TensorImage inputImage = TensorImage.fromImage(image);
     TensorImage inputImage = TensorImage(TfLiteType.float32);
     inputImage.loadImage(image);
+    
 
     // Pre-process TensorImage
     inputImage = getProcessedImage(inputImage);
+
+    print(inputImage.getWidth());
 
     print(inputImage.getDataType());
 

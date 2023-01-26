@@ -286,6 +286,9 @@ class _CancerPredictState extends State<CancerPredict> {
       // var tmp = _image.openRead();
       // img.decodeImage(_image.readAsBytesSync());
 
+      var temp_img = img.decodeImage(_image.readAsBytesSync());
+      print(temp_img!.getBytes());
+
       classifyImage(img.decodeImage(_image.readAsBytesSync())!);
     } catch (e) {
       print(e);
@@ -310,7 +313,7 @@ class _CancerPredictState extends State<CancerPredict> {
     setState(() {
       results = output;
       var temp = getTopProbability(results!);
-      category = Category(temp.key,temp.value);
+      category = Category(temp.key, temp.value);
     });
   }
 
