@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 // Other files
-import 'p_homepage.dart';
-import 'p_message.dart';
-import 'p_myprofile.dart';
+import 'd_homepage.dart';
+import 'd_message.dart';
+import 'd_myprofile.dart';
 
 // Details for calendar customization:
 // https://blog.logrocket.com/build-custom-calendar-flutter/
@@ -23,17 +23,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Patient Calendar page',
+      title: 'Doctor Calendar page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_CalendarPage(),
+      home: const d_CalendarPage(),
     );
   }
 }
 
-class p_CalendarPage extends StatefulWidget {
-  const p_CalendarPage({super.key});
+class d_CalendarPage extends StatefulWidget {
+  const d_CalendarPage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -46,10 +46,10 @@ class p_CalendarPage extends StatefulWidget {
 
   @override
   
-  State<p_CalendarPage> createState() => _CalendarPageState();
+  State<d_CalendarPage> createState() => _CalendarPageState();
 }
 
-class _CalendarPageState extends State<p_CalendarPage> {
+class _CalendarPageState extends State<d_CalendarPage> {
   
   @override
   Widget build(BuildContext context) {
@@ -82,28 +82,28 @@ class _CalendarPageState extends State<p_CalendarPage> {
     if (index == 1) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_HomePage()
+          builder: (context) => const d_HomePage()
         ),
       );
     }
     else if(index == 2) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_CalendarPage()
+          builder: (context) => const d_CalendarPage()
         ),
       );
     }
     else if(index == 3) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MessagePage()
+          builder: (context) => const d_MessagePage()
         ),
       );
     }
     else if(index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MyProfilePage()
+          builder: (context) => const d_MyProfilePage()
         ),
       );
     }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
-// Other files
+// Other files:
+import 'p_homepage.dart';
 import 'p_calendar.dart';
-import 'p_message.dart';
 import 'p_myprofile.dart';
 
 void main() {
@@ -19,17 +18,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Patient Home Page',
+      title: 'Patient Message Page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_HomePage(),
+      home: const p_MessagePage(),
     );
   }
 }
 
-class p_HomePage extends StatefulWidget {
-  const p_HomePage({super.key});
+class p_MessagePage extends StatefulWidget {
+  const p_MessagePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,10 +41,10 @@ class p_HomePage extends StatefulWidget {
 
   @override
   
-  State<p_HomePage> createState() => _HomePageState();
+  State<p_MessagePage> createState() => _MessagePageState();
 }
 
-class _HomePageState extends State<p_HomePage> {
+class _MessagePageState extends State<p_MessagePage> {
 
 
   @override
@@ -103,17 +102,10 @@ class _HomePageState extends State<p_HomePage> {
         ),
       );
     }
-    if (index == 5) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_DoctorListPage()
-        ),
-      );
-    }
     setState(() {});
   }
 
-  String getCurrentDate() {
+    String getCurrentDate() {
     var date = DateTime.now();
     var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
     return formattedDate.toString();
@@ -137,8 +129,13 @@ class _HomePageState extends State<p_HomePage> {
       children: [
         Container(
           width: globalwidth,
-          height: globalheight*0.25,
+          height: globalheight*0.27,
           color: const Color.fromARGB(255, 255, 255, 255),
+        ),
+        Container(
+          width: globalwidth,
+          height: globalheight*0.25,
+          color: const Color.fromARGB(255, 28, 107, 164),
         ),
         Container(
           margin: const EdgeInsets.only(left: 12, top: 5),
@@ -286,43 +283,40 @@ class _HomePageState extends State<p_HomePage> {
   );
 
   Widget meetadoctor(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: GestureDetector(
-      onTap: () => navigator(5),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        height: globalheight*0.2,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        color: const Color.fromARGB(255, 220, 237, 249),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [           
-            SizedBox(
-              width: globalwidth*0.4,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  children: const [
-                  Text('Meet a doctor now!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
-                  Text('Just a few simple steps', style: TextStyle(fontSize: 15)),
-                  ],
-                ),
+    child: Container(
+      padding: const EdgeInsets.all(10),
+      height: globalheight*0.2,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+      color: const Color.fromARGB(255, 220, 237, 249),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [           
+          SizedBox(
+            width: globalwidth*0.4,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                children: const [
+                Text('Meet a doctor now!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
+                Text('Just a few simple steps', style: TextStyle(fontSize: 15)),
+                ],
               ),
             ),
-            Container(
-              width: globalwidth*0.4,
-              height: globalheight*0.2,
-              decoration : BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
-                fit: BoxFit.cover,
-                ),
-              ),    
+          ),
+          Container(
+            width: globalwidth*0.4,
+            height: globalheight*0.2,
+            decoration : BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              image: const DecorationImage(
+                image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
+              fit: BoxFit.cover,
               ),
-          ],
-        ),
+            ),    
+            ),
+        ],
       ),
     ),
   );
@@ -401,8 +395,8 @@ class _HomePageState extends State<p_HomePage> {
                 onTap: () => navigator(1),
                 child: Column(
                   children: const [
-                    Icon(Icons.home,color: Color.fromARGB(255, 28, 107, 164)),
-                    Text('Home', style: TextStyle(color: Color.fromARGB(255, 28, 107, 164))),
+                    Icon(Icons.home,color: Color.fromARGB(255, 123, 141, 158)),
+                    Text('Home'),
                   ],
                 ),
               ),
@@ -425,8 +419,8 @@ class _HomePageState extends State<p_HomePage> {
                 onTap: () => navigator(3),
                 child: Column(
                   children: const [
-                    Icon(Icons.message,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Message'),
+                    Icon(Icons.message,color: Color.fromARGB(255, 28, 107, 164)),
+                    Text('Message', style: TextStyle(color: Color.fromARGB(255, 28, 107, 164))),
                   ],
                 ),
               ),

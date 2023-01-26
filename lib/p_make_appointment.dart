@@ -6,11 +6,9 @@ import 'package:table_calendar/table_calendar.dart';
 
 // Other files
 import 'p_homepage.dart';
+import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
-
-// Details for calendar customization:
-// https://blog.logrocket.com/build-custom-calendar-flutter/
 
 void main() {
   runApp(const MyApp());
@@ -23,17 +21,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Patient Calendar page',
+      title: 'Patient Make Appointment page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_CalendarPage(),
+      home: const p_MakeAppointmentPage(),
     );
   }
 }
 
-class p_CalendarPage extends StatefulWidget {
-  const p_CalendarPage({super.key});
+class p_MakeAppointmentPage extends StatefulWidget {
+  const p_MakeAppointmentPage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -46,10 +44,10 @@ class p_CalendarPage extends StatefulWidget {
 
   @override
   
-  State<p_CalendarPage> createState() => _CalendarPageState();
+  State<p_MakeAppointmentPage> createState() => _MakeAppointmentPageState();
 }
 
-class _CalendarPageState extends State<p_CalendarPage> {
+class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   
   @override
   Widget build(BuildContext context) {
@@ -61,7 +59,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    DateTime selectedDay = DateTime.now();
+    //DateTime selectedDay = DateTime.now();
     return Scaffold(
 
       body: Column(
@@ -69,7 +67,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
           children: [
             heading(width, height),
             calendar(width, height),
-            upcomingappointmentlist(width, height, selectedDay),
+            guide(width, height),
             home(width, height),           
           ],
         ),
@@ -115,38 +113,51 @@ class _CalendarPageState extends State<p_CalendarPage> {
       children: [
         Container(
           width: globalwidth,
-          height: globalheight*0.12,
+          height: globalheight*0.25,
           color: const Color.fromARGB(255, 28, 107, 164),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 15, top: 10),
+                  height: globalheight*0.06,
+                  width: globalheight*0.06,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      margin: const EdgeInsets.all(5),
+                      child: const Icon(Icons.arrow_back_rounded),
+                    ),
+                  ),
+                ),
+              ),
               Container(
                 margin: const EdgeInsets.only(top: 10),
-                child: const Align(
+                child: Align(
                   alignment: Alignment.center,
                   child: FittedBox (
-                  fit: BoxFit.scaleDown,        
-                  child: 
-                  Text('Calendar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    fit: BoxFit.scaleDown,        
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Text('Make Appointment', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text('Doctor: Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
                   ),
                 ), 
               ),
             ],
           ),
         ),
-        // Positioned(
-        //   top: globalheight*0.12,
-        //   child: Column(
-        //     children: [
-        //       SizedBox(
-        //         //width: globalwidth,
-        //         //height: globalheight*0.58,
-        //         child:  calendar(globalwidth, globalheight),
-        //       ),
-        //   ],
-        //   ),
-        // ),
       ],
     ),
   );
@@ -175,70 +186,68 @@ class _CalendarPageState extends State<p_CalendarPage> {
     return formattedDate.toString();
   }
 
-  Widget upcomingappointmentlist(double globalwidth, double globalheight, DateTime selectedDay) => DefaultTextStyle.merge(
-    child: Column(
-      children: [
-        Align(alignment: Alignment.centerLeft,
-          child: FittedBox(
-              fit: BoxFit.scaleDown,
-            child: Container(
-              margin: const EdgeInsets.only(left: 12, bottom: 5),
-              height: globalheight*0.03,
-              width: globalwidth,
-              child: FittedBox (
-                alignment: Alignment.centerLeft,
-                fit: BoxFit.scaleDown,
-                child: Text(getDate(selectedDay), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-            ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: globalheight*0.15,
-          child: ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            scrollDirection: Axis.vertical,
-            padding: const EdgeInsets.all(12),
-            // The number of itemCount depends on the number of appointment
-            // 5 is the number of appointment for testing only
-            itemCount : 5,
-            separatorBuilder:  (context, index) {
-              return const SizedBox(height: 5);
-            },
-            itemBuilder: (context, index) {
-              return upcomingappointment(index, globalheight);
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-
-  // Todo: Access database and update the upcommingappointment list
-  Widget upcomingappointment(int index, double globalheight) => Column(
+  Widget guide(double globalwidth, double globalheight) => Column(
+    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
     mainAxisSize: MainAxisSize.min,
     children: [
+      const Divider(),
       Container(
-        height: globalheight*0.1,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(80, 224, 159, 31),
-        ),
+        height: globalheight*0.04,
+        margin: const EdgeInsets.only(bottom: 5),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            SizedBox(
-              width: globalheight*0.05,
-              height: globalheight*0.05,
-              child: const FittedBox (
-                fit: BoxFit.scaleDown,
-                child: Icon(Icons.call_rounded),
-              ),
+            Row(
+              children: [
+                SizedBox(
+                  width: globalheight*0.02,
+                  height: globalheight*0.02,
+                  child: const FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Icon(Icons.circle, color: Color.fromARGB(255, 28, 107, 164)),
+                  ),
+                ),
+                const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text (' : Available', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
-            Text ('This is the appointment $index'),
+            Row(
+              children: [
+                SizedBox(
+                  width: globalheight*0.02,
+                  height: globalheight*0.02,
+                  child: const FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Icon(Icons.circle, color: Color.fromARGB(255, 123, 141 , 158)),
+                  ),
+                ),
+                const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text (' : Full', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                SizedBox(
+                  width: globalheight*0.02,
+                  height: globalheight*0.02,
+                  child: const FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Icon(Icons.circle, color: Color.fromARGB(255, 36, 242 , 31)),
+                  ),
+                ),
+                const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text (' : Today', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
           ],
         ),
       ),
-      const Divider(),
     ],
   );
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import 'p_calendar.dart';
-import 'p_homepage.dart';
-import 'p_message.dart';
-import 'p_myprofile.dart';
+import 'd_calendar.dart';
+import 'd_homepage.dart';
+import 'd_message.dart';
 
 
 void main() {
@@ -18,17 +17,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Doctor List page',
+      title: 'Doctor my Profile page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_DoctorDetailPage(),
+      home: const d_MyProfilePage(),
     );
   }
 }
 
-class p_DoctorDetailPage extends StatefulWidget {
-  const p_DoctorDetailPage({super.key});
+class d_MyProfilePage extends StatefulWidget {
+  const d_MyProfilePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -41,10 +40,10 @@ class p_DoctorDetailPage extends StatefulWidget {
 
   @override
 
-  State<p_DoctorDetailPage> createState() => _DoctorDetailPageState();
+  State<d_MyProfilePage> createState() => _MyProfilePageState();
 }
 
-class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
+class _MyProfilePageState extends State<d_MyProfilePage> {
   
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,6 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
           children: [
             heading(width, height),
             detaillist(width, height),
-            booknow(width, height),
             home(width, height),           
           ],
         ),
@@ -76,28 +74,28 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
     if (index == 1) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_HomePage()
+          builder: (context) => const d_HomePage()
         ),
       );
     }
     else if(index == 2) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_CalendarPage()
+          builder: (context) => const d_CalendarPage()
         ),
       );
     }
     else if(index == 3) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MessagePage()
+          builder: (context) => const d_MessagePage()
         ),
       );
     }
     else if(index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MyProfilePage()
+          builder: (context) => const d_MyProfilePage()
         ),
       );
     }
@@ -116,38 +114,34 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
         width: globalwidth,
         height: globalheight*0.25,
         color: const Color.fromARGB(255, 28, 107, 164),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 15, top: 10),
-                height: globalheight*0.06,
-                width: globalheight*0.06,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 255, 255, 255),
+        child: Container(
+          margin: const EdgeInsets.only(top: 10, left: 12),
+          child: Align(
+            alignment: Alignment.topLeft ,
+            child: Row(
+              children: [
+                const FittedBox (
+                  fit: BoxFit.scaleDown,        
+                  child: Text('My Profile', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                 ),
-                child: FittedBox (
-                  fit: BoxFit.scaleDown,
-                  child: Container(
-                  margin: const EdgeInsets.all(5),
-                  child: const Icon(Icons.arrow_back_rounded),
+                const Spacer(),
+                FittedBox(
+                fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    height: globalheight*0.1,
+                    width: globalheight*0.1,
+                    child: const FittedBox (
+                      fit: BoxFit.scaleDown,
+                      child: Icon(Icons.settings),
+                    ),
                   ),
                 ),
-              ),
+                SizedBox(
+                  width: globalwidth*0.05,
+                ),
+              ],
             ),
-            const Align(
-              alignment: Alignment.center,  
-              child: FittedBox (
-              fit: BoxFit.scaleDown,        
-              child: 
-              Text('Doctor Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              ),
-            ), 
-          ],
+          ),
         ),
       ),
       Positioned(
@@ -397,28 +391,6 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
         ),
       ),
     ],
-  ),
-);
-
-Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: Align(
-    alignment: Alignment.center,
-    child: FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Container(
-        height: globalheight*0.08,
-        width: globalwidth*0.7,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(255, 28, 107, 164),
-          boxShadow: const [
-            BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
-          ],
-        ),
-        child: const Text('Book Now', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
-      ),
-    ),
   ),
 );
 

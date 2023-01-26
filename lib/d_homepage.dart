@@ -4,9 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
-import 'p_calendar.dart';
-import 'p_message.dart';
-import 'p_myprofile.dart';
+import 'd_calendar.dart';
+import 'd_message.dart';
+import 'd_myprofile.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,17 +19,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Patient Home Page',
+      title: 'Doctor Home Page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_HomePage(),
+      home: const d_HomePage(),
     );
   }
 }
 
-class p_HomePage extends StatefulWidget {
-  const p_HomePage({super.key});
+class d_HomePage extends StatefulWidget {
+  const d_HomePage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,10 +42,10 @@ class p_HomePage extends StatefulWidget {
 
   @override
   
-  State<p_HomePage> createState() => _HomePageState();
+  State<d_HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<p_HomePage> {
+class _HomePageState extends State<d_HomePage> {
 
 
   @override
@@ -64,7 +64,6 @@ class _HomePageState extends State<p_HomePage> {
           children: [
             heading(width, height),
             services(width, height),
-            meetadoctor(width, height),
             upcomingappointmentlist(width, height),
             home(width, height),
           ],
@@ -73,40 +72,34 @@ class _HomePageState extends State<p_HomePage> {
   }
 
   // All navigate direction calling method
+  // Todo: Change the direction to dctor page after created
   void navigator(int index)
   {
     if (index == 1) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_HomePage()
+          builder: (context) => const d_HomePage()
         ),
       );
     }
     else if(index == 2) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_CalendarPage()
+          builder: (context) => const d_CalendarPage()
         ),
       );
     }
     else if(index == 3) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MessagePage()
+          builder: (context) => const d_MessagePage()
         ),
       );
     }
     else if(index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const p_MyProfilePage()
-        ),
-      );
-    }
-    if (index == 5) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_DoctorListPage()
+          builder: (context) => const d_MyProfilePage()
         ),
       );
     }
@@ -137,7 +130,7 @@ class _HomePageState extends State<p_HomePage> {
       children: [
         Container(
           width: globalwidth,
-          height: globalheight*0.25,
+          height: globalheight*0.27,
           color: const Color.fromARGB(255, 255, 255, 255),
         ),
         Container(
@@ -285,52 +278,13 @@ class _HomePageState extends State<p_HomePage> {
     ),
   );
 
-  Widget meetadoctor(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: GestureDetector(
-      onTap: () => navigator(5),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        height: globalheight*0.2,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-        color: const Color.fromARGB(255, 220, 237, 249),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [           
-            SizedBox(
-              width: globalwidth*0.4,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  children: const [
-                  Text('Meet a doctor now!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),),
-                  Text('Just a few simple steps', style: TextStyle(fontSize: 15)),
-                  ],
-                ),
-              ),
-            ),
-            Container(
-              width: globalwidth*0.4,
-              height: globalheight*0.2,
-              decoration : BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
-                fit: BoxFit.cover,
-                ),
-              ),    
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
-
   Widget upcomingappointmentlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Align(alignment: Alignment.centerLeft,
+        Align(
+          alignment: Alignment.centerLeft,
           child: FittedBox(
               fit: BoxFit.scaleDown,
             child: Container(
@@ -340,16 +294,15 @@ class _HomePageState extends State<p_HomePage> {
               child: const FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text('Upcoming Appointments:', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                child: Text('Today\'s Appointments:', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
         ),
         SizedBox(
-          height: globalheight*0.2,
+          height: globalheight*0.4,
           child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
@@ -367,9 +320,17 @@ class _HomePageState extends State<p_HomePage> {
   );
 
   Widget upcomingappointment(int index, double globalheight) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisSize: MainAxisSize.min,
     children: [
+      const Divider(),
+      const FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Text('Appointment\'s Time', style: TextStyle(fontSize: 10, color: Color.fromARGB(255, 125, 150, 181))),
+      ),
       Container(
+        margin: const EdgeInsets.only(top: 12, bottom: 12),
         height: globalheight*0.13,
         width: 200,
         decoration: BoxDecoration(
