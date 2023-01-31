@@ -194,12 +194,19 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   bool hidePassword = true;
+  bool hideRePassword = true;
+  bool email_error = false;
+  bool user_name_error = false;
+  bool password_error = false;
+
   final _storage = const FlutterSecureStorage();
   final TextEditingController _usernameController =
       TextEditingController(text: "");
   final TextEditingController _passwordController =
       TextEditingController(text: "");
   final TextEditingController _nicknameController =
+      TextEditingController(text: "");
+  final TextEditingController _retypePasswordController =
       TextEditingController(text: "");
 
   final CollectionReference Users =
@@ -231,7 +238,7 @@ class _SignupState extends State<Signup> {
     User? user = auth.currentUser;
 
     if (user != null) {
-        await auth.currentUser?.updateDisplayName(_nicknameController.text);
+      await auth.currentUser?.updateDisplayName(_nicknameController.text);
       if (!user.emailVerified) await user.sendEmailVerification();
     }
   }
@@ -270,7 +277,7 @@ class _SignupState extends State<Signup> {
             children: [
               Container(
                 width: width,
-                height: height * 0.45,
+                height: height * 0.35,
                 child: Image.asset(
                   'assets/play.png',
                   fit: BoxFit.fill,
@@ -294,7 +301,10 @@ class _SignupState extends State<Signup> {
               ),
               TextField(
                 controller: _usernameController,
+                // cursorColor: Colors.orange,
                 decoration: InputDecoration(
+                  filled: email_error,
+                  fillColor: Colors.red,
                   hintText: 'Email',
                   suffixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(
@@ -308,6 +318,8 @@ class _SignupState extends State<Signup> {
               TextField(
                 controller: _nicknameController,
                 decoration: InputDecoration(
+                  filled: user_name_error,
+                  fillColor: Colors.red,
                   hintText: 'User Name',
                   suffixIcon: Icon(Icons.assignment_ind),
                   border: OutlineInputBorder(
@@ -322,6 +334,8 @@ class _SignupState extends State<Signup> {
                 controller: _passwordController,
                 obscureText: hidePassword,
                 decoration: InputDecoration(
+                  filled: password_error,
+                  fillColor: Colors.red,
                   hintText: 'Password',
                   suffixIcon: IconButton(
                       onPressed: () {
@@ -338,7 +352,34 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               SizedBox(
-                height: 30.0,
+                height: 20.0,
+              ),
+              TextField(
+                controller: _retypePasswordController,
+                obscureText: hideRePassword,
+                decoration: InputDecoration(
+                  filled: password_error,
+                  fillColor: Colors.red,
+                  hintText: 'Retype Your Password',
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          hideRePassword = !hideRePassword;
+                        });
+                      },
+                      icon: Icon(
+                        hideRePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      )),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+              ),
+              Text(
+                email_error || user_name_error || password_error ? 'Invalid input.' : '',
+                style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(
                 padding: const EdgeInsets.all(10.0),
@@ -358,10 +399,43 @@ class _SignupState extends State<Signup> {
                       onPressed: () async {
                         // await _onFormSubmit();
                         // await addUser();
-                        if (_nicknameController.text != '' &&
-                          _passwordController.text != '' &&
-                          _usernameController.text != '') 
-                        {await _signup();}
+                        bool email = false;
+                        bool user_name = false;
+                        bool password = false;
+                        RegExp regex =
+                            RegExp(r'\S+@\S+\.\S+');
+                        if (_usernameController.text == '' ||
+                            !regex.hasMatch(_usernameController.text)) {
+                          setState(() {
+                            email_error = true;
+                          });
+                        } else {
+                          email_error = false;
+                          email = true;
+                        }
+
+                        if (_nicknameController.text == '') {
+                          setState(() {
+                            user_name_error = true;
+                          });
+                        } else {
+                          user_name_error = false;
+                          user_name = true;
+                        }
+
+                        if (_passwordController.text == '' ||
+                            _passwordController.text !=
+                                _retypePasswordController.text) {
+                          setState(() {
+                            password_error = true;
+                          });
+                        } else {
+                          password_error = false;
+                          password = true;
+                        }
+                        if (email && password && user_name) {
+                          await _signup();
+                        }
                       },
                     ),
                   ],
