@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:simple_login/pred_stat.dart';
 // import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:simple_login/classifier.dart';
-import 'package:logger/logger.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'package:simple_login/flutter_tflite-master/lib/tflite.dart';
 import 'package:simple_login/skin_classifier.dart';
 import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
-import 'classifier.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:simple_login/loading_screen.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:http/http.dart' as http;
 
 // class _ChartData {
 //   _ChartData(this.x, this.y);
@@ -220,80 +218,61 @@ class CancerPredict extends StatefulWidget {
 }
 
 class _CancerPredictState extends State<CancerPredict> {
-  // late Classifier _classifier;
 
-  // var logger = Logger();
-
-  // File? _image;
-  // final picker = ImagePicker();
-
-  // Image? _imageWidget;
-
-  // img.Image? fox;
-
-  // Category? category;
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _classifier = cancerClassifier();
-  // }
-
-  // Future _getImage() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-  //   setState(() {
-  //     _image = File(pickedFile!.path);
-  //     _imageWidget = Image.file(_image!);
-
-  //     _predict();
-  //   });
-  // }
   bool isLoading = true;
 
   // late Stats? _outputs;
-  Category? category;
-  Map<String, double>? results;
+  // Category? category;
+  String? category;
+  // Map<String, double>? results;
   late File _image;
   // String? _imgUrl;
   Image? displayImg;
-  late Classifier _classifier;
+  // late Classifier _classifier;
 
   @override
   void initState() {
     super.initState();
     _getImg();
+
     // loadModel().then((value) {
     //   setState(() {
     //     isLoading = false;
-    //     // data = [_ChartData('a', 10)];
     //   });
     // });
+
     setState(() {
-      _classifier = SkinClassifier();
+      // _classifier = SkinClassifier();
       isLoading = false;
     });
   }
 
-  pickImage() async {
-    try {
-      var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return null;
-      setState(() {
-        _image = File(image.path);
-      });
-      // img.Image im = _image.readAsBytes();
-      // var tmp = _image.openRead();
-      // img.decodeImage(_image.readAsBytesSync());
+  // pickImage() async {
+  //   try {
+  //     var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  //     if (image == null) return null;
+  //     setState(() {
+  //       _image = File(image.path);
+  //     });
+  //     // img.Image im = _image.readAsBytes();
+  //     // var tmp = _image.openRead();
+  //     // img.decodeImage(_image.readAsBytesSync());
 
-      var temp_img = img.decodeImage(_image.readAsBytesSync());
-      print(temp_img!.getBytes());
-
-      classifyImage(img.decodeImage(_image.readAsBytesSync())!);
-    } catch (e) {
-      print(e);
-    }
-  }
+  //     var temp_img = img.decodeJpg(_image.readAsBytesSync());
+  //     print(temp_img!.getBytes());
+  //     // var temp = _image.readAsBytesSync();
+  //     // List<Uint8List> l = [];
+  //     // for (int i = 0; i < temp.length; i++){
+        
+  //     // }
+  //     // Tflite.runModelOnImage(path: path)
+  //     // Tflite.runModelOnFrame(bytesList: temp.p);
+  //     classifyImage(img.decodeJpg(_image.readAsBytesSync())!);
+  //     // classifyImage(img.decodeImage(_image.readAsBytesSync())!);
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   // preprocess(File image) async {
   //   img.Image image = img.decodeImage(
@@ -304,22 +283,22 @@ class _CancerPredictState extends State<CancerPredict> {
   //   return thumbnail;
   // }
 
-  classifyImage(img.Image image) async {
-    // var output = await Tflite.runModelOnImage(
-    //   path: image.path,
-    // );
-    var output = _classifier.predict(image);
-    print("predict = " + output.toString());
-    setState(() {
-      results = output;
-      var temp = getTopProbability(results!);
-      category = Category(temp.key, temp.value);
-    });
-  }
+  // classifyImage(img.Image image) async {
+  //   // var output = await Tflite.runModelOnImage(
+  //   //   path: image.path,
+  //   // );
+  //   var output = _classifier.predict(image);
+  //   print("predict = " + output.toString());
+  //   setState(() {
+  //     results = output;
+  //     var temp = getTopProbability(results!);
+  //     category = Category(temp.key, temp.value);
+  //   });
+  // }
 
   loadModel() async {
     await Tflite.loadModel(
-      model: "assets/model.tflite",
+      model: "assets/Xception.tflite",
       labels: "assets/label.txt",
     );
     print("load model success!");
@@ -370,14 +349,25 @@ class _CancerPredictState extends State<CancerPredict> {
     return 'Location from firestore'; //TODO
   }
 
-  // void _predict() async {
-  //   img.Image imageInput = img.decodeImage(_image!.readAsBytesSync())!;
-  //   var pred = _classifier.predict(imageInput);
-
-  //   setState(() {
-  //     this.category = pred;
-  //   });
-  // }
+  uploadImageToServer() async
+  {
+  var image = await ImagePicker().pickImage(source: ImageSource.gallery);
+  if (image == null) return null;
+  setState(() {
+    _image = File(image.path);
+  });
+  print('attempting to connect to server...');
+  var request = 
+    http.MultipartRequest('POST', Uri.parse('http://192.168.0.176:5000/predict'));
+  request.files.add(http.MultipartFile.fromBytes('file', _image.readAsBytesSync(), filename: image.path));
+  print('connection established.');
+  // contentType: new MediaType(‘image’, ‘png’));
+  // var response = await http.get(Uri.parse('http://192.168.0.176:5000/'));
+  // print(response.statusCode);
+  var response = await request.send();
+  var respStr = await response.stream.bytesToString();
+  print(respStr);
+  }
 
   @override
   Widget build(BuildContext context) => isLoading
@@ -417,15 +407,15 @@ class _CancerPredictState extends State<CancerPredict> {
                         ),
                       ),
                       Text(
-                        category != null ? category!.label : '',
+                        category != null ? category! : '',
                         style: TextStyle(fontSize: 18.0, color: Colors.white),
                       ),
-                      Text(
-                        category != null
-                            ? 'percentage: ${category!.score.toStringAsFixed(3)}'
-                            : '',
-                        style: TextStyle(fontSize: 18.0, color: Colors.white),
-                      ),
+                      // Text(
+                      //   category != null
+                      //       ? 'percentage: ${category!.score.toStringAsFixed(3)}'
+                      //       : '',
+                      //   style: TextStyle(fontSize: 18.0, color: Colors.white),
+                      // ),
                       AspectRatio(
                         aspectRatio: 1.7,
                         child: Card(
@@ -437,7 +427,7 @@ class _CancerPredictState extends State<CancerPredict> {
                         ),
                       ),
                       ElevatedButton(
-                          onPressed: pickImage, child: Text('Predict')),
+                          onPressed: uploadImageToServer, child: Text('Predict')),
 
                       // Text(
                       //   category != null ? category!.label : '',
