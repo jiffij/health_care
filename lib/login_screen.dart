@@ -9,6 +9,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simple_login/ImageUpDownload.dart';
 import 'main.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -87,6 +88,24 @@ class _loginScreenState extends State<loginScreen> {
     }
     print('login fail');
     return false;
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -169,6 +188,24 @@ class _loginScreenState extends State<loginScreen> {
                     },
                   ),
                   SizedBox(height: 20.0),
+                  ElevatedButton(
+                    child: Text('Google Login'),
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.amber)),
+                    onPressed: () async {
+                      signInWithGoogle().then((value) {
+                        // print(FirebaseAuth.instance.authStateChanges());
+                        print(FirebaseAuth.instance.currentUser.toString());
+                        if (FirebaseAuth.instance.currentUser != null) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const d_HomePage()));
+                        }
+                      }).catchError((e) => print(e));
+                    },
+                  ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
@@ -378,7 +415,9 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               Text(
-                email_error || user_name_error || password_error ? 'Invalid input.' : '',
+                email_error || user_name_error || password_error
+                    ? 'Invalid input.'
+                    : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(
@@ -402,8 +441,7 @@ class _SignupState extends State<Signup> {
                         bool email = false;
                         bool user_name = false;
                         bool password = false;
-                        RegExp regex =
-                            RegExp(r'\S+@\S+\.\S+');
+                        RegExp regex = RegExp(r'\S+@\S+\.\S+');
                         if (_usernameController.text == '' ||
                             !regex.hasMatch(_usernameController.text)) {
                           setState(() {
