@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -11,6 +10,7 @@ import 'p_myprofile.dart';
 
 // Details for calendar customization:
 // https://blog.logrocket.com/build-custom-calendar-flutter/
+// https://stackoverflow.com/questions/69818820/how-to-change-header-formatting-in-flutter-table-calendar-package
 
 void main() {
   runApp(const MyApp());
@@ -50,6 +50,10 @@ class p_CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<p_CalendarPage> {
+
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
   
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,8 @@ class _CalendarPageState extends State<p_CalendarPage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    DateTime selectedDay = DateTime.now();
+    
+    
     return Scaffold(
 
       body: Column(
@@ -69,7 +74,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
           children: [
             heading(width, height),
             calendar(width, height),
-            upcomingappointmentlist(width, height, selectedDay),
+            upcomingappointmentlist(width, height, _focusedDay),
             home(width, height),           
           ],
         ),
@@ -77,35 +82,29 @@ class _CalendarPageState extends State<p_CalendarPage> {
   }
   
   // All navigate direction calling method
-  void navigator(int index)
-  {
-    if (index == 1) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_HomePage()
-        ),
-      );
-    }
-    else if(index == 2) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_CalendarPage()
-        ),
-      );
-    }
-    else if(index == 3) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_MessagePage()
-        ),
-      );
-    }
-    else if(index == 4) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_MyProfilePage()
-        ),
-      );
+  void navigator(int index) {
+    switch (index) {
+      case 1:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_HomePage()),
+        );
+        break;
+      case 2:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_CalendarPage()),
+        );
+        break;
+      case 3:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MessagePage()),
+        );
+        break;
+      case 4:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
+        );
+        break;
+      default:
     }
     setState(() {});
   }
@@ -115,7 +114,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
       children: [
         Container(
           width: globalwidth,
-          height: globalheight*0.12,
+          height: globalheight*0.08,
           color: const Color.fromARGB(255, 28, 107, 164),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,33 +134,80 @@ class _CalendarPageState extends State<p_CalendarPage> {
             ],
           ),
         ),
-        // Positioned(
-        //   top: globalheight*0.12,
-        //   child: Column(
-        //     children: [
-        //       SizedBox(
-        //         //width: globalwidth,
-        //         //height: globalheight*0.58,
-        //         child:  calendar(globalwidth, globalheight),
-        //       ),
-        //   ],
-        //   ),
-        // ),
       ],
     ),
   );
 
-  Widget calendar(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  Widget calendar(double globalwidth, double globalheight) => Card(
     child: Expanded(
       child: SizedBox(
         child: SingleChildScrollView(
           child: Column(
             children: [
               TableCalendar(
+                weekendDays: const [DateTime.sunday],
+                rowHeight: globalheight*0.08,
+                headerStyle: HeaderStyle(
+                  headerPadding: const EdgeInsets.symmetric(vertical: 2),
+                  formatButtonVisible: false,
+                  titleCentered: true,
+                  titleTextFormatter: (date, locale) => DateFormat.yMMM(locale).format(date),
+                  // Calendar title style
+                  titleTextStyle: TextStyle(
+                    color: const Color.fromARGB(255, 74, 84, 94), fontSize: MediaQuery.of(context).size.width*0.07),
+                  leftChevronIcon: Icon(
+                    Icons.chevron_left,
+                    color: const Color.fromARGB(255, 74, 84, 94),
+                    size: MediaQuery.of(context).size.width*0.07,
+                  ),
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    color: const Color.fromARGB(255, 74, 84, 94),
+                    size: MediaQuery.of(context).size.width*0.07,
+                  ),
+                ),
+                // Calendar days title style
+                daysOfWeekStyle: const DaysOfWeekStyle(
+                  weekendStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                ),
+                // Calendar days style
+                calendarStyle: const CalendarStyle(
+                weekendTextStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                todayDecoration: BoxDecoration(
+                  color: Color.fromARGB(165, 35, 185, 59),
+                  shape: BoxShape.rectangle,
+                ),
+                // highlighted color for selected day
+                selectedDecoration: BoxDecoration(
+                  color: Color.fromARGB(255, 65, 95, 185),
+                  shape: BoxShape.rectangle,
+                ),
+                ),
+                calendarBuilders: CalendarBuilders(
+                  // defaultBuilder: (context, day, events) {
+                  //   return Center(
+                  //     child: Center(
+                  //       //child: Text('${day.day}', style: TextStyle(color: day.weekday == DateTime.sunday ? const Color.fromARGB(255, 255, 0, 0) : const Color.fromARGB(255, 0, 0, 0))),
+                  //     ),
+                  //   );
+                  // },
+                ),
                 firstDay: DateTime(2020),
                 lastDay: DateTime(2050),
-                focusedDay: DateTime.now(),
+                focusedDay: _focusedDay,
                 // Todo: Calendar interatives
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay; 
+                    _focusedDay = focusedDay; // update `_focusedDay` here as well
+                  });
+                },
+                onPageChanged: (focusedDay) {
+                  _focusedDay = focusedDay;
+                },
               ),
             ],
           ),
@@ -183,7 +229,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
               fit: BoxFit.scaleDown,
             child: Container(
               margin: const EdgeInsets.only(left: 12, bottom: 5),
-              height: globalheight*0.03,
+              height: globalheight*0.025,
               width: globalwidth,
               child: FittedBox (
                 alignment: Alignment.centerLeft,

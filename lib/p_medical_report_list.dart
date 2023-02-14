@@ -8,8 +8,8 @@ import 'p_message.dart';
 import 'p_myprofile.dart';
 
 
-class p_DoctorListPage extends StatefulWidget {
-  const p_DoctorListPage({super.key});
+class p_MedicalReportListPage extends StatefulWidget {
+  const p_MedicalReportListPage({super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,10 +22,10 @@ class p_DoctorListPage extends StatefulWidget {
 
   @override
 
-  State<p_DoctorListPage> createState() => _DoctorListPageState();
+  State<p_MedicalReportListPage> createState() => _MedicalReportListPageState();
 }
 
-class _DoctorListPageState extends State<p_DoctorListPage> {
+class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
   
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,8 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
-            currentdoctorlist(width, height),
-            highrateddoctorlist(width, height),
+            //currentdoctorlist(width, height),
+            medicalreportlist(width, height),
             home(width, height),           
           ],
         ),
@@ -56,7 +56,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     switch (index) {
       case 0:
         Navigator.of(context).pop(context);
-      break;
+        break;
       case 1:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_HomePage()),
@@ -119,7 +119,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             child: FittedBox (
             fit: BoxFit.scaleDown,        
             child: 
-            Text('Doctor List', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text('My Medical Report', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
             ),
           ),
           FittedBox(
@@ -143,7 +143,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
                     child: const FittedBox (
                       alignment: Alignment.centerLeft,
                       fit: BoxFit.scaleDown,        
-                      child: Text('Search Doctor...', style: TextStyle(fontSize: 12)),
+                      child: Text('Search By Report Number...', style: TextStyle(fontSize: 12)),
                     ),
                   ),
                   const Spacer(),
@@ -161,7 +161,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget currentdoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  Widget medicalreportlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Column(
       children: [
         Align(alignment: Alignment.centerLeft,
@@ -174,86 +174,13 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               child: const FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text('Current Available Doctors', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text('Medical Report History', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
         ),
         SizedBox(
-          height: globalheight*0.2,
-          child: ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(12),
-            // The number of itemCount depends on the number of appointment
-            // 5 is the number of appointment for testing only
-            itemCount : 5,
-            separatorBuilder:  (context, index) {
-              return const SizedBox(width: 15);
-            },
-            itemBuilder: (context, index) {
-              return currentdoctor(index, globalheight);
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget currentdoctor(int index, double globalheight) => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        height: globalheight*0.12,
-        width: globalheight*0.12,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(50, 224, 159, 31),
-        ),
-        child: Stack(
-          children: [
-            Text ('Doctor Photo $index', style: const TextStyle(fontSize: 10)),
-            Positioned(
-              right: 2,
-              top: 2,
-              child: Container(
-                height: globalheight*0.02,
-                width: globalheight*0.02,
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(130, 0, 255, 0),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: Color.fromARGB(255, 255, 255, 255), spreadRadius: 3),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-
-  Widget highrateddoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: Column(
-      children: [
-        Align(alignment: Alignment.centerLeft,
-          child: FittedBox(
-              fit: BoxFit.scaleDown,
-            child: Container(
-              margin: const EdgeInsets.only(left: 12),
-              height: globalheight*0.05,
-              width: globalwidth,
-              child: const FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text('High Rated Doctors', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: globalheight*0.35,
+          height: globalheight*0.60,
           child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
             scrollDirection: Axis.vertical,
@@ -265,7 +192,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               return const SizedBox(height: 15);
             },
             itemBuilder: (context, index) {
-              return highrateddoctor(index, globalheight);
+              return medicalreport(index, globalwidth, globalheight);
             },
           ),
         ),
@@ -273,7 +200,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget highrateddoctor(int index, double globalheight) => Column(
+  Widget medicalreport(int index, double globalwidth, double globalheight) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
@@ -290,18 +217,57 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             Container(
               width: globalheight*0.15,
               height: globalheight*0.15,
+              margin: const EdgeInsets.only(right: 12),
               decoration : BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
-                  fit: BoxFit.cover,
+                color: const Color.fromARGB(255, 220, 237, 249),
+              ),
+              child: SizedBox(
+                width: globalwidth * 0.15,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text('Click here',
+                        style: TextStyle(fontSize: 30)),
+                      Text('to download',
+                        style: TextStyle(fontSize: 30)),
+                      Text('the report!',
+                        style: TextStyle(fontSize: 30)),
+                    ],
+                  ),
                 ),
-              ),    
+              ),
             ),
-            Text ('Doctor Details $index'),
+            SizedBox(
+                width: globalwidth * 0.55,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Medical Report Number: 12345678 $index',
+                        style: const TextStyle(
+                            fontSize: 30, fontWeight: FontWeight.bold),
+                      ),
+                      const Text('Issued by: Doctor\'s Name',
+                          style: TextStyle(fontSize: 30)),
+                      const Text('Issued on: Date',
+                          style: TextStyle(fontSize: 30)),
+                    ],
+                  ),
+                ),
+            ),
           ],
         ),
       ),
+      const Divider(),
     ],
   );
 

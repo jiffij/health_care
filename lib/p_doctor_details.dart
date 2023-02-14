@@ -71,35 +71,32 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
   }
 
   // All navigate direction calling method
-  void navigator(int index)
-  {
-    if (index == 1) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_HomePage()
-        ),
-      );
-    }
-    else if(index == 2) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_CalendarPage()
-        ),
-      );
-    }
-    else if(index == 3) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_MessagePage()
-        ),
-      );
-    }
-    else if(index == 4) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const p_MyProfilePage()
-        ),
-      );
+  void navigator(int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).pop(context);
+        break;
+      case 1:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_HomePage()),
+        );
+        break;
+      case 2:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_CalendarPage()),
+        );
+        break;
+      case 3:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MessagePage()),
+        );
+        break;
+      case 4:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
+        );
+        break;
+      default:
     }
     setState(() {});
   }
