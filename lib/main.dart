@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 import 'package:collection/collection.dart'; // For using firstWhereOrNull()
+import 'StreamChannelListPage.dart';
 
 void main() async {
   // *** implementation using my API key
@@ -22,43 +23,6 @@ void main() async {
 
   await client.connectUser(user,
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiRXZhQ2hhbl8xIn0.4fvK0lD9-8jmmSyV_NrOsd_HOYFLmvQtdh-vE4iO3-8");
-
-  // set up a channel
-  /// Creates a channel using the type `messaging` and `flutterdevs`.
-  /// Channels are containers for holding messages between different members. To
-  /// learn more about channels and some of our predefined types, checkout our
-  /// our channel docs: https://getstream.io/chat/docs/flutter-dart/creating_channels/?language=dart
-  /*
-  final channel = client.channel(
-    'messaging',
-    id: 'AliceWilliams_1_channel',
-    extraData: {
-      'name': 'Alice Williams',
-    },
-  );
-
-  /// `.watch()` is used to create and listen to the channel for updates. If the
-  /// channel already exists, it will simply listen for new events.
-  await channel.watch();
-  */
-
-  /*
-  // Querying Channels - retrieve a list of channels
-  final filter = Filter.in_('members', ['john']);
-  final channels = await client
-      .queryChannels(
-        filter: filter,
-        // sort: sort,
-        sort: [SortOption("last_message_at", direction: SortOption.DESC)],
-        watch: true,
-        state: true,
-      )
-      .last;
-
-  channels.forEach((Channel c) {
-    print("${c.extraData['name']} ${c.cid}");
-  });
-  */
 
   runApp(
     MyApp(
@@ -111,6 +75,8 @@ class MyApp extends StatelessWidget {
 }
 */
 
+/// Move to StreamChannelListPage.dart
+/*
 class ChannelListPage extends StatefulWidget {
   const ChannelListPage({
     Key? key,
@@ -168,6 +134,7 @@ class _ChannelListPageState extends State<ChannelListPage> {
         ),
       );
 }
+*/
 
 /*
 // Default Channel Preview - Without header
@@ -264,6 +231,9 @@ class _ChannelListPageState extends State<ChannelListPage> {
 }
 */
 
+
+/// Move to StreamChannelPage.dart
+/*
 /// Displays the list of messages inside the channel
 class ChannelPage extends StatelessWidget {
   const ChannelPage({
@@ -334,7 +304,7 @@ class ThreadPage extends StatelessWidget {
     );
   }
 }
-
+*/
 
 
 
@@ -379,5 +349,76 @@ class MyApp extends StatelessWidget {
       home: loginScreen(),
     );
   }
+}
+*/
+
+
+
+
+/// backup
+/*
+void main() async {
+  // *** implementation using my API key
+  // client-side you initialize the Chat client with your API key
+  final client = StreamChatClient(
+    "4kvevaagmggn",
+    logLevel: Level.INFO,
+    connectTimeout: Duration(milliseconds: 6000),
+    receiveTimeout: Duration(milliseconds: 6000),
+  );
+
+  // User 1
+  final user = User(id: "EvaChan_1", extraData: {
+    "name": "Eva Chan",
+    "image":
+        "https://serving.photos.photobox.com/98717916301912f7dfba33d6787c095532b401b2ae7f44741223486f2736ffbea9f7f813.jpg",
+  });
+
+  await client.connectUser(user,
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiRXZhQ2hhbl8xIn0.4fvK0lD9-8jmmSyV_NrOsd_HOYFLmvQtdh-vE4iO3-8");
+
+  // set up a channel
+  /// Creates a channel using the type `messaging` and `flutterdevs`.
+  /// Channels are containers for holding messages between different members. To
+  /// learn more about channels and some of our predefined types, checkout our
+  /// our channel docs: https://getstream.io/chat/docs/flutter-dart/creating_channels/?language=dart
+  /*
+  final channel = client.channel(
+    'messaging',
+    id: 'AliceWilliams_1_channel',
+    extraData: {
+      'name': 'Alice Williams',
+    },
+  );
+
+  /// `.watch()` is used to create and listen to the channel for updates. If the
+  /// channel already exists, it will simply listen for new events.
+  await channel.watch();
+  */
+
+  /*
+  // Querying Channels - retrieve a list of channels
+  final filter = Filter.in_('members', ['john']);
+  final channels = await client
+      .queryChannels(
+        filter: filter,
+        // sort: sort,
+        sort: [SortOption("last_message_at", direction: SortOption.DESC)],
+        watch: true,
+        state: true,
+      )
+      .last;
+
+  channels.forEach((Channel c) {
+    print("${c.extraData['name']} ${c.cid}");
+  });
+  */
+
+  runApp(
+    MyApp(
+      client: client,
+      //channel: channel,
+    ),
+  );
 }
 */
