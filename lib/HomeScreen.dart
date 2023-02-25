@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/material.dart';
 import 'main.dart';
 
@@ -27,18 +28,16 @@ class _MainScreenState extends State<MainScreen> {
         height: height,
         width: width,
         child: SingleChildScrollView(
-          child: Column(
-          children: [
+            child: Column(children: [
           SizedBox(
             width: width,
-            height: height*0.1,
+            height: height * 0.1,
             child: Card(child: Text('Hello World!')),
           ),
           Text('Hi, ' + displayName),
-          ]
-          )
-        ),
+        ])),
       ),
     );
   }
 }
+*/

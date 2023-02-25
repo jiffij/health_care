@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
 import 'package:image_picker/image_picker.dart';
 import 'AgoraConfig.dart';
+import 'AgoraConfigWithUIKit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const VideoCall()));
+                              builder: (context) => VideoCallWithUIKit()));
                     },
                     icon: const Icon(Icons.video_call),
                     label: const Text('Video Call')),

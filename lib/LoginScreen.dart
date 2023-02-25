@@ -1,5 +1,5 @@
+/*
 // import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:simple_login/HomeScreen.dart';
@@ -8,6 +8,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simple_login/ImageUpDownload.dart';
 import 'SendbirdChatView.dart'; // Sendbird Chat Test
+import 'StreamChatChannelListPreview.dart'; // Stream Chat Test
+import 'AgoraConfigWithUIKit.dart'; // Agora Video Call Test
 import 'main.dart';
 
 class loginScreen extends StatefulWidget {
@@ -164,13 +166,8 @@ class _loginScreenState extends State<loginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => ChatView(
-                                          appId:
-                                              "2742FF7C-48D1-40CE-B88D-3AE6B49C29A3",
-                                          userId: "test01",
-                                          otherUserIds: [
-                                            "test02"
-                                          ]))); // Sendbird Chat Test
+                                  builder: (context) =>
+                                      HomePage())); // Agora Video Call Test
                         }
                       },
                     ),
@@ -399,3 +396,4 @@ class _SignupState extends State<Signup> {
     );
   }
 }
+*/

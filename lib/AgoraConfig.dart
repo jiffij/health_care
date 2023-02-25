@@ -7,8 +7,6 @@ import 'package:agora_rtc_engine/agora_rtc_engine.dart';
 const String appId = "fa12dc73db1e4f769dcb6fd794785382";
 
 class VideoCall extends StatefulWidget {
-  const VideoCall({Key? key}) : super(key: key);
-
   @override
   _VideoCallState createState() => _VideoCallState();
 }
