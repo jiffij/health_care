@@ -1,10 +1,9 @@
 // import 'dart:html';
 import 'package:flutter/material.dart';
-import 'LoginScreen.dart';
-import 'HomeScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:simple_login/pages/connect.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -26,7 +25,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: loginScreen(),
+      home: const ConnectPage(),
     );
   }
 }
+
+
