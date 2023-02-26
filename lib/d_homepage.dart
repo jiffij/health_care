@@ -8,6 +8,7 @@ import 'd_calendar.dart';
 import 'd_message.dart';
 import 'd_myprofile.dart';
 import 'cancer_prediction.dart';
+import 'register.dart';
 
 class d_HomePage extends StatefulWidget {
   const d_HomePage({super.key});
@@ -62,13 +63,13 @@ class _HomePageState extends State<d_HomePage> {
       );
     } else if (index == 3) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const d_MessagePage()),
+        MaterialPageRoute(builder: (context) => const Register()),
       );
     } else if (index == 4) {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const d_MyProfilePage()),
       );
-    } else if (index ==5 ){
+    } else if (index == 5) {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const CancerPredict()),
       );
