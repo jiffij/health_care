@@ -48,10 +48,13 @@ class _RegisterState extends State<Register> {
     updateAuthInfo(_nameController.text);
   }
 
-  // void checkExist() async {
-  //   final String uid = await getUID();
-  //   print(await checkDocExist("patient/$uid"));
-  // }
+  void checkExist() async {
+    final String uid = await getUID();
+    print(await checkDocExist("doctor/$uid"));
+    var data = await getDoc("doctor/$uid");
+    print(await data?['first name']);
+    print(await data?['last name']);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -144,17 +147,17 @@ class _RegisterState extends State<Register> {
                   onPressed: register,
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(10.0),
-              //   child: ElevatedButton(
-              //     child: Text('CheckExist'),
-              //     style: ButtonStyle(
-              //       backgroundColor:
-              //           MaterialStateProperty.all(Colors.amber[900]),
-              //     ),
-              //     onPressed: checkExist,
-              //   ),
-              // ),
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: ElevatedButton(
+                  child: Text('CheckExist'),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.amber[900]),
+                  ),
+                  onPressed: checkExist,
+                ),
+              ),
             ],
           ),
         ),

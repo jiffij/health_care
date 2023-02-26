@@ -16,7 +16,8 @@ Example
 Future<bool> checkDocExist(String docID) async {
   bool exist = false;
   try {
-    await FirebaseFirestore.instance.doc(docID).get().then((doc) { //"users/$docID"
+    await FirebaseFirestore.instance.doc(docID).get().then((doc) {
+      //"users/$docID"
       exist = doc.exists;
     });
     return exist;
@@ -44,6 +45,23 @@ Future<void> setDoc(String docID, Map<String, dynamic> map) async {
       .set(map, SetOptions(merge: true))
       .then((value) => print("Document set!"))
       .catchError((error) => print("Failed to add user: $error"));
+}
+
+/* 
+get all data in a document
+e.g.
+    var data = await getDoc("doctor/$uid");
+    print(await data?['first name']);
+    print(await data?['last name']);
+*/
+Future<Map<String, dynamic>?> getDoc(String docID) async {
+  var docSnapshot = await FirebaseFirestore.instance.doc(docID).get();
+
+  if (docSnapshot.exists) {
+    Map<String, dynamic>? data = docSnapshot.data();
+    return data;
+  }
+  return null;
 }
 
 // Update the information in Firebase auth
