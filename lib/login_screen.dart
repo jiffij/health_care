@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:simple_login/d_homepage.dart';
+import 'doctor/d_homepage.dart';
 import 'package:simple_login/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:simple_login/ImageUpDownload.dart';
+import 'package:simple_login/helper/ImageUpDownload.dart';
 import 'main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 

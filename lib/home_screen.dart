@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cancer_prediction.dart';
+import 'doctor/cancer_prediction.dart';
 // import 'main.dart';
 
 class MyHomePage extends StatefulWidget {

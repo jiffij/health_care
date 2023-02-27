@@ -47,12 +47,12 @@ dependencies:
   path_provider: ^2.0.11
   swipe_widget: ^0.0.2+1
   table_calendar: ^3.0.8
-  tflite:
-    path: ./lib/flutter_tflite-master
-  tflite_flutter_helper: 
-    git:
-      url: https://github.com/filofan1/tflite_flutter_helper.git
-      ref: 783f15e5a87126159147d8ea30b98eea9207ac70
+  # tflite:
+  #   path: ./lib/flutter_tflite-master
+  # tflite_flutter_helper: 
+  #   git:
+  #     url: https://github.com/filofan1/tflite_flutter_helper.git
+  #     ref: 783f15e5a87126159147d8ea30b98eea9207ac70
   translator: ^0.1.7
   utility: ^1.0.2
 
