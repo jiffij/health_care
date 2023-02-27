@@ -85,22 +85,22 @@ class _MyProfilePageState extends State<p_MyProfilePage> {
   void navigator(int index) {
     switch (index) {
       case 1:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_HomePage()),
         );
         break;
       case 2:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_CalendarPage()),
         );
         break;
       case 3:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MessagePage()),
         );
         break;
       case 4:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
         );
         break;
@@ -127,9 +127,12 @@ class _MyProfilePageState extends State<p_MyProfilePage> {
               alignment: Alignment.topLeft ,
               child: Row(
                 children: [
-                  const FittedBox (
-                    fit: BoxFit.scaleDown,        
-                    child: Text('My Profile', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                  SizedBox(
+                    height: globalheight*0.1,
+                    child: const FittedBox (
+                      fit: BoxFit.scaleDown,        
+                      child: Text('My Profile', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                    ),
                   ),
                   const Spacer(),
                   FittedBox(

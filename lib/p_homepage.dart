@@ -57,22 +57,22 @@ class _HomePageState extends State<p_HomePage> {
   void navigator(int index) {
     switch (index) {
       case 1:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_HomePage()),
         );
         break;
       case 2:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_CalendarPage()),
         );
         break;
       case 3:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MessagePage()),
         );
         break;
       case 4:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
         );
         break;
@@ -223,6 +223,7 @@ class _HomePageState extends State<p_HomePage> {
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Container(
+                    padding: const EdgeInsets.all(6),
                     height: globalheight * 0.08,
                     width: globalheight * 0.08,
                     decoration: BoxDecoration(
@@ -230,8 +231,11 @@ class _HomePageState extends State<p_HomePage> {
                       color: const Color.fromARGB(255, 220, 237, 249),
                     ),
                     // Todo: Change the icon
-                    child: const Icon(Icons.home,
-                        color: Color.fromARGB(255, 28, 107, 164)),
+                    child: Image.asset(
+                      'assets/pill.png',
+                      fit: BoxFit.fill,
+                      color: const Color.fromARGB(255, 28, 107, 164),
+                    ),
                   ),
                 ),
                 FittedBox(
@@ -239,28 +243,35 @@ class _HomePageState extends State<p_HomePage> {
                   child: GestureDetector(
                     onTap: () => navigator(7),
                     child: Container(
+                      padding: const EdgeInsets.all(8),
                       height: globalheight * 0.08,
                       width: globalheight * 0.08,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: const Color.fromARGB(255, 250, 240, 219),
                       ),
-                      child: const Icon(Icons.medical_services_rounded,
-                          color: Color.fromARGB(255, 224, 159, 31)),
+                      child: Image.asset(
+                        'assets/doctor.png',
+                        fit: BoxFit.fill,
+                        color: const Color.fromARGB(255, 224, 159, 31)),
                     ),
                   ),
                 ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Container(
+                    padding: const EdgeInsets.all(6),
                     height: globalheight * 0.08,
                     width: globalheight * 0.08,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: const Color.fromARGB(38, 247, 56, 89),
                     ),
-                    child: const Icon(Icons.chat,
-                        color: Color.fromARGB(255, 247, 56, 89)),
+                    child: Image.asset(
+                      'assets/message.png',
+                      fit: BoxFit.fill,
+                      color: const Color.fromARGB(255, 247, 56, 89)
+                    ),
                   ),
                 ),
                 FittedBox(
@@ -268,14 +279,17 @@ class _HomePageState extends State<p_HomePage> {
                   child: GestureDetector(
                     onTap: () => navigator(6),
                     child: Container(
+                      padding: const EdgeInsets.all(6),
                       height: globalheight * 0.08,
                       width: globalheight * 0.08,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         color: const Color.fromARGB(255, 242, 227, 233),
                       ),
-                      child: const Icon(Icons.coronavirus,
-                          color: Color.fromARGB(255, 157, 76, 108)),
+                      child: Image.asset(
+                        'assets/virus.png',
+                        fit: BoxFit.fill,
+                        color: const Color.fromARGB(255, 157, 76, 108)),
                     ),
                   ),
                 ),

@@ -109,6 +109,9 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   // All navigate direction calling method
   void navigator(int index) {
     switch (index) {
+      case 0:
+        Navigator.of(context).pop(context);
+        break;
       case 1:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_HomePage()),

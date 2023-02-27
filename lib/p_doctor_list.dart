@@ -7,6 +7,8 @@ import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 
+import 'p_doctor_details.dart';
+
 
 class p_DoctorListPage extends StatefulWidget {
   const p_DoctorListPage({super.key});
@@ -75,6 +77,11 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       case 4:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
+        );
+        break;
+      case 5:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_DoctorDetailPage()),
         );
         break;
       default:
@@ -210,25 +217,33 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
           borderRadius: BorderRadius.circular(10),
           color: const Color.fromARGB(50, 224, 159, 31),
         ),
-        child: Stack(
-          children: [
-            Text ('Doctor Photo $index', style: const TextStyle(fontSize: 10)),
-            Positioned(
-              right: 2,
-              top: 2,
-              child: Container(
-                height: globalheight*0.02,
-                width: globalheight*0.02,
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(130, 0, 255, 0),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(color: Color.fromARGB(255, 255, 255, 255), spreadRadius: 3),
-                  ],
+        child: GestureDetector(
+          onTap: () => navigator(5),
+          child: Stack(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text ('Doctor Photo $index', style: const TextStyle(fontSize: 10)),
+                ]
+              ),
+              Positioned(
+                right: 2,
+                top: 2,
+                child: Container(
+                  height: globalheight*0.02,
+                  width: globalheight*0.02,
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(130, 0, 255, 0),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: Color.fromARGB(255, 255, 255, 255), spreadRadius: 3),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ],
@@ -265,7 +280,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               return const SizedBox(height: 15);
             },
             itemBuilder: (context, index) {
-              return highrateddoctor(index, globalheight);
+              return highrateddoctor(index, globalwidth, globalheight);
             },
           ),
         ),
@@ -273,33 +288,57 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget highrateddoctor(int index, double globalheight) => Column(
+  Widget highrateddoctor(int index, double globalwidth, double globalheight) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
         height: globalheight*0.15,
         decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: const Color.fromARGB(80, 224, 159, 31),
-        boxShadow: const [
-        BoxShadow(color: Color.fromARGB(50, 224, 159, 31), spreadRadius: 3),
-        ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: globalheight*0.15,
-              height: globalheight*0.15,
-              decoration : BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),    
-            ),
-            Text ('Doctor Details $index'),
+          borderRadius: BorderRadius.circular(10),
+          //color: const Color.fromARGB(80, 224, 159, 31),
+          boxShadow: const [
+          //BoxShadow(color: Color.fromARGB(50, 224, 159, 31), spreadRadius: 3),
           ],
+        ),
+        child: GestureDetector(
+          onTap: () => navigator(5),
+          child: Row(
+            children: [
+              Container(
+                width: globalheight*0.15,
+                height: globalheight*0.15,
+                decoration : BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: const DecorationImage(
+                    image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),    
+              ),
+              SizedBox(
+                width: globalwidth * 0.55,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Doctor Name $index',
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const Text('Doctor\'s title',
+                          style: TextStyle(fontSize: 12)),
+                      const Text('Rating',
+                          style: TextStyle(fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     ],
