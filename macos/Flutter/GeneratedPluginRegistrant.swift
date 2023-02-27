@@ -15,10 +15,10 @@ import firebase_core
 import firebase_storage
 import flutter_secure_storage_macos
 import iris_event
-import path_provider_macos
+import path_provider_foundation
 import photo_manager
 import share_plus_macos
-import shared_preferences_macos
+import shared_preferences_foundation
 import sqflite
 import thumblr_macos
 import url_launcher_macos
