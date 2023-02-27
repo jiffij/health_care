@@ -7,7 +7,7 @@ import 'package:simple_login/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:simple_login/ImageUpDownload.dart';
+//import 'package:simple_login/ImageUpDownload.dart';
 import 'main.dart';
 
 class loginScreen extends StatefulWidget {

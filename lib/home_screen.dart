@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'cancer_prediction.dart';
+//import 'cancer_prediction.dart';
 // import 'main.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -154,7 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const CancerPredict())),
+                                          Container())
+                                        ),
                           ),
                           const Text('My Profile'),
                         ],

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
-import 'package:simple_login/cancer_prediction.dart';
+//import 'package:simple_login/cancer_prediction.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
@@ -9,7 +9,7 @@ import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 import 'p_doctor_list.dart';
-import 'cancer_prediction.dart';
+//import 'cancer_prediction.dart';
 import 'p_medical_report_list.dart';
 
 class p_HomePage extends StatefulWidget {
@@ -83,7 +83,7 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 6:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const CancerPredict()),
+          MaterialPageRoute(builder: (context) => Container()),
         );
       break;
       case 7:

@@ -7,7 +7,7 @@ import 'package:swipe_widget/swipe_widget.dart';
 import 'd_calendar.dart';
 import 'd_message.dart';
 import 'd_myprofile.dart';
-import 'cancer_prediction.dart';
+//import 'cancer_prediction.dart';
 
 class d_HomePage extends StatefulWidget {
   const d_HomePage({super.key});
