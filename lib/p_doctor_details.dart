@@ -120,7 +120,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Container(
-                margin: const EdgeInsets.only(left: 15, top: 10),
+                margin: const EdgeInsets.only(left: 15, top: 20),
                 height: globalheight*0.06,
                 width: globalheight*0.06,
                 decoration: BoxDecoration(

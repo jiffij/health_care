@@ -75,22 +75,22 @@ class _MessagePageState extends State<p_MessagePage> {
   void navigator(int index) {
     switch (index) {
       case 1:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_HomePage()),
         );
         break;
       case 2:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_CalendarPage()),
         );
         break;
       case 3:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MessagePage()),
         );
         break;
       case 4:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
         );
         break;
