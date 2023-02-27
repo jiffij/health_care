@@ -52,6 +52,21 @@ dependencies:
   flutter_background: ^1.2.0
   google_fonts: ^4.0.3
   shared_preferences: ^2.0.18
+  fl_chart: ^0.55.2
+  image: ^3.0.2
+  intl: ^0.17.0
+  loading_animation_widget: ^1.2.0+4
+  logger: ^1.1.0
+  path: ^1.8.1
+  swipe_widget: ^0.0.2+1
+  table_calendar: ^3.0.8
+  tflite:
+    path: ./lib/flutter_tflite-master
+  tflite_flutter_helper: 
+    git:
+      url: https://github.com/filofan1/tflite_flutter_helper.git
+      ref: 783f15e5a87126159147d8ea30b98eea9207ac70
+  utility: ^1.0.2
 
 dev_dependencies:
   flutter_test:
