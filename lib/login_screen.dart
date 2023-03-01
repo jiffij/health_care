@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:simple_login/patient/p_homepage.dart';
+import 'package:simple_login/register.dart';
 import 'doctor/d_homepage.dart';
 import 'package:simple_login/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simple_login/helper/ImageUpDownload.dart';
 import 'main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'helper/firebase_helper.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -194,14 +197,32 @@ class _loginScreenState extends State<loginScreen> {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.amber)),
                     onPressed: () async {
-                      signInWithGoogle().then((value) {
+                      signInWithGoogle().then((value) async {
                         // print(FirebaseAuth.instance.authStateChanges());
                         print(FirebaseAuth.instance.currentUser.toString());
                         if (FirebaseAuth.instance.currentUser != null) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const d_HomePage()));
+                          switch (await patientOrdoc()) {
+                            case ID.DOCTOR:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                              builder: (context) => const d_HomePage()));
+                              break;
+                            case ID.PATIENT:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                              builder: (context) => const p_HomePage()));
+                              break;
+                            case ID.ADMIN:
+                              break;
+                            case ID.NOBODY:
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                              builder: (context) => const Register()));
+                              break;
+                          }                          
                         }
                       }).catchError((e) => print(e));
                     },

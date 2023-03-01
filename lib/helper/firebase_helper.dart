@@ -3,9 +3,41 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../main.dart';
 
+enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
+
 //return the UID of the user
 Future<String> getUID() async {
   return auth.currentUser!.uid;
+}
+
+//Get the identity of the user
+Future<ID> patientOrdoc() async {
+  var uid = await getUID();
+  if (await checkDocExist('patient/$uid')) {
+    return ID.PATIENT;
+  } else if (await checkDocExist('doctor/$uid')) {
+    return ID.DOCTOR;
+  } else {
+    return ID.NOBODY;
+  }
+}
+
+Future<bool> isValid() async {
+  var uid = await getUID();
+  String id;
+  switch (await patientOrdoc()) {
+    case ID.DOCTOR:
+      id = 'doctor/';
+      break;
+    case ID.PATIENT:
+      id = 'patient/';
+      break;
+    case ID.ADMIN:
+    case ID.NOBODY:
+      return false;
+  }
+  var doc = await getDoc(id + uid);
+  return doc?['isValid'];
 }
 
 /*
