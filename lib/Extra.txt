@@ -1,6 +1,0 @@
-import 'package:intl/intl.dart';
-import 'package:swipe_widget/swipe_widget.dart';
-
-Terminal code:
-flutter pub add intl
-flutter pub add swipe_widget

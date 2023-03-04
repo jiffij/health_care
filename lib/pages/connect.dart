@@ -97,8 +97,8 @@ class _ConnectPageState extends State<ConnectPage> {
       // Try to connect to the room
       // This will throw an Exception if it fails for any reason.
       await room.connect(
-        _uriCtrl.text,
-        _tokenCtrl.text,
+        "wss://dr-ust.livekit.cloud",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NzgxNzIxMTYsImlzcyI6IkFQSThyak1pVFZZV3RTSCIsIm5iZiI6MTY3NzU2NzMxNiwic3ViIjoidXNlcjEiLCJ2aWRlbyI6eyJjYW5QdWJsaXNoIjp0cnVlLCJjYW5QdWJsaXNoRGF0YSI6dHJ1ZSwiY2FuU3Vic2NyaWJlIjp0cnVlLCJyb29tIjoidGVzdCIsInJvb21Kb2luIjp0cnVlfX0.HKqRSYtGgzg2jedw5lfTl5ufgWarKXJ-r2D2kFmOZus",
         roomOptions: RoomOptions(
           adaptiveStream: _adaptiveStream,
           dynacast: _dynacast,
