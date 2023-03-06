@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'helper/firebase_helper.dart';
 import 'main.dart';
+import 'helper/aes.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -38,10 +39,10 @@ class _RegisterState extends State<Register> {
       idError = true;
     }
     if (nameError || lastnameError || idError) return;
-    final String uid = await getUID();
+    final String uid = getUID();
     setDoc("doctor/$uid", {
-      'first name': _nameController.text,
-      'last name': _lastnameController.text,
+      'first name': aesEncrypt(_nameController.text, getMyKey()),
+      'last name': aesEncrypt( _lastnameController.text, ')J@NcRfUjXnZr4u7'),
       'email': auth.currentUser!.email,
       'HKID': _idController.text
     });
@@ -49,10 +50,10 @@ class _RegisterState extends State<Register> {
   }
 
   void checkExist() async {
-    final String uid = await getUID();
+    final String uid = getUID();
     print(await checkDocExist("doctor/$uid"));
     var data = await getDoc("doctor/$uid");
-    print(await data?['first name']);
+    print(aesDecrypt(await data?['first name'], getMyKey()));
     print(await data?['last name']);
   }
 

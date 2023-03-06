@@ -6,13 +6,13 @@ import '../main.dart';
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
 //return the UID of the user
-Future<String> getUID() async {
+String getUID() {
   return auth.currentUser!.uid;
 }
 
 //Get the identity of the user
 Future<ID> patientOrdoc() async {
-  var uid = await getUID();
+  var uid = getUID();
   if (await checkDocExist('patient/$uid')) {
     return ID.PATIENT;
   } else if (await checkDocExist('doctor/$uid')) {
@@ -23,7 +23,7 @@ Future<ID> patientOrdoc() async {
 }
 
 Future<bool> isValid() async {
-  var uid = await getUID();
+  var uid = getUID();
   String id;
   switch (await patientOrdoc()) {
     case ID.DOCTOR:
