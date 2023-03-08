@@ -1,5 +1,6 @@
 // import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:simple_login/navigator.dart';
 import 'package:simple_login/welcome.dart';
 import 'login_screen.dart';
 // import 'home_screen.dart';
@@ -29,7 +30,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const welcome(),  //new login page
+      home: //const welcome(),  //new login page
+            BottomNav(),
             //const loginScreen(), old login page
     );
   }
