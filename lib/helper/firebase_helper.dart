@@ -1,10 +1,15 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import '../main.dart';
+import 'encryption.dart';
+// import 'dart:convert' show utf8;
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
+const URL = 'http://192.168.0.178:5000';
 //return the UID of the user
 String getUID() {
   return auth.currentUser!.uid;
@@ -36,7 +41,7 @@ Future<bool> isValid() async {
     case ID.NOBODY:
       return false;
   }
-  var doc = await getDoc(id + uid);
+  var doc = await readFromServer(id + uid);
   return doc?['isValid'];
 }
 
@@ -46,16 +51,21 @@ Example
   print(await checkDocExist("patient/$uid"));
 */
 Future<bool> checkDocExist(String docID) async {
-  bool exist = false;
-  try {
-    await FirebaseFirestore.instance.doc(docID).get().then((doc) {
-      //"users/$docID"
-      exist = doc.exists;
-    });
-    return exist;
-  } catch (e) {
-    // If any error
+  // bool exist = false;
+  // try {
+  //   await FirebaseFirestore.instance.doc(docID).get().then((doc) {
+  //     //"users/$docID"
+  //     exist = doc.exists;
+  //   });
+  //   return exist;
+  // } catch (e) {
+  //   // If any error
+  //   return false;
+  // }
+  if (await readFromServer(docID) == null) {
     return false;
+  } else {
+    return true;
   }
 }
 
@@ -101,4 +111,45 @@ void updateAuthInfo(String name) async {
   if (auth.currentUser != null) {
     await auth.currentUser?.updateDisplayName(name);
   }
+}
+
+Future<String> getServerPublicKey() async {
+  var response = await http.get(
+    Uri.parse('$URL/publickey'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+  );
+  return response.body;
+}
+
+Future<http.Response> writeToServer(
+    String docID, Map<String, dynamic> body) async {
+  var server_key = await getServerPublicKey();
+  print(server_key);
+  var new_body = await rsaEncrypt(jsonEncode(body), server_key);
+  print(new_body);
+  return http.post(
+    Uri.parse('$URL/add'),
+    headers: <String, String>{
+      'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
+      'path': docID,
+    },
+    body: new_body,
+  );
+}
+
+Future<Map<String, dynamic>?> readFromServer(String docID) async {
+  var public_key = await getMyPublicKey();
+  var response = await http.post(
+    Uri.parse('$URL/list'),
+    headers: <String, String>{
+      'Content-Type': 'text/plain',// 'application/json; charset=UTF-8',
+      'path': docID,
+    },
+    body: public_key,
+  );
+  if (response.statusCode == 204) return null;
+  return jsonDecode(await rsaDecrypt(response.body));
+  // return jsonDecode(response.body);
 }

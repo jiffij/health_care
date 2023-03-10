@@ -4,7 +4,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'helper/firebase_helper.dart';
 import 'main.dart';
-import 'helper/aes.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -40,20 +39,28 @@ class _RegisterState extends State<Register> {
     }
     if (nameError || lastnameError || idError) return;
     final String uid = getUID();
-    setDoc("doctor/$uid", {
-      'first name': aesEncrypt(_nameController.text, getMyKey()),
-      'last name': aesEncrypt( _lastnameController.text, ')J@NcRfUjXnZr4u7'),
+    // setDoc("doctor/$uid", {
+    //   'first name': aesEncrypt(_nameController.text, getMyKey()),
+    //   'last name': aesEncrypt(_lastnameController.text, ')J@NcRfUjXnZr4u7'),
+    //   'email': auth.currentUser!.email,
+    //   'HKID': _idController.text
+    // });
+    var respond = await writeToServer("doctor/$uid", {
+      'first name': _nameController.text,
+      'last name': _lastnameController.text,
       'email': auth.currentUser!.email,
       'HKID': _idController.text
     });
+    print(respond);
     updateAuthInfo(_nameController.text);
   }
 
   void checkExist() async {
     final String uid = getUID();
     print(await checkDocExist("doctor/$uid"));
-    var data = await getDoc("doctor/$uid");
-    print(aesDecrypt(await data?['first name'], getMyKey()));
+    // var data = await getDoc("doctor/$uid");
+    var data = await readFromServer("doctor/$uid");
+    print(await data?['first name']);
     print(await data?['last name']);
   }
 
