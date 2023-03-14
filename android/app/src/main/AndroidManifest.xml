@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.simple_login">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="simple_login"
         android:name="${applicationName}"
