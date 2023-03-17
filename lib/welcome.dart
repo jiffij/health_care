@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/color.dart';
 import 'helper/loading/loading_popup.dart';
 import 'helper/alert.dart';
 
@@ -56,8 +57,8 @@ class _welcomeState extends State<welcome> {
       body: GestureDetector(
         onTap: () {FocusScope.of(context).requestFocus(FocusNode());},
         child: Container(
-                decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 47, 106, 173).withOpacity(0.25),
+                decoration: const BoxDecoration(
+                              color: bgColor,
                             ),
                 child: SafeArea(
                   child: Center(
@@ -99,7 +100,7 @@ class _welcomeState extends State<welcome> {
                             height: 410,
                             width: MediaQuery.of(context).size.width / 1.1,
                             decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.5),
+                                color: Colors.white.withOpacity(0.4),
                                 borderRadius: BorderRadius.circular(20)),
                             child: Column(
                               children: [
@@ -111,24 +112,24 @@ class _welcomeState extends State<welcome> {
                                     style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black)),
                                     inputFormatters: [FilteringTextInputFormatter.deny(RegExp('[ ]'))],
                                     decoration: InputDecoration(
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide.none,
+                                      focusedBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(color: themeColor),
                                           borderRadius:
                                               BorderRadius.all(Radius.circular(10))),
-                                      enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide.none,
+                                      enabledBorder: const OutlineInputBorder(
+                                          borderSide: BorderSide(color: themeColor),
                                           borderRadius:
                                               BorderRadius.all(Radius.circular(10))),
-                                      prefixIcon: Icon(
+                                      prefixIcon: const Icon(
                                         Icons.email,
-                                        color: Color.fromARGB(255, 47, 106, 173),
+                                        color: themeColor,
                                       ),
                                       filled: true,
                                       fillColor: Colors.white,
                                       labelText: "Email",
                                       hintText: 'your-email@domain.com',
-                                      labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
-                                      hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
+                                      labelStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: themeColor)),
+                                      hintStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
                                     ),
                                   ),
                                 ),
@@ -142,17 +143,17 @@ class _welcomeState extends State<welcome> {
                                       obscureText: hidePassword,
                                       inputFormatters: [FilteringTextInputFormatter.deny(RegExp('[ ]'))],
                                       decoration: InputDecoration(
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none,
+                                        focusedBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(color: themeColor),
                                             borderRadius:
                                                 BorderRadius.all(Radius.circular(10))),
-                                        enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none,
+                                        enabledBorder: const OutlineInputBorder(
+                                            borderSide: BorderSide(color: themeColor),
                                             borderRadius:
                                                 BorderRadius.all(Radius.circular(10))),
-                                        prefixIcon: Icon(
+                                        prefixIcon: const Icon(
                                           Icons.lock,
-                                          color: Color.fromARGB(255, 47, 106, 173),
+                                          color: themeColor,
                                         ),
                                         filled: true,
                                         fillColor: Colors.white,
@@ -182,8 +183,8 @@ class _welcomeState extends State<welcome> {
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(10.0)),
-                                            backgroundColor: Color.fromARGB(255, 47, 106, 173),
-                                            padding: EdgeInsets.symmetric(
+                                            backgroundColor: themeColor,
+                                            padding: const EdgeInsets.symmetric(
                                                 horizontal: 128, vertical: 17)
                                             ),
                                         onPressed: () async {
@@ -218,7 +219,7 @@ class _welcomeState extends State<welcome> {
                                 // or continue with
                                 Row(
                                   children: [
-                                    Expanded(
+                                    const Expanded(
                                       child: Divider(
                                         indent: 20,
                                         endIndent: 20,

@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:simple_login/calendar.dart';
 import 'package:simple_login/color.dart';
-import 'package:simple_login/patient/p_calendar.dart';
-import 'package:simple_login/patient/p_homepage.dart';
-import 'package:simple_login/patient/p_myprofile.dart';
-import 'package:simple_login/new_home.dart';
-import 'navbar_cubit.dart';
+import 'home.dart';
+import 'navbar_helper/navbar_cubit.dart';
 import 'custom_bottom_nav_bar_dash.dart';
 
 class BottomNav extends StatefulWidget {
+  const BottomNav({super.key});
+
   @override
   _BottomNavState createState() => _BottomNavState();
 }
 
 class _BottomNavState extends State<BottomNav> {
+
+  final List<Widget> _pages = [
+    const Home(),
+    const CalendarPage(),
+    Container(),
+    Container(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -46,12 +54,9 @@ class _BottomNavState extends State<BottomNav> {
             ),
             extendBody: true,
             body: Container(
-              color: themeColor.withOpacity(0.25),
+              //color: bgColor,
               child: Center(
-                child: //Text('Hello from Item ${cubit.currentIndex}'),
-                        (cubit.currentIndex == 0)? p_HomePage() : 
-                        (cubit.currentIndex == 1)? Test() :
-                        (cubit.currentIndex == 2)? Container() : p_MyProfilePage(),
+                child: _pages[cubit.currentIndex],
               ),
             ),
           );

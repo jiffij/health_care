@@ -18,6 +18,7 @@ TextStyle label = GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, 
 TextStyle timestamp = GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, fontSize: 15, height: 1.5, fontWeight: FontWeight.w700));
 TextStyle card = GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 14, height: 2, fontWeight: FontWeight.w700));
 TextStyle card2 = GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 16, height: 2, fontWeight: FontWeight.w700));
+TextStyle appbar_title = GoogleFonts.comfortaa(textStyle: const TextStyle(color: themeColor, fontSize: 19));
 
 List<BoxShadow> defaultShadow = [BoxShadow(
                       offset: const Offset(0, 10),  
@@ -26,3 +27,5 @@ List<BoxShadow> defaultShadow = [BoxShadow(
                     )];
 
 const double nav = 70;
+
+AppBar appbar = AppBar();

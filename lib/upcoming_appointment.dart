@@ -13,7 +13,7 @@ class Upcoming extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.only(
           top: defaultVerPadding,
-          bottom: defaultVerPadding*1.3,
+          //bottom: defaultVerPadding/2,
           left: defaultHorPadding/3,
           right: defaultHorPadding/3
         ),
@@ -90,9 +90,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       height: parentHeight,
                       margin: EdgeInsets.only(right: parentWidth*0.03),
                       alignment: Alignment.center,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
-                        color: Colors.white.withOpacity(0.8)
+                        color: Colors.white
                       ),
                       child: Text('12\nMar', style: timestamp, textAlign: TextAlign.center,),
                   ),

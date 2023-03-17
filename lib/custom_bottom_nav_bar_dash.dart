@@ -36,6 +36,12 @@ class _CustomBottomNavBarDashState extends State<CustomBottomNavBarDash> {
   List<IconData> _iconList = [];
   List<String> _textList = [];
 
+  void updateBottomNavBar(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   void initState() {
     super.initState();

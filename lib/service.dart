@@ -20,10 +20,10 @@ class Services extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.medical_information,size: 35, color: themeColor,)),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
+              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.person_search,size: 35, color: themeColor,)),Container(margin: EdgeInsets.only(top: 15),child: Text('Booking', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.heart_broken,size: 35, color: themeColor)),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
-              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.coronavirus,size: 35, color: themeColor)),Container(margin: EdgeInsets.only(top: 15),child: Text('News', style: label,))]),
-              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.settings,size: 35, color: themeColor)),Container(margin: EdgeInsets.only(top: 15),child: Text('Setting', style: label,))]),
+              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.medical_information,size: 35, color: themeColor)),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
+              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.settings,size: 35, color: themeColor)),Container(margin: EdgeInsets.only(top: 15),child: Text('Settings', style: label,))]),
           ]),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -84,6 +84,7 @@ class ServiceButton extends StatelessWidget {
             height: size.width*0.2,
             width: size.width*0.2,
             decoration: BoxDecoration(
+              border: Border(top: BorderSide(color: themeColor), bottom: BorderSide(color: themeColor), right: BorderSide(color: themeColor), left: BorderSide(color: themeColor),),
               borderRadius: BorderRadius.all(Radius.circular(30)),
               color: Colors.white,
               boxShadow: defaultShadow,

@@ -8,7 +8,7 @@ import 'd_calendar.dart';
 import 'd_myprofile.dart';
 import 'd_myprofile.dart';
 import 'cancer_prediction.dart';
-import '../register.dart';
+import '../../register.dart';
 
 class d_HomePage extends StatefulWidget {
   const d_HomePage({super.key});
