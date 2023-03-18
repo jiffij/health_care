@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../main.dart';
 import 'encryption.dart';
+import 'dart:io';
+
 // import 'dart:convert' show utf8;
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
@@ -144,7 +146,7 @@ Future<Map<String, dynamic>?> readFromServer(String docID) async {
   var response = await http.post(
     Uri.parse('$URL/list'),
     headers: <String, String>{
-      'Content-Type': 'text/plain',// 'application/json; charset=UTF-8',
+      'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
       'path': docID,
     },
     body: public_key,
@@ -152,4 +154,13 @@ Future<Map<String, dynamic>?> readFromServer(String docID) async {
   if (response.statusCode == 204) return null;
   return jsonDecode(await rsaDecrypt(response.body));
   // return jsonDecode(response.body);
+}
+
+Future<Map<String, dynamic>?> cancerPredict(File img) async {
+  var request = http.MultipartRequest('POST', Uri.parse('$URL/predict'));
+  request.files.add(http.MultipartFile.fromBytes('file', img.readAsBytesSync(),
+      filename: img.path));
+  var response = await request.send();
+  var respStr = await response.stream.bytesToString();
+  return jsonDecode(respStr);
 }
