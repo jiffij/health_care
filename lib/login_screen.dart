@@ -52,7 +52,7 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   _firestoreLogin() async {
-    var credential;
+    dynamic credential;
     try {
       credential = await auth.signInWithEmailAndPassword(
           email: _usernameController.text, password: _passwordController.text);
@@ -67,13 +67,13 @@ class _loginScreenState extends State<loginScreen> {
       }
     }
     // print(auth.currentUser!);
-    if (credential.user.emailVerified == false) {
+    if (auth.currentUser?.emailVerified == true) {
+      return true;
+    } else {
       await auth.currentUser?.sendEmailVerification();
       if (auth.currentUser?.emailVerified == true) return true;
       return false;
     }
-
-    return true;
   }
 
   _login() async {
@@ -183,10 +183,32 @@ class _loginScreenState extends State<loginScreen> {
                       if (_usernameController.text != '' &&
                           _passwordController.text != '' &&
                           await _firestoreLogin()) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const d_HomePage()));
+                        if (FirebaseAuth.instance.currentUser != null) {
+                          switch (await patientOrdoc()) {
+                            case ID.DOCTOR:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const d_HomePage()));
+                              break;
+                            case ID.PATIENT:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const p_HomePage()));
+                              break;
+                            case ID.ADMIN:
+                              break;
+                            case ID.NOBODY:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Register()));
+                              break;
+                          }
+                        }
                       }
                     },
                   ),
@@ -204,25 +226,27 @@ class _loginScreenState extends State<loginScreen> {
                           switch (await patientOrdoc()) {
                             case ID.DOCTOR:
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                              builder: (context) => const d_HomePage()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const d_HomePage()));
                               break;
                             case ID.PATIENT:
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                              builder: (context) => const p_HomePage()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const p_HomePage()));
                               break;
                             case ID.ADMIN:
                               break;
                             case ID.NOBODY:
                               Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                              builder: (context) => const Register()));
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Register()));
                               break;
-                          }                          
+                          }
                         }
                       }).catchError((e) => print(e));
                     },
@@ -494,6 +518,10 @@ class _SignupState extends State<Signup> {
                         }
                         if (email && password && user_name) {
                           await _signup();
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => const Register()),
+                          );
                         }
                       },
                     ),

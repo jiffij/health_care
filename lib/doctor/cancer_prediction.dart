@@ -31,6 +31,7 @@ class _CancerPredictState extends State<CancerPredict> {
   Map<String, dynamic>? results;
   String? _patientName;
   String? _woundArea;
+  bool waitingForResult = false;
 
   @override
   void initState() {
@@ -80,8 +81,8 @@ class _CancerPredictState extends State<CancerPredict> {
     return 'Location from firestore'; //TODO
   }
 
-  pickFromFirestore() async { //TODO
-    
+  pickFromFirestore() async {
+    //TODO
   }
 
   pickFromGallery() async {
@@ -89,6 +90,7 @@ class _CancerPredictState extends State<CancerPredict> {
     if (image == null) return null;
     setState(() {
       _image = File(image.path);
+      waitingForResult = true;
     });
     print('attempting to connect to server...');
     var respStr = await cancerPredict(_image);
@@ -96,6 +98,7 @@ class _CancerPredictState extends State<CancerPredict> {
     setState(() {
       results = respStr;
       displayImg = Image.file(_image);
+      waitingForResult = false;
     });
   }
 
@@ -123,61 +126,69 @@ class _CancerPredictState extends State<CancerPredict> {
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Text(
-                    'Caution!\nThe predicted result is only for reference. We do not take any responsibility for the result.',
+                    'Caution!\nThe predicted result is only for reference. We do not take any responsibility for the result.\nBe patient. It may takes few seconds.',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 18.0, color: Colors.black),
                   ),
                 ),
                 ElevatedButton(
                     onPressed: pickFromGallery,
-                    child: Text('Pick from gallery')),
+                    child: waitingForResult
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text('Pick from gallery')),
                 Container(
                     width: MediaQuery.of(context).size.width * 0.8,
                     height: MediaQuery.of(context).size.height * 0.4,
                     child: displayImg),
-                if(_patientName != null)
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
-                  child: Text(
-                    '''
+                if (_patientName != null)
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      '''
                       Patient: ${_getName()}
                       Wound location: ${_getCancerLoc()}
                       ''',
-                    style: TextStyle(fontSize: 18.0, color: Colors.black),
-                    textAlign: TextAlign.left,
+                      style: TextStyle(fontSize: 18.0, color: Colors.black),
+                      textAlign: TextAlign.left,
+                    ),
                   ),
-                ),
                 // Text(
                 //   category != null ? category! : '',
                 //   style: TextStyle(fontSize: 18.0, color: Colors.black),
                 // ),
                 if (results != null)
-                SfCartesianChart(
-                  title: ChartTitle(text: 'Likelyhood by Skin Lesion'),
-                  legend: Legend(isVisible: true),
-                  series: <ChartSeries>[
-                    BarSeries<ChartData, String>(
-                      name: 'Acc',
-                      dataSource: <ChartData>[
-                        ChartData('Acti', results?['result'][0] ?? 0),
-                        ChartData('Basal', results?['result'][1] ?? 0),
-                        ChartData('Benign', results?['result'][2] ?? 0),
-                        ChartData('Derm', results?['result'][3] ?? 0),
-                        ChartData('Mel_nevi', results?['result'][4] ?? 0),
-                        ChartData('Mel', results?['result'][5] ?? 0),
-                        ChartData('Vas', results?['result'][6] ?? 0),
-                      ],
-                      xValueMapper: (ChartData acc, _) => acc.lesion,
-                      yValueMapper: (ChartData acc, _) => acc.acc,
-                      dataLabelSettings: DataLabelSettings(isVisible: true),
+                  SfCartesianChart(
+                    title: ChartTitle(text: 'Likelyhood by Skin Lesion'),
+                    legend: Legend(isVisible: true),
+                    series: <ChartSeries>[
+                      BarSeries<ChartData, String>(
+                        name: 'Acc',
+                        dataSource: <ChartData>[
+                          ChartData('Acti', results?['result'][0] ?? 0),
+                          ChartData('Basal', results?['result'][1] ?? 0),
+                          ChartData('Benign', results?['result'][2] ?? 0),
+                          ChartData('Derm', results?['result'][3] ?? 0),
+                          ChartData('Mel_nevi', results?['result'][4] ?? 0),
+                          ChartData('Mel', results?['result'][5] ?? 0),
+                          ChartData('Vas', results?['result'][6] ?? 0),
+                        ],
+                        xValueMapper: (ChartData acc, _) => acc.lesion,
+                        yValueMapper: (ChartData acc, _) => acc.acc,
+                        dataLabelSettings: DataLabelSettings(isVisible: true),
+                      ),
+                    ],
+                    primaryXAxis: CategoryAxis(),
+                    primaryYAxis: NumericAxis(
+                      title: AxisTitle(text: 'Probability'),
+                      maximum: 1,
                     ),
-                  ],
-                  primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(
-                    title: AxisTitle(text: 'Probability'),
-                    maximum: 1,
                   ),
-                ),
 
                 // Text(
                 //   category != null ? category!.label : '',
