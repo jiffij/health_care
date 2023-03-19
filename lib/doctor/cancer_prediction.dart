@@ -92,6 +92,7 @@ class _CancerPredictState extends State<CancerPredict> {
     });
     print('attempting to connect to server...');
     var respStr = await cancerPredict(_image);
+    // var respStr = await cancerPredict(_image);
     setState(() {
       results = respStr;
       displayImg = Image.file(_image);

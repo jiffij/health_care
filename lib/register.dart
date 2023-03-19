@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'helper/firebase_helper.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'main.dart';
 
 class Register extends StatefulWidget {
@@ -16,6 +17,8 @@ class _RegisterState extends State<Register> {
   bool nameError = false;
   bool idError = false;
   bool lastnameError = false;
+  String pos = 'patient';
+  String errorText = '';
 
   final _storage = const FlutterSecureStorage();
   final TextEditingController _nameController = TextEditingController(text: "");
@@ -27,6 +30,13 @@ class _RegisterState extends State<Register> {
       FirebaseFirestore.instance.collection('users');
 
   void register() async {
+    if (await patientOrdoc() != ID.NOBODY) {
+      setState(() {
+        errorText = 'You have already signed in.';
+      });
+      return;
+    }
+
     nameError = lastnameError = idError = false;
     if (_nameController.text.isEmpty) {
       nameError = true;
@@ -39,13 +49,8 @@ class _RegisterState extends State<Register> {
     }
     if (nameError || lastnameError || idError) return;
     final String uid = getUID();
-    // setDoc("doctor/$uid", {
-    //   'first name': aesEncrypt(_nameController.text, getMyKey()),
-    //   'last name': aesEncrypt(_lastnameController.text, ')J@NcRfUjXnZr4u7'),
-    //   'email': auth.currentUser!.email,
-    //   'HKID': _idController.text
-    // });
-    var respond = await writeToServer("doctor/$uid", {
+
+    var respond = await writeToServer("$pos/$uid", {
       'first name': _nameController.text,
       'last name': _lastnameController.text,
       'email': auth.currentUser!.email,
@@ -57,9 +62,10 @@ class _RegisterState extends State<Register> {
 
   void checkExist() async {
     final String uid = getUID();
-    print(await checkDocExist("doctor/$uid"));
+    // final String pos = await patientOrdocStr();
+    print(await checkDocExist("$pos/$uid"));
     // var data = await getDoc("doctor/$uid");
-    var data = await readFromServer("doctor/$uid");
+    var data = await readFromServer("$pos/$uid");
     print(await data?['first name']);
     print(await data?['last name']);
   }
@@ -88,6 +94,31 @@ class _RegisterState extends State<Register> {
                     ),
                   ],
                 ),
+              ),
+              SizedBox(
+                height: 30.0,
+              ),
+              ToggleSwitch(
+                minWidth: 90.0,
+                cornerRadius: 20.0,
+                activeBgColors: [
+                  [Colors.blue[600]!],
+                  [Colors.blue[600]!]
+                ],
+                activeFgColor: Colors.white,
+                inactiveBgColor: Colors.grey,
+                inactiveFgColor: Colors.white,
+                initialLabelIndex: 0,
+                totalSwitches: 2,
+                labels: ['Patient', 'Doctor'],
+                radiusStyle: true,
+                onToggle: (index) {
+                  if (index == 0) {
+                    pos = 'patient';
+                  } else {
+                    pos = 'doctor';
+                  }
+                },
               ),
               SizedBox(
                 height: 30.0,
@@ -141,7 +172,7 @@ class _RegisterState extends State<Register> {
                 height: 20.0,
               ),
               Text(
-                nameError || lastnameError || idError ? 'Invalid input.' : '',
+                nameError || lastnameError || idError ? 'Invalid input.' : errorText != '' ? errorText: '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(

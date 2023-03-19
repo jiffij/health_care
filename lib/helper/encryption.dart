@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:encrypt/encrypt.dart' as encrypt;
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
@@ -65,4 +67,8 @@ Future<String> rsaEncrypt(String text, String publicKey) async {
 Future<String> rsaDecrypt(String text) async {
   var privateKey = await getMyPrivateKey();
   return await RSA.decryptPKCS1v15(text, privateKey);
+}
+
+Future<Uint8List> rsaEncryptByte(Uint8List text, String publicKey) async {
+  return await RSA.encryptPKCS1v15Bytes(text, publicKey);
 }

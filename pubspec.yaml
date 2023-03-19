@@ -58,6 +58,7 @@ dependencies:
   #   git:
   #     url: https://github.com/filofan1/tflite_flutter_helper.git
   #     ref: 783f15e5a87126159147d8ea30b98eea9207ac70
+  toggle_switch: ^2.0.1
   translator: ^0.1.7
   utility: ^1.0.2
   validators: ^3.0.0

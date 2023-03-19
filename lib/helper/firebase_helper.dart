@@ -29,6 +29,25 @@ Future<ID> patientOrdoc() async {
   }
 }
 
+Future<String> patientOrdocStr() async {
+  var id = await patientOrdoc();
+  String pos;
+  switch (id) {
+    case ID.DOCTOR:
+      pos = 'doctor';
+      break;
+    case ID.PATIENT:
+      pos = 'patient';
+      break;
+    case ID.NOBODY:
+      pos = '';
+      break;
+    default:
+      pos = '';
+  }
+  return pos;
+}
+
 Future<bool> isValid() async {
   var uid = getUID();
   String id;
@@ -53,17 +72,6 @@ Example
   print(await checkDocExist("patient/$uid"));
 */
 Future<bool> checkDocExist(String docID) async {
-  // bool exist = false;
-  // try {
-  //   await FirebaseFirestore.instance.doc(docID).get().then((doc) {
-  //     //"users/$docID"
-  //     exist = doc.exists;
-  //   });
-  //   return exist;
-  // } catch (e) {
-  //   // If any error
-  //   return false;
-  // }
   if (await readFromServer(docID) == null) {
     return false;
   } else {
@@ -163,4 +171,20 @@ Future<Map<String, dynamic>?> cancerPredict(File img) async {
   var response = await request.send();
   var respStr = await response.stream.bytesToString();
   return jsonDecode(respStr);
+}
+
+Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
+  //TODO
+  var encode = img.readAsBytesSync();
+  var server_key = await getServerPublicKey();
+  encode = await rsaEncryptByte(encode, server_key);
+  var response = await http.post(
+    Uri.parse('$URL/predictEncrypt'),
+    headers: <String, String>{
+      'Content-Type':
+          'application/octet-stream', // 'application/json; charset=UTF-8',
+    },
+    body: encode,
+  );
+  // return jsonDecode(await rsaDecrypt(response.body));
 }
