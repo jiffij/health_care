@@ -11,7 +11,7 @@ import 'dart:io';
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
-const URL = 'http://192.168.0.178:5000';
+const URL = 'http://143.89.130.155:8080';
 //return the UID of the user
 String getUID() {
   return auth.currentUser!.uid;
@@ -159,6 +159,7 @@ Future<Map<String, dynamic>?> readFromServer(String docID) async {
     },
     body: public_key,
   );
+  print('status code:$response.statusCode');
   if (response.statusCode == 204) return null;
   return jsonDecode(await rsaDecrypt(response.body));
   // return jsonDecode(response.body);
