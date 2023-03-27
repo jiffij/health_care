@@ -22,6 +22,8 @@ class loginScreen extends StatefulWidget {
 }
 
 class _loginScreenState extends State<loginScreen> {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   final _storage = const FlutterSecureStorage();
   bool hidePassword = true, LoginSuccess = false;
   final TextEditingController _usernameController =
@@ -95,6 +97,8 @@ class _loginScreenState extends State<loginScreen> {
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
+    await signOut();
+
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
@@ -109,6 +113,11 @@ class _loginScreenState extends State<loginScreen> {
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> signOut() async {
+    await googleSignIn.signOut();
+    await auth.signOut();
   }
 
   @override
@@ -251,6 +260,15 @@ class _loginScreenState extends State<loginScreen> {
                       }).catchError((e) => print(e));
                     },
                   ),
+                  // ElevatedButton(
+                  //   child: Text('Google Logout'),
+                  //   style: ButtonStyle(
+                  //       backgroundColor:
+                  //           MaterialStateProperty.all(Colors.amber)),
+                  //   onPressed: () async {
+                  //     await signOut();
+                  //   },
+                  // ),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,

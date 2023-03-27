@@ -135,12 +135,14 @@ Future<String> getServerPublicKey() async {
 
 Future<http.Response> writeToServer(
     String docID, Map<String, dynamic> body) async {
+  final bool exist = await checkDocExist(docID);
+  var dir = exist ? 'add' : 'set';
   var server_key = await getServerPublicKey();
-  print(server_key);
+  // print(server_key);
   var new_body = await rsaEncrypt(jsonEncode(body), server_key);
-  print(new_body);
+  // print(new_body);
   return http.post(
-    Uri.parse('$URL/add'),
+    Uri.parse('$URL/$dir'),
     headers: <String, String>{
       'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
       'path': docID,
