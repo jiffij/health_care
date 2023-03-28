@@ -166,44 +166,59 @@ Widget services(double globalwidth, double globalheight) => DefaultTextStyle.mer
                         borderRadius: BorderRadius.circular(10),
                         color: Color.fromARGB(255, 220, 237, 249),
                       ),
-                    // Todo: Change the icon
-                    child: const Icon(Icons.home,color: Color.fromARGB(255, 28, 107, 164)),
+                    child: Image.asset(
+                      'assets/pill.png',
+                      fit: BoxFit.fill,
+                      color: const Color.fromARGB(255, 28, 107, 164),
+                    ),
                 ),
               ),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Container(
-                    height: globalheight*0.1,
-                    width: globalheight*0.1,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color.fromARGB(255, 250, 240, 219),
-                      ),
-                          child: const Icon(Icons.medical_services_rounded,color: Color.fromARGB(255, 224, 159, 31)),
+                  height: globalheight*0.1,
+                  width: globalheight*0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromARGB(255, 250, 240, 219),
+                  ),
+                  child: Image.asset(
+                    'assets/doctor.png',
+                    fit: BoxFit.fill,
+                    color: const Color.fromARGB(255, 224, 159, 31)
+                  ),
                 ),
               ),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Container(
-                    height: globalheight*0.1,
-                    width: globalheight*0.1,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color.fromARGB(38, 247, 56, 89),
-                      ),
-                          child: const Icon(Icons.chat,color: Color.fromARGB(255, 247, 56, 89)),
+                  height: globalheight*0.1,
+                  width: globalheight*0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromARGB(38, 247, 56, 89),
+                  ),
+                  child: Image.asset(
+                    'assets/message.png',
+                    fit: BoxFit.fill,
+                    color: const Color.fromARGB(255, 247, 56, 89)
+                  ),
                 ),
               ),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Container(
-                    height: globalheight*0.1,
-                    width: globalheight*0.1,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color.fromARGB(255, 242, 227, 233),
-                      ),
-                          child: const Icon(Icons.coronavirus,color: Color.fromARGB(255, 157, 76, 108)),
+                  height: globalheight*0.1,
+                  width: globalheight*0.1,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color.fromARGB(255, 242, 227, 233),
+                  ),
+                  child: Image.asset(
+                    'assets/virus.png',
+                    fit: BoxFit.fill,
+                    color: const Color.fromARGB(255, 157, 76, 108)
+                  ),
                 ),
               ),
             ]

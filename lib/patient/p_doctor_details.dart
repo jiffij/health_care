@@ -6,6 +6,7 @@ import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 
+import 'p_make_appointment.dart';
 
 void main() {
   runApp(const MyApp());
@@ -96,6 +97,11 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
         );
         break;
+      case 5:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MakeAppointmentPage()),
+        );
+        break;
       default:
     }
     setState(() {});
@@ -117,21 +123,24 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 15, top: 20),
-                height: globalheight*0.06,
-                width: globalheight*0.06,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                ),
-                child: FittedBox (
-                  fit: BoxFit.scaleDown,
-                  child: Container(
-                  margin: const EdgeInsets.all(5),
-                  child: const Icon(Icons.arrow_back_rounded),
+            GestureDetector(
+              onTap: () => navigator(0),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 15, top: 20),
+                  height: globalheight*0.06,
+                  width: globalheight*0.06,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: const Icon(Icons.arrow_back_rounded),
+                    ),
                   ),
                 ),
               ),
@@ -398,22 +407,25 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
 );
 
 Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: Align(
-    alignment: Alignment.center,
-    child: FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Container(
-        height: globalheight*0.08,
-        width: globalwidth*0.7,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(255, 28, 107, 164),
-          boxShadow: const [
-            BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
-          ],
+  child: GestureDetector(
+    onTap: () => navigator(5),
+    child: Align(
+      alignment: Alignment.center,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Container(
+          height: globalheight*0.08,
+          width: globalwidth*0.7,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: const Color.fromARGB(255, 28, 107, 164),
+            boxShadow: const [
+              BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
+            ],
+          ),
+          child: const Text('Book Now', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
         ),
-        child: const Text('Book Now', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
       ),
     ),
   ),

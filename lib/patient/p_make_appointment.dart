@@ -49,6 +49,9 @@ class p_MakeAppointmentPage extends StatefulWidget {
 
 class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
 
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
   String selected_timeslot = '';
 
   @override
@@ -99,7 +102,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
             heading(width, height),
             //calendar(width, height),
             guide(width, height),
-            timeslotlist(width, height, timeslotslist),  
+            timeslotlist(width, height, timeslotslist, _focusedDay),  
             home(width, height),           
           ],
         ),
@@ -142,12 +145,33 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     setState(() {});
   }
 
+  // Pop out when selecting the unavailable tiimeslot
   void warning_message() {
     showDialog<String>(
         context: context,
         builder: (BuildContext context) => AlertDialog(
-          content: const Text('This timeslot is unavailable!'),
+          content: const Text('Oops! The timeslot you selected is unavailable!'),
           actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Exit'),
+              child: const Text('Exit'),
+            ),
+          ],
+        ),
+    );
+  }
+
+  // Pop out before the user finalize their booking
+  void confirm_message(){
+    showDialog<String>(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          content: Text('Please confirm your booking timeslot:\n${getDate(_focusedDay)} - $selected_timeslot',style: const TextStyle(fontWeight: FontWeight.bold)),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, 'Confirm'),
+              child: const Text('Confirm'),
+            ),
             TextButton(
               onPressed: () => Navigator.pop(context, 'Exit'),
               child: const Text('Exit'),
@@ -169,21 +193,24 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Container(
-                  margin: const EdgeInsets.only(left: 15, top: 10),
-                  height: globalheight*0.06,
-                  width: globalheight*0.06,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  child: FittedBox (
-                    fit: BoxFit.scaleDown,
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      child: const Icon(Icons.arrow_back_rounded),
+              GestureDetector(
+                onTap: () => navigator(0),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 15, top: 20),
+                    height: globalheight*0.06,
+                    width: globalheight*0.06,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    ),
+                    child: FittedBox (
+                      fit: BoxFit.scaleDown,
+                      child: Container(
+                        margin: const EdgeInsets.all(5),
+                        child: const Icon(Icons.arrow_back_rounded),
+                      ),
                     ),
                   ),
                 ),
@@ -212,17 +239,67 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     ),
   );
 
-  Widget calendar(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  Widget calendar(double globalwidth, double globalheight) => Card(
     child: Expanded(
       child: SizedBox(
         child: SingleChildScrollView(
           child: Column(
             children: [
               TableCalendar(
+                weekendDays: const [DateTime.sunday],
+                rowHeight: globalheight*0.08,
+                headerStyle: HeaderStyle(
+                  headerPadding: const EdgeInsets.symmetric(vertical: 2),
+                  formatButtonVisible: false,
+                  titleCentered: true,
+                  titleTextFormatter: (date, locale) => DateFormat.yMMM(locale).format(date),
+                  // Calendar title style
+                  titleTextStyle: TextStyle(
+                    color: const Color.fromARGB(255, 74, 84, 94), fontSize: MediaQuery.of(context).size.width*0.07),
+                  leftChevronIcon: Icon(
+                    Icons.chevron_left,
+                    color: const Color.fromARGB(255, 74, 84, 94),
+                    size: MediaQuery.of(context).size.width*0.07,
+                  ),
+                  rightChevronIcon: Icon(
+                    Icons.chevron_right,
+                    color: const Color.fromARGB(255, 74, 84, 94),
+                    size: MediaQuery.of(context).size.width*0.07,
+                  ),
+                ),
+                // Calendar days title style
+                daysOfWeekStyle: const DaysOfWeekStyle(
+                  weekendStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                ),
+                // Calendar days style
+                calendarStyle: const CalendarStyle(
+                weekendTextStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                todayDecoration: BoxDecoration(
+                  color: Color.fromARGB(165, 35, 185, 59),
+                  shape: BoxShape.rectangle,
+                ),
+                // highlighted color for selected day
+                selectedDecoration: BoxDecoration(
+                  color: Color.fromARGB(255, 65, 95, 185),
+                  shape: BoxShape.rectangle,
+                ),
+                ),
                 firstDay: DateTime(2020),
                 lastDay: DateTime(2050),
-                focusedDay: DateTime.now(),
+                focusedDay: _focusedDay,
                 // Todo: Calendar interatives
+                selectedDayPredicate: (day) {
+                  return isSameDay(_selectedDay, day);
+                },
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _selectedDay = selectedDay; 
+                    _focusedDay = focusedDay; // update `_focusedDay` here as well
+                  });
+                },
+                onPageChanged: (focusedDay) {
+                  _focusedDay = focusedDay;
+                },
               ),
             ],
           ),
@@ -301,7 +378,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     ],
   );
 
-  Widget timeslotlist(double globalwidth, double globalheight, list) => DefaultTextStyle.merge(
+  Widget timeslotlist(double globalwidth, double globalheight, list, DateTime selectedDay) => DefaultTextStyle.merge(
     child: Container(
       padding: const EdgeInsets.all(12),
       width: globalwidth,
@@ -314,8 +391,8 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SizedBox(
-            height: globalheight*0.05,
-            width: globalwidth *0.4,
+            height: globalheight*0.1,
+            width: globalwidth *0.5,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Row(
@@ -323,7 +400,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                   const FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Text(
-                      'Date',
+                      'Date:',
                       style: TextStyle(fontSize: 50, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -332,13 +409,13 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                     width: globalwidth*0.2,
                   ),
                   Align(
-                    alignment: Alignment.center,
+                    alignment: Alignment.centerLeft,
                     child: FittedBox(
-                      fit: BoxFit.scaleDown,
+                        fit: BoxFit.scaleDown,
                       child: Container(
-                        height: globalheight*0.1,
+                        //margin: const EdgeInsets.only(left: 12, bottom: 5),
+                        height: globalheight*0.15,
                         width: globalwidth,
-                        alignment: Alignment.center,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: const Color.fromARGB(255, 255, 255, 255),
@@ -346,6 +423,11 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                             BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
                           ],
                         ),
+                        child: FittedBox (
+                          alignment: Alignment.centerLeft,
+                          fit: BoxFit.scaleDown,
+                          child: Text(getDate(selectedDay), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold)),
+                      ),
                       ),
                     ),
                   ),
@@ -385,22 +467,25 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.center,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Container(
-                height: globalheight*0.08,
-                width: globalwidth*0.7,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  boxShadow: const [
-                    BoxShadow(color: Color.fromARGB(150, 255, 255, 255), spreadRadius: 2),
-                  ],
+          GestureDetector(
+            onTap: () => confirm_message(),
+            child: Align(
+              alignment: Alignment.center,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  height: globalheight*0.08,
+                  width: globalwidth*0.7,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    boxShadow: const [
+                      BoxShadow(color: Color.fromARGB(150, 255, 255, 255), spreadRadius: 2),
+                    ],
+                  ),
+                  child: const Text('Make Appointment', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 28, 107, 164), fontWeight: FontWeight.bold)),
                 ),
-                child: const Text('Make Appointment', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 28, 107, 164), fontWeight: FontWeight.bold)),
               ),
             ),
           ),

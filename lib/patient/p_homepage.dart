@@ -11,6 +11,7 @@ import 'p_myprofile.dart';
 import 'p_doctor_list.dart';
 // import 'cancer_prediction.dart';
 import 'p_medical_report_list.dart';
+import 'package:simple_login/helper/firebase_helper.dart';
 
 class p_HomePage extends StatefulWidget {
   const p_HomePage({super.key});
@@ -39,11 +40,13 @@ class _HomePageState extends State<p_HomePage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    String uid = getUID();
+    Map<String, dynamic>? data = readFromServer(uid) as Map<String, dynamic>?;
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          heading(width, height),
+          heading(width, height, data),
           services(width, height),
           meetadoctor(width, height),
           upcomingappointmentlist(width, height),
@@ -96,6 +99,12 @@ class _HomePageState extends State<p_HomePage> {
     setState(() {});
   }
 
+  Future<Map<String, dynamic>?> getServerData(uid) async {
+    Map<String, dynamic>? data = await readFromServer(uid);
+    return data;
+  }
+  
+
   String getCurrentDate() {
     var date = DateTime.now();
     var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
@@ -115,7 +124,7 @@ class _HomePageState extends State<p_HomePage> {
     }
   }
 
-  Widget heading(double globalwidth, double globalheight) =>
+  Widget heading(double globalwidth, double globalheight, data) =>
       DefaultTextStyle.merge(
         child: Stack(
           children: [
@@ -136,11 +145,14 @@ class _HomePageState extends State<p_HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(getCurrentDate(),
-                            style: const TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold)),
+                          style: const TextStyle(
+                              fontSize: 10, fontWeight: FontWeight.bold)),
                         Text(greetingMessage(),
-                            style: const TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold)),
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text(data?['first name'] + data?['last name'],
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
                       ]),
                 ),
               ),
