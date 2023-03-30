@@ -49,7 +49,7 @@ class _RegisterState extends State<Register> {
     }
     if (nameError || lastnameError || idError) return;
     final String uid = getUID();
-
+    print(auth.currentUser);
     var respond = await writeToServer("$pos/$uid", {
       'first name': _nameController.text,
       'last name': _lastnameController.text,
@@ -172,7 +172,11 @@ class _RegisterState extends State<Register> {
                 height: 20.0,
               ),
               Text(
-                nameError || lastnameError || idError ? 'Invalid input.' : errorText != '' ? errorText: '',
+                nameError || lastnameError || idError
+                    ? 'Invalid input.'
+                    : errorText != ''
+                        ? errorText
+                        : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(
