@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/patient/p_medical_allergy.dart';
 // import 'package:simple_login/cancer_prediction.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
@@ -40,13 +41,14 @@ class _HomePageState extends State<p_HomePage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    String uid = getUID();
-    Map<String, dynamic>? data = readFromServer(uid) as Map<String, dynamic>?;
+    //String uid = getUID();
+    //Map<String, dynamic>? data = getServerData(uid) as Map<String, dynamic>?;
+    // Hardcode
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          heading(width, height, data),
+          heading(width, height),
           services(width, height),
           meetadoctor(width, height),
           upcomingappointmentlist(width, height),
@@ -91,6 +93,11 @@ class _HomePageState extends State<p_HomePage> {
       break;
       case 7:
         Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MedicalAllergyPage()),
+        );
+        break;
+      case 8:
+        Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_MedicalReportListPage()),
         );
         break;
@@ -98,7 +105,7 @@ class _HomePageState extends State<p_HomePage> {
     }
     setState(() {});
   }
-
+  
   Future<Map<String, dynamic>?> getServerData(uid) async {
     Map<String, dynamic>? data = await readFromServer(uid);
     return data;
@@ -124,7 +131,7 @@ class _HomePageState extends State<p_HomePage> {
     }
   }
 
-  Widget heading(double globalwidth, double globalheight, data) =>
+  Widget heading(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
         child: Stack(
           children: [
@@ -150,9 +157,9 @@ class _HomePageState extends State<p_HomePage> {
                         Text(greetingMessage(),
                           style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold)),
-                        Text(data?['first name'] + data?['last name'],
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
+                        // Text(data?['first name'] + data?['last name'],
+                        //   style: const TextStyle(
+                        //       fontSize: 14, fontWeight: FontWeight.bold)),
                       ]),
                 ),
               ),
@@ -234,26 +241,29 @@ class _HomePageState extends State<p_HomePage> {
               children: [
                 FittedBox(
                   fit: BoxFit.scaleDown,
-                  child: Container(
-                    padding: const EdgeInsets.all(6),
-                    height: globalheight * 0.08,
-                    width: globalheight * 0.08,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(255, 220, 237, 249),
-                    ),
-                    // Todo: Change the icon
-                    child: Image.asset(
-                      'assets/pill.png',
-                      fit: BoxFit.fill,
-                      color: const Color.fromARGB(255, 28, 107, 164),
+                  child: GestureDetector(
+                    onTap: () => navigator(7),
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      height: globalheight * 0.08,
+                      width: globalheight * 0.08,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color.fromARGB(255, 220, 237, 249),
+                      ),
+                      // Todo: Change the icon
+                      child: Image.asset(
+                        'assets/pill.png',
+                        fit: BoxFit.fill,
+                        color: const Color.fromARGB(255, 28, 107, 164),
+                      ),
                     ),
                   ),
                 ),
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   child: GestureDetector(
-                    onTap: () => navigator(7),
+                    onTap: () => navigator(8),
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       height: globalheight * 0.08,
@@ -265,7 +275,8 @@ class _HomePageState extends State<p_HomePage> {
                       child: Image.asset(
                         'assets/doctor.png',
                         fit: BoxFit.fill,
-                        color: const Color.fromARGB(255, 224, 159, 31)),
+                        color: const Color.fromARGB(255, 224, 159, 31)
+                      ),
                     ),
                   ),
                 ),
