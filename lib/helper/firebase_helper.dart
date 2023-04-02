@@ -173,6 +173,7 @@ Future<Map<String, dynamic>?> cancerPredict(File img) async {
       filename: img.path));
   var response = await request.send();
   var respStr = await response.stream.bytesToString();
+  if (respStr == "None") return null;
   return jsonDecode(respStr);
 }
 
