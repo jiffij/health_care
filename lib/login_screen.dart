@@ -13,6 +13,7 @@ import 'package:simple_login/helper/ImageUpDownload.dart';
 import 'main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'helper/firebase_helper.dart';
+import 'helper/loading_screen.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -116,7 +117,7 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   Future<void> signOut() async {
-    if (FirebaseAuth.instance.currentUser == null) return;
+    if (!checkSignedin()) return;
     await googleSignIn.signOut();
     await auth.signOut();
   }
@@ -297,7 +298,7 @@ class _SignupState extends State<Signup> {
   bool hidePassword = true;
   bool hideRePassword = true;
   bool email_error = false;
-  bool user_name_error = false;
+  // bool user_name_error = false;
   bool password_error = false;
 
   final _storage = const FlutterSecureStorage();
@@ -305,8 +306,8 @@ class _SignupState extends State<Signup> {
       TextEditingController(text: "");
   final TextEditingController _passwordController =
       TextEditingController(text: "");
-  final TextEditingController _nicknameController =
-      TextEditingController(text: "");
+  // final TextEditingController _nicknameController =
+  //     TextEditingController(text: "");
   final TextEditingController _retypePasswordController =
       TextEditingController(text: "");
 
@@ -321,7 +322,7 @@ class _SignupState extends State<Signup> {
   }
 
   //firestore auth
-  _signup() async {
+  Future<bool> _signup() async {
     try {
       final credential = await auth.createUserWithEmailAndPassword(
         email: _usernameController.text,
@@ -333,15 +334,18 @@ class _SignupState extends State<Signup> {
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+      return false;
     } catch (e) {
       print(e);
+      return false;
     }
     User? user = auth.currentUser;
 
     if (user != null) {
-      await auth.currentUser?.updateDisplayName(_nicknameController.text);
+      // await auth.currentUser?.updateDisplayName(_nicknameController.text);
       if (!user.emailVerified) await user.sendEmailVerification();
     }
+    return true;
   }
 
   //firestore
@@ -355,13 +359,6 @@ class _SignupState extends State<Signup> {
         }, SetOptions(merge: true))
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
-    //create a document
-    // return Users.add({
-    //   'Id': _usernameController.text,
-    //   'Password': _passwordController.text,
-    // })
-    //     .then((value) => print("User Added"))
-    //     .catchError((error) => print("Failed to add user: $error"));
   }
 
   @override
@@ -416,21 +413,21 @@ class _SignupState extends State<Signup> {
               SizedBox(
                 height: 20.0,
               ),
-              TextField(
-                controller: _nicknameController,
-                decoration: InputDecoration(
-                  filled: user_name_error,
-                  fillColor: Colors.red,
-                  hintText: 'User Name',
-                  suffixIcon: Icon(Icons.assignment_ind),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
+              // TextField(
+              //   controller: _nicknameController,
+              //   decoration: InputDecoration(
+              //     filled: user_name_error,
+              //     fillColor: Colors.red,
+              //     hintText: 'User Name',
+              //     suffixIcon: Icon(Icons.assignment_ind),
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(20.0),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20.0,
+              // ),
               TextField(
                 controller: _passwordController,
                 obscureText: hidePassword,
@@ -479,9 +476,7 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               Text(
-                email_error || user_name_error || password_error
-                    ? 'Invalid input.'
-                    : '',
+                email_error || password_error ? 'Invalid input.' : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(
@@ -503,7 +498,7 @@ class _SignupState extends State<Signup> {
                         // await _onFormSubmit();
                         // await addUser();
                         bool email = false;
-                        bool user_name = false;
+                        // bool user_name = false;
                         bool password = false;
                         RegExp regex = RegExp(r'\S+@\S+\.\S+');
                         if (_usernameController.text == '' ||
@@ -516,14 +511,14 @@ class _SignupState extends State<Signup> {
                           email = true;
                         }
 
-                        if (_nicknameController.text == '') {
-                          setState(() {
-                            user_name_error = true;
-                          });
-                        } else {
-                          user_name_error = false;
-                          user_name = true;
-                        }
+                        // if (_nicknameController.text == '') {
+                        //   setState(() {
+                        //     user_name_error = true;
+                        //   });
+                        // } else {
+                        //   user_name_error = false;
+                        //   user_name = true;
+                        // }
 
                         if (_passwordController.text == '' ||
                             _passwordController.text !=
@@ -535,9 +530,9 @@ class _SignupState extends State<Signup> {
                           password_error = false;
                           password = true;
                         }
-                        if (email && password && user_name) {
-                          await _signup();
-                          Navigator.of(context).push(
+                        if (email && password) {
+                          var go = await _signup();
+                          if(go) Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) => const Register()),
                           );

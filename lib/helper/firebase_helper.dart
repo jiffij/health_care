@@ -6,15 +6,35 @@ import 'dart:convert';
 import '../main.dart';
 import 'encryption.dart';
 import 'dart:io';
-
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart' as path;
+import 'dart:math';
 // import 'dart:convert' show utf8;
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
 const URL = 'http://143.89.130.155:8080';
+
+// FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseStorage storage = FirebaseStorage.instance;
+
+bool checkSignedin() {
+  if (auth.currentUser != null) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 //return the UID of the user
 String getUID() {
   return auth.currentUser!.uid;
+}
+
+bool checkEmailAuth() {
+  return auth.currentUser!.emailVerified;
 }
 
 //Get the identity of the user
@@ -191,4 +211,135 @@ Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
     body: encode,
   );
   // return jsonDecode(await rsaDecrypt(response.body));
+}
+
+/// if inputSource == 'camera', it will open camera and take picture\
+/// if inputSource == 'gallery', it will open gallery\
+/// return a Future<File?>  \
+/// Container(  \
+///                    width: MediaQuery.of(context).size.width * 0.8,  \
+///                    height: MediaQuery.of(context).size.height * 0.4, \ 
+///                    child: Image.file(imgFile!)),
+Future<File?> pickImage(String inputSource) async {
+  final picker = ImagePicker();
+  XFile? pickedImage;
+  try {
+    pickedImage = await picker.pickImage(
+        source:
+            inputSource == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        maxWidth: 1920);
+
+    final String fileName = path.basename(pickedImage!.path);
+    File imageFile = File(pickedImage.path);
+    return imageFile;
+  } catch (err) {
+    if (kDebugMode) {
+      print(err);
+    }
+  }
+  return null;
+}
+
+///It checks if the file name exist in firebase storage
+Future<bool> checkStorageExists(String fileName) async {
+  Reference reference = FirebaseStorage.instance.ref(fileName);
+  try {
+    await reference.getDownloadURL();
+    // File exists
+    return true;
+  } catch (e) {
+    // File does not exist
+    return false;
+  }
+}
+
+///just upload
+///It will return the fileName(which is the url) of the Image
+///please store the returned String into firestore database
+Future<String> uploadImage(File img, String name, String description) async {
+  // final String fileName = path.basename(img.path);
+  var uid = getUID();
+  String fileName;
+  do {
+    var salt = Random().nextInt(10000000).toString();
+    fileName = '$uid$salt';
+  } while (await checkStorageExists(fileName));
+
+  try {
+    // Uploading the selected image with some custom meta data
+    TaskSnapshot taskSnapshot = await storage
+        .ref(fileName)
+        .putFile(
+            img,
+            SettableMetadata(customMetadata: {
+              'uploaded_by': name,
+              'description': description
+            }))
+        .whenComplete(() => null);
+    // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    return fileName; //gs://hola-85371.appspot.com/
+    // Refresh the UI
+  } on FirebaseException catch (error) {
+    if (kDebugMode) {
+      print(error);
+    }
+  }
+
+  return '';
+}
+
+///pick and upload
+Future<String> pickUploadImage(
+    String inputSource, String name, String description) async {
+  final picker = ImagePicker();
+  XFile? pickedImage;
+  try {
+    pickedImage = await picker.pickImage(
+        source:
+            inputSource == 'camera' ? ImageSource.camera : ImageSource.gallery,
+        maxWidth: 1920);
+
+    final String fileName = path.basename(pickedImage!.path);
+    File imageFile = File(pickedImage.path);
+
+    try {
+      // Uploading the selected image with some custom meta data
+      TaskSnapshot taskSnapshot = await storage
+          .ref(fileName)
+          .putFile(
+              imageFile,
+              SettableMetadata(customMetadata: {
+                'uploaded_by': name,
+                'description': description
+              }))
+          .whenComplete(() => null);
+      // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      return fileName;
+      // Refresh the UI
+    } on FirebaseException catch (error) {
+      if (kDebugMode) {
+        print(error);
+      }
+    }
+  } catch (err) {
+    if (kDebugMode) {
+      print(err);
+    }
+  }
+  return '';
+}
+
+/// loadStorageUrl('')\
+/// display it with:\
+/// String url = await loadStorageUrl('fileName');\
+/// Image.network(url);\
+/// It will return '' if the image doesn't exits
+Future<String> loadStorageUrl(String fileName) async {
+  String url;
+  if (await checkStorageExists(fileName)) {
+    url = await storage.ref(fileName).getDownloadURL();
+  } else {
+    url = '';
+  }
+  return url;
 }
