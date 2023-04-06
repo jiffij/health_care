@@ -213,6 +213,13 @@ Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
   // return jsonDecode(await rsaDecrypt(response.body));
 }
 
+/// if inputSource == 'camera', it will open camera and take picture\
+/// if inputSource == 'gallery', it will open gallery\
+/// return a Future<File?>  \
+/// Container(  \
+///                    width: MediaQuery.of(context).size.width * 0.8,  \
+///                    height: MediaQuery.of(context).size.height * 0.4, \ 
+///                    child: Image.file(imgFile!)),
 Future<File?> pickImage(String inputSource) async {
   final picker = ImagePicker();
   XFile? pickedImage;
@@ -233,6 +240,7 @@ Future<File?> pickImage(String inputSource) async {
   return null;
 }
 
+///It checks if the file name exist in firebase storage
 Future<bool> checkStorageExists(String fileName) async {
   Reference reference = FirebaseStorage.instance.ref(fileName);
   try {
@@ -245,7 +253,9 @@ Future<bool> checkStorageExists(String fileName) async {
   }
 }
 
-//just upload
+///just upload
+///It will return the fileName(which is the url) of the Image
+///please store the returned String into firestore database
 Future<String> uploadImage(File img, String name, String description) async {
   // final String fileName = path.basename(img.path);
   var uid = getUID();
@@ -267,7 +277,7 @@ Future<String> uploadImage(File img, String name, String description) async {
             }))
         .whenComplete(() => null);
     // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-    return 'gs://hola-85371.appspot.com/$fileName';
+    return fileName; //gs://hola-85371.appspot.com/
     // Refresh the UI
   } on FirebaseException catch (error) {
     if (kDebugMode) {
@@ -278,7 +288,7 @@ Future<String> uploadImage(File img, String name, String description) async {
   return '';
 }
 
-//pick and upload
+///pick and upload
 Future<String> pickUploadImage(
     String inputSource, String name, String description) async {
   final picker = ImagePicker();
@@ -303,8 +313,8 @@ Future<String> pickUploadImage(
                 'description': description
               }))
           .whenComplete(() => null);
-      String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      return downloadUrl;
+      // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+      return fileName;
       // Refresh the UI
     } on FirebaseException catch (error) {
       if (kDebugMode) {
@@ -317,4 +327,19 @@ Future<String> pickUploadImage(
     }
   }
   return '';
+}
+
+/// loadStorageUrl('')\
+/// display it with:\
+/// String url = await loadStorageUrl('fileName');\
+/// Image.network(url);\
+/// It will return '' if the image doesn't exits
+Future<String> loadStorageUrl(String fileName) async {
+  String url;
+  if (await checkStorageExists(fileName)) {
+    url = await storage.ref(fileName).getDownloadURL();
+  } else {
+    url = '';
+  }
+  return url;
 }
