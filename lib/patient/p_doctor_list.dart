@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 // Other files
+import '../helper/firebase_helper.dart';
 import 'p_calendar.dart';
 import 'p_homepage.dart';
 import 'p_message.dart';
@@ -53,6 +54,33 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     );
   }
 
+  final TextEditingController _doctorNameController = TextEditingController(text: "");
+  bool nameError = false;
+  List<List> doctorlist = [];
+  List<List> doctorlistsort = [];
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    Map<String, dynamic>? data = await readFromServer('doctor');
+    setState(() {
+      List<String>? doctorListId = data?.keys.toList();
+      for (var id in doctorListId!)
+      {
+        var fullname = data![id]?['first name'] + ' ' + data[id]?['last name'];
+        var picture = data[id]?['picture'];
+        var title = data[id]?['title'];
+        var rating = data[id]?['rating'];
+        doctorlist.insert(0, [fullname, picture, title, rating]);
+      }
+      print(doctorlist);
+    });
+  }
+
   // All navigate direction calling method
   void navigator(int index) {
     switch (index) {
@@ -87,6 +115,22 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       default:
     }
     setState(() {});
+  }
+
+  List<List> doctorSort(String input) {
+    List<List> temp = [];
+
+    for (var doctor in doctorlist)
+    {
+      for (var data in doctor)
+      {
+        if ((data as String).toLowerCase().trim().contains(input.toLowerCase().trim()))
+        {
+          temp.insert(0, doctor);
+        }
+      }
+    }
+    return temp;
   }
   
   Widget heading(double globalwidth, double globalheight) => DefaultTextStyle.merge(
@@ -126,43 +170,41 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             child: FittedBox (
             fit: BoxFit.scaleDown,        
             child: 
-            Text('Doctor List', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text('Doctor List', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
             ),
           ),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Container(
-              margin: const EdgeInsets.only(left: 15, top: 10),
-              height: globalheight*0.07,
-              width: globalwidth*0.9,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: Row(
-                children: [
-                  const FittedBox (
-                    fit: BoxFit.scaleDown,
-                    child: Icon(Icons.search),
-                  ),
-                  Container (
-                    margin: const EdgeInsets.only(left: 5),
-                    child: const FittedBox (
-                      alignment: Alignment.centerLeft,
-                      fit: BoxFit.scaleDown,        
-                      child: Text('Search Doctor...', style: TextStyle(fontSize: 12)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                height: globalheight*0.066,
+                width: globalwidth*0.8,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                ),
+                child: TextField(
+                  controller: _doctorNameController,
+                  decoration: InputDecoration(
+                    filled: nameError,
+                    fillColor: Colors.red,
+                    hintText: 'Search the doctor\'s name here...',
+                    suffixIcon: GestureDetector(
+                      onTap: () => {
+                        doctorlistsort = doctorSort(_doctorNameController as String),
+                        setState(() {}),
+                      },
+                      child: const Icon(Icons.search),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
                     ),
                   ),
-                  const Spacer(),
-                  const FittedBox (
-                    alignment: Alignment.centerRight,
-                    fit: BoxFit.scaleDown,
-                    child: Icon(Icons.manage_search),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),             
+            ],
+          ),
         ],
     ),
     ),
@@ -181,7 +223,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               child: const FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text('Current Available Doctors', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text('Suggested Doctors', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
