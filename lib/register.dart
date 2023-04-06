@@ -1,3 +1,5 @@
+import 'dart:math';
+import 'package:image/image.dart' as img;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -5,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'helper/firebase_helper.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'main.dart';
+import 'dart:io';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -17,27 +20,50 @@ class _RegisterState extends State<Register> {
   bool nameError = false;
   bool idError = false;
   bool lastnameError = false;
+  bool titleError = false;
+  bool expError = false;
   String pos = 'patient';
   String errorText = '';
+  String profilePic = '';
+  // Image? displayImg;
+  File? imgFile;
 
   final _storage = const FlutterSecureStorage();
   final TextEditingController _nameController = TextEditingController(text: "");
   final TextEditingController _lastnameController =
       TextEditingController(text: "");
   final TextEditingController _idController = TextEditingController(text: "");
+  final TextEditingController _titleController =
+      TextEditingController(text: "");
+  final TextEditingController _expController = TextEditingController(text: "");
 
   final CollectionReference Users =
       FirebaseFirestore.instance.collection('users');
 
-  void register() async {
-    if (await patientOrdoc() != ID.NOBODY) {
+  void register(BuildContext context) async {
+    if (checkSignedin()) {
       setState(() {
-        errorText = 'You have already signed in.';
+        errorText = 'You have not signed up.';
+      });
+      Navigator.pop(context);
+      return;
+    }
+
+    if (!checkEmailAuth()) {
+      setState(() {
+        errorText = 'Please vertify your email account first.';
       });
       return;
     }
 
-    nameError = lastnameError = idError = false;
+    if (await patientOrdoc() != ID.NOBODY) {
+      setState(() {
+        errorText = 'You have already signed up.';
+      });
+      return;
+    }
+
+    nameError = lastnameError = idError = titleError = expError = false;
     if (_nameController.text.isEmpty) {
       nameError = true;
     }
@@ -47,17 +73,32 @@ class _RegisterState extends State<Register> {
     if (_idController.text.isEmpty) {
       idError = true;
     }
-    if (nameError || lastnameError || idError) return;
+    if (_titleController.text.isEmpty) {
+      titleError = true;
+    }
+    if (_expController.text.isEmpty) {
+      expError = true;
+    }
+    if (nameError || lastnameError || idError || titleError || expError) return;
+    if (imgFile == null) {
+      print("no img");
+      return;
+    }
     final String uid = getUID();
-    print(auth.currentUser);
+    var url = await uploadImage(
+        imgFile!, _nameController.text + _lastnameController.text, 'None');
+    print(url);
     var respond = await writeToServer("$pos/$uid", {
       'first name': _nameController.text,
       'last name': _lastnameController.text,
       'email': auth.currentUser!.email,
-      'HKID': _idController.text
+      'HKID': _idController.text,
+      'profilePic': url,
+      'title': _titleController.text,
+      if (pos == 'doctor') 'exp': _expController.text,
     });
-    
-    print(respond);
+    print('here');
+    print(respond.statusCode);
     updateAuthInfo(_nameController.text);
   }
 
@@ -69,6 +110,36 @@ class _RegisterState extends State<Register> {
     var data = await readFromServer("$pos/$uid");
     print(await data?['first name']);
     print(await data?['last name']);
+  }
+
+  Future<void> getImg(String type) async {
+    var img = await pickImage(type);
+    setState(() {
+      imgFile = img;
+      // displayImg = Image.file(imgFile!);
+    });
+    return;
+  }
+
+  // void _toggleSwitch(String value) {
+  //   setState(() {
+  //     pos = value;
+  //   });
+  //   return;
+  // }
+
+  bool toggle = false;
+
+  void toggleSwitch(int index) {
+    if (index == 0) {
+      setState(() {
+        toggle = true;
+      });
+    } else if (index == 1) {
+      setState(() {
+        toggle = false;
+      });
+    }
   }
 
   @override
@@ -109,16 +180,19 @@ class _RegisterState extends State<Register> {
                 activeFgColor: Colors.white,
                 inactiveBgColor: Colors.grey,
                 inactiveFgColor: Colors.white,
-                initialLabelIndex: 0,
+                initialLabelIndex: toggle ? 0 : 1,
                 totalSwitches: 2,
                 labels: ['Patient', 'Doctor'],
                 radiusStyle: true,
                 onToggle: (index) {
-                  if (index == 0) {
-                    pos = 'patient';
-                  } else {
-                    pos = 'doctor';
-                  }
+                  setState(() {
+                    if (index == 0) {
+                      pos = 'patient';
+                    } else {
+                      pos = 'doctor';
+                    }
+                  });
+                  toggleSwitch(index!);
                 },
               ),
               SizedBox(
@@ -172,27 +246,83 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 20.0,
               ),
+              TextField(
+                controller: _titleController, //TODO
+                decoration: InputDecoration(
+                  labelText: 'Title:',
+                  filled: titleError, //TODO
+                  fillColor: Colors.red,
+                  hintText: 'Title',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20.0,
+              ),
+              if (pos == 'doctor')
+                TextField(
+                  controller: _expController,
+                  decoration: InputDecoration(
+                    labelText: 'Experience:',
+                    filled: expError,
+                    fillColor: Colors.red,
+                    hintText: 'Experience',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              if (pos == 'doctor')
+                SizedBox(
+                  height: 20.0,
+                ),
               Text(
-                nameError || lastnameError || idError
+                nameError || lastnameError || idError || titleError || expError
                     ? 'Invalid input.'
                     : errorText != ''
                         ? errorText
                         : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(7.0),
+                    child: ElevatedButton.icon(
+                        onPressed: () async => await getImg('camera'),
+                        icon: const Icon(Icons.camera),
+                        label: const Text('camera')),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(7.0),
+                    child: ElevatedButton.icon(
+                        onPressed: () async => await getImg('gallery'),
+                        icon: const Icon(Icons.library_add),
+                        label: const Text('Gallery')),
+                  ),
+                ],
+              ),
+              if (imgFile != null)
+                Container(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: Image.file(imgFile!)),
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(7.0),
                 child: ElevatedButton(
                   child: Text('Submit'),
                   style: ButtonStyle(
                     backgroundColor:
                         MaterialStateProperty.all(Colors.amber[900]),
                   ),
-                  onPressed: register,
+                  onPressed: () => register(context),
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(7.0),
                 child: ElevatedButton(
                   child: Text('CheckExist'),
                   style: ButtonStyle(
