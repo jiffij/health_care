@@ -31,6 +31,7 @@ class p_HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<p_HomePage> {
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -41,9 +42,7 @@ class _HomePageState extends State<p_HomePage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    //String uid = getUID();
-    //Map<String, dynamic>? data = getServerData(uid) as Map<String, dynamic>?;
-    // Hardcode
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -56,6 +55,23 @@ class _HomePageState extends State<p_HomePage> {
         ],
       ),
     );
+  }
+
+  String fullname = '';
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    setState(() {
+      fullname = data?['first name'] + data?['last name'];
+      print(fullname);
+    });
   }
 
   // All navigate direction calling method
@@ -104,13 +120,7 @@ class _HomePageState extends State<p_HomePage> {
     default:
     }
     setState(() {});
-  }
-  
-  Future<Map<String, dynamic>?> getServerData(uid) async {
-    Map<String, dynamic>? data = await readFromServer(uid);
-    return data;
-  }
-  
+  }  
 
   String getCurrentDate() {
     var date = DateTime.now();
@@ -157,9 +167,9 @@ class _HomePageState extends State<p_HomePage> {
                         Text(greetingMessage(),
                           style: const TextStyle(
                               fontSize: 14, fontWeight: FontWeight.bold)),
-                        // Text(data?['first name'] + data?['last name'],
-                        //   style: const TextStyle(
-                        //       fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text(fullname,
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
                       ]),
                 ),
               ),

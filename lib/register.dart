@@ -56,6 +56,7 @@ class _RegisterState extends State<Register> {
       'email': auth.currentUser!.email,
       'HKID': _idController.text
     });
+    
     print(respond);
     updateAuthInfo(_nameController.text);
   }

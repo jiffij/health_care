@@ -1,3 +1,5 @@
+// import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:simple_login/patient/p_homepage.dart';
@@ -114,6 +116,7 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   Future<void> signOut() async {
+    if (FirebaseAuth.instance.currentUser == null) return;
     await googleSignIn.signOut();
     await auth.signOut();
   }
