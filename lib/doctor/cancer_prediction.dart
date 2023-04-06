@@ -94,7 +94,7 @@ class _CancerPredictState extends State<CancerPredict> {
     });
     print('attempting to connect to server...');
     var respStr = await cancerPredict(_image);
-    // var respStr = await cancerPredict(_image);
+    if (respStr == null) return;
     setState(() {
       results = respStr;
       displayImg = Image.file(_image);
@@ -170,13 +170,14 @@ class _CancerPredictState extends State<CancerPredict> {
                       BarSeries<ChartData, String>(
                         name: 'Acc',
                         dataSource: <ChartData>[
-                          ChartData('Acti', results?['result'][0] ?? 0),
-                          ChartData('Basal', results?['result'][1] ?? 0),
-                          ChartData('Benign', results?['result'][2] ?? 0),
-                          ChartData('Derm', results?['result'][3] ?? 0),
-                          ChartData('Mel_nevi', results?['result'][4] ?? 0),
-                          ChartData('Mel', results?['result'][5] ?? 0),
-                          ChartData('Vas', results?['result'][6] ?? 0),
+                          ChartData('Acti(akiec)', results?['result'][0] ?? 0),
+                          ChartData('Basal(bcc)', results?['result'][1] ?? 0),
+                          ChartData('Benign(bkl)', results?['result'][2] ?? 0),
+                          ChartData('Derm(df)', results?['result'][3] ?? 0),
+                          ChartData('Mel(mel)', results?['result'][4] ?? 0),
+                          ChartData('Mel_nevi(nv)', results?['result'][5] ?? 0),
+                          ChartData('Vas(vasc)', results?['result'][6] ?? 0),
+                          ChartData('Unknown', results?['result'][7] ?? 0),
                         ],
                         xValueMapper: (ChartData acc, _) => acc.lesion,
                         yValueMapper: (ChartData acc, _) => acc.acc,
