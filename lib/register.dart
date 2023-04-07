@@ -76,21 +76,24 @@ class _RegisterState extends State<Register> {
     if (_idController.text.isEmpty) {
       idError = true;
     }
-    if (_titleController.text.isEmpty) {
+    if (_titleController.text.isEmpty && pos == 'doctor') {
       titleError = true;
     }
-    if (_expController.text.isEmpty) {
+    if (_expController.text.isEmpty && pos == 'doctor') {
       expError = true;
     }
     if (nameError || lastnameError || idError || titleError || expError) return;
-    if (imgFile == null) {
-      print("no img");
-      return;
-    }
+    String url = '';
     final String uid = getUID();
-    var url = await uploadImage(
-        imgFile!, _nameController.text + _lastnameController.text, 'None');
-    print(url);
+    if (pos == 'doctor') {
+      if (imgFile == null) {
+        print("no img");
+        return;
+      }
+      url = await uploadImage(
+          imgFile!, _nameController.text + _lastnameController.text, 'None');
+      print(url);
+    }
     var respond = await writeToServer("$pos/$uid", {
       'first name': _nameController.text,
       'last name': _lastnameController.text,
