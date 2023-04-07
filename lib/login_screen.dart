@@ -14,6 +14,7 @@ import 'main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'helper/firebase_helper.dart';
 import 'helper/loading_screen.dart';
+import 'helper/message_page.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -69,14 +70,14 @@ class _loginScreenState extends State<loginScreen> {
         return false;
       }
     }
-    // print(auth.currentUser!);
-    if (auth.currentUser?.emailVerified == true) {
-      return true;
-    } else {
-      await auth.currentUser?.sendEmailVerification();
-      if (auth.currentUser?.emailVerified == true) return true;
-      return false;
-    }
+    return true;
+    // if (auth.currentUser?.emailVerified == true) {
+    //   return true;
+    // } else {
+    //   await auth.currentUser?.sendEmailVerification();
+    //   if (auth.currentUser?.emailVerified == true) return true;
+    //   return false;
+    // }
   }
 
   _login() async {
@@ -194,6 +195,19 @@ class _loginScreenState extends State<loginScreen> {
                       if (_usernameController.text != '' &&
                           _passwordController.text != '' &&
                           await _firestoreLogin()) {
+                        if (!checkEmailAuth()) {
+                          await auth.currentUser!.sendEmailVerification();
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MessagePage(
+                                      duration: 5,
+                                      color: Colors.blue,
+                                      message:
+                                          'Please authenticate your email.\nIf you could not find it, please check junk mail.')));
+                          return;
+                        }
+
                         if (FirebaseAuth.instance.currentUser != null) {
                           switch (await patientOrdoc()) {
                             case ID.DOCTOR:
@@ -532,10 +546,16 @@ class _SignupState extends State<Signup> {
                         }
                         if (email && password) {
                           var go = await _signup();
-                          if(go) Navigator.of(context).push(
-                            MaterialPageRoute(
-                                builder: (context) => const Register()),
-                          );
+                          if (go)
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => MessagePage(
+                                        duration: 6,
+                                        color: Colors.blue,
+                                        message:
+                                            'Please authenticate your email.\nIf you could not find it, please check junk mail.',
+                                      )),
+                            );
                         }
                       },
                     ),

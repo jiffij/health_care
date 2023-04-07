@@ -8,6 +8,9 @@ import 'helper/firebase_helper.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'main.dart';
 import 'dart:io';
+import 'helper/message_page.dart';
+import 'doctor/d_homepage.dart';
+import 'patient/p_homepage.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -41,7 +44,7 @@ class _RegisterState extends State<Register> {
       FirebaseFirestore.instance.collection('users');
 
   void register(BuildContext context) async {
-    if (checkSignedin()) {
+    if (!checkSignedin()) {
       setState(() {
         errorText = 'You have not signed up.';
       });
@@ -93,13 +96,44 @@ class _RegisterState extends State<Register> {
       'last name': _lastnameController.text,
       'email': auth.currentUser!.email,
       'HKID': _idController.text,
-      'profilePic': url,
-      'title': _titleController.text,
+      if (pos == 'doctor') 'profilePic': url,
+      if (pos == 'doctor') 'title': _titleController.text,
       if (pos == 'doctor') 'exp': _expController.text,
+      if (pos == 'doctor')
+        'rating': {
+          '1': '0',
+          '2': '0',
+          '3': '0',
+          '4': '0',
+          '5': '0',
+        }
     });
-    print('here');
-    print(respond.statusCode);
     updateAuthInfo(_nameController.text);
+    var result = await Navigator.of(context).push(
+      MaterialPageRoute(
+          builder: (context) => MessagePage(
+                color: Colors.green,
+                duration: 3,
+                message: 'You have successfully registered.',
+              )),
+    );
+    Navigator.pop(context);
+    switch (await patientOrdoc()) {
+      case ID.DOCTOR:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const d_HomePage()));
+        break;
+      case ID.PATIENT:
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const p_HomePage()));
+        break;
+      case ID.ADMIN:
+        break;
+      case ID.NOBODY:
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const Register()));
+        break;
+    }
   }
 
   void checkExist() async {
@@ -128,7 +162,7 @@ class _RegisterState extends State<Register> {
   //   return;
   // }
 
-  bool toggle = false;
+  bool toggle = true;
 
   void toggleSwitch(int index) {
     if (index == 0) {
@@ -246,21 +280,23 @@ class _RegisterState extends State<Register> {
               SizedBox(
                 height: 20.0,
               ),
-              TextField(
-                controller: _titleController, //TODO
-                decoration: InputDecoration(
-                  labelText: 'Title:',
-                  filled: titleError, //TODO
-                  fillColor: Colors.red,
-                  hintText: 'Title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+              if (pos == 'doctor')
+                TextField(
+                  controller: _titleController, //TODO
+                  decoration: InputDecoration(
+                    labelText: 'Title:',
+                    filled: titleError, //TODO
+                    fillColor: Colors.red,
+                    hintText: 'Title',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
+              if (pos == 'doctor')
+                SizedBox(
+                  height: 20.0,
+                ),
               if (pos == 'doctor')
                 TextField(
                   controller: _expController,
@@ -286,25 +322,26 @@ class _RegisterState extends State<Register> {
                         : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(7.0),
-                    child: ElevatedButton.icon(
-                        onPressed: () async => await getImg('camera'),
-                        icon: const Icon(Icons.camera),
-                        label: const Text('camera')),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(7.0),
-                    child: ElevatedButton.icon(
-                        onPressed: () async => await getImg('gallery'),
-                        icon: const Icon(Icons.library_add),
-                        label: const Text('Gallery')),
-                  ),
-                ],
-              ),
+              if (pos == 'doctor')
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: ElevatedButton.icon(
+                          onPressed: () async => await getImg('camera'),
+                          icon: const Icon(Icons.camera),
+                          label: const Text('camera')),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: ElevatedButton.icon(
+                          onPressed: () async => await getImg('gallery'),
+                          icon: const Icon(Icons.library_add),
+                          label: const Text('Gallery')),
+                    ),
+                  ],
+                ),
               if (imgFile != null)
                 Container(
                     width: MediaQuery.of(context).size.width * 0.8,
@@ -321,17 +358,17 @@ class _RegisterState extends State<Register> {
                   onPressed: () => register(context),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(7.0),
-                child: ElevatedButton(
-                  child: Text('CheckExist'),
-                  style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStateProperty.all(Colors.amber[900]),
-                  ),
-                  onPressed: checkExist,
-                ),
-              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(7.0),
+              //   child: ElevatedButton(
+              //     child: Text('CheckExist'),
+              //     style: ButtonStyle(
+              //       backgroundColor:
+              //           MaterialStateProperty.all(Colors.amber[900]),
+              //     ),
+              //     onPressed: checkExist,
+              //   ),
+              // ),
             ],
           ),
         ),
