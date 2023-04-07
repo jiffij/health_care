@@ -72,10 +72,10 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       for (var id in doctorListId!)
       {
         var fullname = data![id]?['first name'] + ' ' + data[id]?['last name'];
-        var picture = data[id]?['picture'];
+        var profilePic = data[id]?['profilePic'];
         var title = data[id]?['title'];
-        var rating = data[id]?['rating'];
-        doctorlist.insert(0, [fullname, picture, title, rating]);
+        //var rating = data[id]?['rating'];
+        doctorlist.insert(0, [fullname, profilePic, title]);
       }
       print(doctorlist);
     });
@@ -193,6 +193,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
                     suffixIcon: GestureDetector(
                       onTap: () => {
                         doctorlistsort = doctorSort(_doctorNameController as String),
+                        print(doctorlistsort),
                         setState(() {}),
                       },
                       child: const Icon(Icons.search),
