@@ -41,7 +41,7 @@ class _RegisterState extends State<Register> {
       FirebaseFirestore.instance.collection('users');
 
   void register(BuildContext context) async {
-    if (checkSignedin()) {
+    if (!checkSignedin()) {
       setState(() {
         errorText = 'You have not signed up.';
       });
@@ -128,7 +128,7 @@ class _RegisterState extends State<Register> {
   //   return;
   // }
 
-  bool toggle = false;
+  bool toggle = true;
 
   void toggleSwitch(int index) {
     if (index == 0) {
