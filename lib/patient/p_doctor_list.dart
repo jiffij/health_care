@@ -47,7 +47,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
           children: [
             heading(width, height),
             suggestdoctorlist(width, height),
-            highrateddoctorlist(width, height),
+            filtereddoctorlist(width, height),
             home(width, height),           
           ],
         ),
@@ -87,10 +87,12 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       print(data);
       setState(() {
         doctorlist.insert(0, [fullname, uid, profilePic, title, fRating]);
-        doctorlistsort.insert(0, [fullname, uid, profilePic, title, fRating]);
+        //doctorlistsort.insert(0, [fullname, uid, profilePic, title, fRating]);
       });
+      doctorlistsort = ratingSort();
     }
     print(doctorlist);
+    print(doctorlistsort);
   }
 
   // All navigate direction calling method
@@ -129,17 +131,21 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     setState(() {});
   }
 
+  List<List> ratingSort() {
+    int comparisonIndex = 4;
+    List<List<dynamic>> templist = doctorlist..sort((x, y) => 
+    (x[comparisonIndex] as dynamic).compareTo((y[comparisonIndex] as dynamic)));
+    return templist;
+  }
+
   List<List> doctorSort(String input) {
     List<List> temp = [];
-
     for (var doctor in doctorlist)
     {
-      for (var data in doctor)
+      var data = '${doctor[0]} ${doctor[3]}';
+      if ((data as String).toLowerCase().trim().contains(input.toLowerCase().trim()))
       {
-        if ((data as String).toLowerCase().trim().contains(input.toLowerCase().trim()))
-        {
-          temp.insert(0, doctor);
-        }
+        temp.insert(0, doctor);
       }
     }
     return temp;
@@ -204,7 +210,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
                     hintText: 'Search the doctor\'s name here...',
                     suffixIcon: GestureDetector(
                       onTap: () => {
-                        doctorlistsort = doctorSort(_doctorNameController as String),
+                        doctorlistsort = doctorSort(_doctorNameController.text),
                         print(doctorlistsort),
                         setState(() {}),
                       },
@@ -249,7 +255,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
-            itemCount : doctorlistsort.length,
+            itemCount : doctorlist.length,
             separatorBuilder:  (context, index) {
               return const SizedBox(width: 15);
             },
@@ -272,7 +278,6 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
           borderRadius: BorderRadius.circular(10),
           color: const Color.fromARGB(50, 224, 159, 31),
           image: DecorationImage(
-            //doctorlistsort[index][2]
             image: NetworkImage(doctorlist[index][2]),
             fit: BoxFit.cover,
           ),
@@ -309,7 +314,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ],
   );
 
-  Widget highrateddoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  Widget filtereddoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Column(
       children: [
         Align(alignment: Alignment.centerLeft,
@@ -335,12 +340,12 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
-            itemCount : 5,
+            itemCount : doctorlistsort.length,
             separatorBuilder:  (context, index) {
               return const SizedBox(height: 15);
             },
             itemBuilder: (context, index) {
-              return highrateddoctor(index, globalwidth, globalheight);
+              return filtereddoctor(index, globalwidth, globalheight);
             },
           ),
         ),
@@ -348,17 +353,13 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget highrateddoctor(int index, double globalwidth, double globalheight) => Column(
+  Widget filtereddoctor(int index, double globalwidth, double globalheight) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
         height: globalheight*0.15,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          //color: const Color.fromARGB(80, 224, 159, 31),
-          boxShadow: const [
-          //BoxShadow(color: Color.fromARGB(50, 224, 159, 31), spreadRadius: 3),
-          ],
         ),
         child: GestureDetector(
           onTap: () => navigator(5),
@@ -369,8 +370,8 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
                 height: globalheight*0.15,
                 decoration : BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  image: const DecorationImage(
-                    image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
+                  image: DecorationImage(
+                    image: NetworkImage(doctorlist[index][2]),
                     fit: BoxFit.cover,
                   ),
                 ),    
