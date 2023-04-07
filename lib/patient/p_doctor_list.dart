@@ -46,7 +46,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
-            currentdoctorlist(width, height),
+            suggestdoctorlist(width, height),
             highrateddoctorlist(width, height),
             home(width, height),           
           ],
@@ -65,20 +65,32 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     start();
   }
 
+  double getRating() {
+    double temp = 0;
+
+    return temp;
+  }
+
   void start() async {
-    Map<String, dynamic>? data = await readFromServer('doctor');
-    setState(() {
-      List<String>? doctorListId = data?.keys.toList();
-      for (var id in doctorListId!)
-      {
-        var fullname = data![id]?['first name'] + ' ' + data[id]?['last name'];
-        var profilePic = data[id]?['profilePic'];
-        var title = data[id]?['title'];
-        //var rating = data[id]?['rating'];
-        doctorlist.insert(0, [fullname, profilePic, title]);
-      }
-      print(doctorlist);
-    });
+    List<String> doctorListId = await getColId('doctor');
+    print(doctorListId);
+    for (var id in doctorListId)
+    {
+      Map<String, dynamic>? data = await readFromServer('doctor/$id');
+      var firstname = data?['first name'];
+      var lastname = data?['last name'];
+      var fullname = '$firstname $lastname';
+      var uid = data?['profilePic'];
+      var profilePic = await loadStorageUrl(uid);
+      var title = data?['title'];
+      var fRating = calRating(data?['rating']);
+      print(data);
+      setState(() {
+        doctorlist.insert(0, [fullname, uid, profilePic, title, fRating]);
+        doctorlistsort.insert(0, [fullname, uid, profilePic, title, fRating]);
+      });
+    }
+    print(doctorlist);
   }
 
   // All navigate direction calling method
@@ -211,7 +223,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget currentdoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  Widget suggestdoctorlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Column(
       children: [
         Align(alignment: Alignment.centerLeft,
@@ -237,12 +249,12 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
-            itemCount : 5,
+            itemCount : doctorlistsort.length,
             separatorBuilder:  (context, index) {
               return const SizedBox(width: 15);
             },
             itemBuilder: (context, index) {
-              return currentdoctor(index, globalheight);
+              return suggestdoctor(index, globalheight);
             },
           ),
         ),
@@ -250,7 +262,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     ),
   );
 
-  Widget currentdoctor(int index, double globalheight) => Column(
+  Widget suggestdoctor(int index, double globalheight) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
@@ -259,6 +271,11 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: const Color.fromARGB(50, 224, 159, 31),
+          image: DecorationImage(
+            //doctorlistsort[index][2]
+            image: NetworkImage(doctorlist[index][2]),
+            fit: BoxFit.cover,
+          ),
         ),
         child: GestureDetector(
           onTap: () => navigator(5),
@@ -267,7 +284,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text ('Doctor Photo $index', style: const TextStyle(fontSize: 10)),
+                  //Text ('Doctor Photo $index', style: const TextStyle(fontSize: 10)),
                 ]
               ),
               Positioned(
@@ -305,7 +322,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
               child: const FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text('High Rated Doctors', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                child: Text('Filtered Doctors (Default: Rating)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
               ),
             ),
           ),
