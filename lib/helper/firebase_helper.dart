@@ -218,7 +218,7 @@ Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
 /// return a Future<File?>  \
 /// Container(  \
 ///                    width: MediaQuery.of(context).size.width * 0.8,  \
-///                    height: MediaQuery.of(context).size.height * 0.4, \ 
+///                    height: MediaQuery.of(context).size.height * 0.4, \
 ///                    child: Image.file(imgFile!)),
 Future<File?> pickImage(String inputSource) async {
   final picker = ImagePicker();
@@ -342,4 +342,13 @@ Future<String> loadStorageUrl(String fileName) async {
     url = '';
   }
   return url;
+}
+
+Future<List<String>> getColId(String path) async {
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final CollectionReference collectionRef =
+      firestore.collection(path);
+  QuerySnapshot querySnapshot = await collectionRef.get();
+  List<String> documentNames = querySnapshot.docs.map((doc) => doc.id).toList();
+  return documentNames;
 }
