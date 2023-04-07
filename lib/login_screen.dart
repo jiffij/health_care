@@ -37,7 +37,7 @@ class _loginScreenState extends State<loginScreen> {
       FirebaseFirestore.instance.collection('users');
 
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
   }
 
@@ -59,7 +59,7 @@ class _loginScreenState extends State<loginScreen> {
     dynamic credential;
     try {
       credential = await auth.signInWithEmailAndPassword(
-          email: _usernameController.text, password: _passwordController.text);
+          email: _usernameController.text.trim(), password: _passwordController.text);
       print(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -78,23 +78,6 @@ class _loginScreenState extends State<loginScreen> {
     //   if (auth.currentUser?.emailVerified == true) return true;
     //   return false;
     // }
-  }
-
-  _login() async {
-    await _readFromStorage();
-    print(UserName + Password);
-    if (UserName != null && Password != null) {
-      if (UserName == _usernameController.text &&
-          Password == _passwordController.text) {
-        setState(() {
-          LoginSuccess = true;
-        });
-        print('login success');
-        return true;
-      }
-    }
-    print('login fail');
-    return false;
   }
 
   Future<UserCredential> signInWithGoogle() async {
@@ -330,7 +313,7 @@ class _SignupState extends State<Signup> {
 
   //local storing password
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
     print('signed up');
   }
@@ -339,7 +322,7 @@ class _SignupState extends State<Signup> {
   Future<bool> _signup() async {
     try {
       final credential = await auth.createUserWithEmailAndPassword(
-        email: _usernameController.text,
+        email: _usernameController.text.trim(),
         password: _passwordController.text,
       );
     } on FirebaseAuthException catch (e) {

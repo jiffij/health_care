@@ -109,7 +109,7 @@ class _RegisterState extends State<Register> {
           '3': '0',
           '4': '0',
           '5': '0',
-        }
+        },
     });
     updateAuthInfo(_nameController.text);
     var result = await Navigator.of(context).push(
@@ -120,6 +120,7 @@ class _RegisterState extends State<Register> {
                 message: 'You have successfully registered.',
               )),
     );
+
     Navigator.pop(context);
     switch (await patientOrdoc()) {
       case ID.DOCTOR:
@@ -145,8 +146,10 @@ class _RegisterState extends State<Register> {
     print(await checkDocExist("$pos/$uid"));
     // var data = await getDoc("doctor/$uid");
     var data = await readFromServer("$pos/$uid");
-    print(await data?['first name']);
-    print(await data?['last name']);
+    print(data!);
+    print(data['first name']);
+    print(data['last name']);
+    print(data['rating']);
   }
 
   Future<void> getImg(String type) async {
@@ -361,17 +364,17 @@ class _RegisterState extends State<Register> {
                   onPressed: () => register(context),
                 ),
               ),
-              // Padding(
-              //   padding: const EdgeInsets.all(7.0),
-              //   child: ElevatedButton(
-              //     child: Text('CheckExist'),
-              //     style: ButtonStyle(
-              //       backgroundColor:
-              //           MaterialStateProperty.all(Colors.amber[900]),
-              //     ),
-              //     onPressed: checkExist,
-              //   ),
-              // ),
+              Padding(
+                padding: const EdgeInsets.all(7.0),
+                child: ElevatedButton(
+                  child: Text('CheckExist'),
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all(Colors.amber[900]),
+                  ),
+                  onPressed: checkExist,
+                ),
+              ),
             ],
           ),
         ),

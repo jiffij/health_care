@@ -356,8 +356,8 @@ double calRating(Map<String, dynamic> rating) {
   double sum = 0;
   double count = 0;
   for (String key in rating.keys) {
-    sum += int.parse(rating[key]) * rating[key];
-    count += rating[key];
+    sum += int.parse(rating[key]) * int.parse(rating[key]);
+    count += int.parse(rating[key]);
   }
   sum /= count;
   return sum;
