@@ -346,9 +346,19 @@ Future<String> loadStorageUrl(String fileName) async {
 
 Future<List<String>> getColId(String path) async {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final CollectionReference collectionRef =
-      firestore.collection(path);
+  final CollectionReference collectionRef = firestore.collection(path);
   QuerySnapshot querySnapshot = await collectionRef.get();
   List<String> documentNames = querySnapshot.docs.map((doc) => doc.id).toList();
   return documentNames;
+}
+
+double calRating(Map<String, dynamic> rating) {
+  double sum = 0;
+  double count = 0;
+  for (String key in rating.keys) {
+    sum += int.parse(rating[key]) * rating[key];
+    count += rating[key];
+  }
+  sum /= count;
+  return sum;
 }
