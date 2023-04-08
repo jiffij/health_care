@@ -95,13 +95,13 @@ class _RegisterState extends State<Register> {
       print(url);
     }
     var respond = await writeToServer("$pos/$uid", {
-      'first name': _nameController.text,
-      'last name': _lastnameController.text,
+      'first name': _nameController.text.trim(),
+      'last name': _lastnameController.text.trim(),
       'email': auth.currentUser!.email,
-      'HKID': _idController.text,
+      'HKID': _idController.text.trim(),
       if (pos == 'doctor') 'profilePic': url,
-      if (pos == 'doctor') 'title': _titleController.text,
-      if (pos == 'doctor') 'exp': _expController.text,
+      if (pos == 'doctor') 'title': _titleController.text.trim(),
+      if (pos == 'doctor') 'exp': _expController.text.trim(),
       if (pos == 'doctor')
         'rating': {
           '1': '0',
