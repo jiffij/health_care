@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/title_with_more_btn.dart';
 import 'color.dart';
+import 'navbar_helper/navbar_cubit.dart';
 
 class CustomBottomNavBarDash extends StatefulWidget {
   final int defaultSelectedIndex;
@@ -36,10 +38,14 @@ class _CustomBottomNavBarDashState extends State<CustomBottomNavBarDash> {
   List<IconData> _iconList = [];
   List<String> _textList = [];
 
-  void updateBottomNavBar(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Widget buildShortcutButton(String title, int newIndex, bool withBtn) {
+    var cubit = NavbarCubit.get(context);
+    return TitleWithMoreBtn(title: title, press: (){
+      cubit.changeBottomNavBar(newIndex);
+      setState(() {
+        _selectedIndex = newIndex;
+      });
+    }, withBtn: withBtn);
   }
 
   @override

@@ -8,7 +8,7 @@ showAlertDialog(BuildContext context, String message) {
     icon: const Icon(Icons.error_outline, size: 50,),
     iconPadding: const EdgeInsets.symmetric(vertical: 20),
     iconColor: const Color.fromARGB(255, 235, 120, 112),
-    titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black, fontSize: 15)),
+    titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black, fontSize: 15), height: 1.5),
     shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(30)),
             ),
@@ -23,9 +23,10 @@ showAlertDialog(BuildContext context, String message) {
                                                     BorderRadius.only(bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30))),
                                             backgroundColor: Color.fromARGB(255, 47, 106, 173),
                                             padding: EdgeInsets.symmetric(
-                                                horizontal: 140, vertical: 17)
+                                                horizontal: 140, vertical: 17),
+                                                minimumSize: const Size.fromHeight(50),
                                             ),
-        child: Text('OKAY', style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 17)),))
+        child: Text('OK', style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 17)),))
     ],
     actionsAlignment: MainAxisAlignment.center,
     actionsPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 0),

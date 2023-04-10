@@ -40,6 +40,9 @@ class _welcomeState extends State<welcome> {
       } else if (e.code == 'wrong-password') {
         return 2;
       }
+      else if (e.code == 'too-many-requests') {
+        return 5;
+      }
     }
     if (credential?.user?.emailVerified == false) {
       await auth.currentUser?.sendEmailVerification();
@@ -198,7 +201,11 @@ class _welcomeState extends State<welcome> {
                                                 showAlertDialog(context, "Invalid Password");
                                             } else if (msg == 3) {
                                                 showAlertDialog(context, "Your Email is not verified");
-                                            } else {
+                                            } 
+                                            else if (msg == 5) {
+                                              showAlertDialog(context, "You have tried too many times.\nPlease try again later.");
+                                            }
+                                            else {
                                                 showAlertDialog(context, "Login Success");
                                             }
                                           }

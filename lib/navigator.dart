@@ -54,7 +54,6 @@ class _BottomNavState extends State<BottomNav> {
             ),
             extendBody: true,
             body: Container(
-              //color: bgColor,
               child: Center(
                 child: _pages[cubit.currentIndex],
               ),

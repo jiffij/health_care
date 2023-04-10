@@ -30,9 +30,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: //const welcome(),  //new login page
+      home: //const welcome(),
             const BottomNav(),
-            //const loginScreen(), old login page
     );
   }
 }

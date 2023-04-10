@@ -11,7 +11,9 @@ import 'service.dart';
 import 'header.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home({
+    Key? key
+  }) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
@@ -25,21 +27,15 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: bgColor,
       body: 
-                        SafeArea(child: SingleChildScrollView(
+                        SafeArea(
+                          child: SingleChildScrollView(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Header(size: size),
                               TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
                               const Services(),
-                              TitleWithMoreBtn(
-                                title: "Upcoming Appointments",
-                                press: () {
-                                  // Navigate to another page and update the navbar
-                                  cubit.changeBottomNavBar(1);
-                                },
-                                withBtn: true,
-                              ),
+                              TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: true,),
                               const Upcoming(),
                             ],
                           ),
