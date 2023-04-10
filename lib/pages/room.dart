@@ -165,7 +165,9 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
+  Widget build(BuildContext context) { 
+    Size size = MediaQuery. of(context).size;
+    return Scaffold(
         body: Column(
           children: [
             Expanded(
@@ -173,13 +175,13 @@ class _RoomPageState extends State<RoomPage> {
                     ? ParticipantWidget.widgetFor(participantTracks.first)
                     : Container()),
             SizedBox(
-              height: 100,
+              height: size.height * 0.35,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: math.max(0, participantTracks.length - 1),
                 itemBuilder: (BuildContext context, int index) => SizedBox(
-                  width: 100,
-                  height: 100,
+                  width: size.width / (participantTracks.length - 1),
+                  height: size.height,
                   child:
                       ParticipantWidget.widgetFor(participantTracks[index + 1]),
                 ),
@@ -194,4 +196,5 @@ class _RoomPageState extends State<RoomPage> {
           ],
         ),
       );
+  }
 }

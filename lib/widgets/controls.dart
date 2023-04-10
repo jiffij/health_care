@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:livekit_client/livekit_client.dart';
@@ -278,183 +277,112 @@ class _ControlsWidgetState extends State<ControlsWidget> {
         spacing: 5,
         runSpacing: 5,
         children: [
-          IconButton(
-            onPressed: _unpublishAll,
-            icon: const Icon(EvaIcons.closeCircleOutline),
-            tooltip: 'Unpublish all',
-          ),
+          // IconButton(
+          //   onPressed: _unpublishAll,
+          //   icon: const Icon(EvaIcons.closeCircleOutline),
+          //   tooltip: 'Unpublish all',
+          // ),
           if (participant.isMicrophoneEnabled())
-            PopupMenuButton<MediaDevice>(
-              icon: const Icon(Icons.settings_voice),
-              itemBuilder: (BuildContext context) {
-                return [
-                  PopupMenuItem<MediaDevice>(
-                    value: null,
-                    child: const ListTile(
-                      leading: Icon(
-                        EvaIcons.micOff,
-                        color: Colors.white,
-                      ),
-                      title: Text('Mute Microphone'),
-                    ),
-                    onTap: isMuted ? _enableAudio : _disableAudio,
-                  ),
-                  if (_audioInputs != null)
-                    ..._audioInputs!.map((device) {
-                      return PopupMenuItem<MediaDevice>(
-                        value: device,
-                        child: ListTile(
-                          leading: (device.deviceId ==
-                                  Hardware
-                                      .instance.selectedAudioInput?.deviceId)
-                              ? const Icon(
-                                  EvaIcons.checkmarkSquare,
-                                  color: Colors.white,
-                                )
-                              : const Icon(
-                                  EvaIcons.square,
-                                  color: Colors.white,
-                                ),
-                          title: Text(device.label),
-                        ),
-                        onTap: () => _selectAudioInput(device),
-                      );
-                    }).toList()
-                ];
-              },
+            IconButton(
+              onPressed: _disableAudio, 
+              icon: const Icon(Icons.mic),
             )
           else
             IconButton(
               onPressed: _enableAudio,
-              icon: const Icon(EvaIcons.micOff),
+              icon: const Icon(Icons.mic_off),
               tooltip: 'un-mute audio',
             ),
-          PopupMenuButton<MediaDevice>(
-            icon: const Icon(Icons.volume_up),
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem<MediaDevice>(
-                  value: null,
-                  child: ListTile(
-                    leading: Icon(
-                      EvaIcons.speaker,
-                      color: Colors.white,
-                    ),
-                    title: Text('Select Audio Output'),
-                  ),
-                ),
-                if (_audioOutputs != null)
-                  ..._audioOutputs!.map((device) {
-                    return PopupMenuItem<MediaDevice>(
-                      value: device,
-                      child: ListTile(
-                        leading: (device.deviceId ==
-                                Hardware.instance.selectedAudioOutput?.deviceId)
-                            ? const Icon(
-                                EvaIcons.checkmarkSquare,
-                                color: Colors.white,
-                              )
-                            : const Icon(
-                                EvaIcons.square,
-                                color: Colors.white,
-                              ),
-                        title: Text(device.label),
-                      ),
-                      onTap: () => _selectAudioOutput(device),
-                    );
-                  }).toList()
-              ];
-            },
-          ),
+          // PopupMenuButton<MediaDevice>(
+          //   icon: const Icon(Icons.volume_up),
+          //   itemBuilder: (BuildContext context) {
+          //     return [
+          //       const PopupMenuItem<MediaDevice>(
+          //         value: null,
+          //         child: ListTile(
+          //           leading: Icon(
+          //             EvaIcons.speaker,
+          //             color: Colors.white,
+          //           ),
+          //           title: Text('Select Audio Output'),
+          //         ),
+          //       ),
+          //       if (_audioOutputs != null)
+          //         ..._audioOutputs!.map((device) {
+          //           return PopupMenuItem<MediaDevice>(
+          //             value: device,
+          //             child: ListTile(
+          //               leading: (device.deviceId ==
+          //                       Hardware.instance.selectedAudioOutput?.deviceId)
+          //                   ? const Icon(
+          //                       EvaIcons.checkmarkSquare,
+          //                       color: Colors.white,
+          //                     )
+          //                   : const Icon(
+          //                       EvaIcons.square,
+          //                       color: Colors.white,
+          //                     ),
+          //               title: Text(device.label),
+          //             ),
+          //             onTap: () => _selectAudioOutput(device),
+          //           );
+          //         }).toList()
+          //     ];
+          //   },
+          // ),
           if (participant.isCameraEnabled())
-            PopupMenuButton<MediaDevice>(
-              icon: const Icon(EvaIcons.video),
-              itemBuilder: (BuildContext context) {
-                return [
-                  PopupMenuItem<MediaDevice>(
-                    value: null,
-                    child: const ListTile(
-                      leading: Icon(
-                        EvaIcons.videoOff,
-                        color: Colors.white,
-                      ),
-                      title: Text('Disable Camera'),
-                    ),
-                    onTap: _disableVideo,
-                  ),
-                  if (_videoInputs != null)
-                    ..._videoInputs!.map((device) {
-                      return PopupMenuItem<MediaDevice>(
-                        value: device,
-                        child: ListTile(
-                          leading:
-                              (device.deviceId == _selectedVideoInput?.deviceId)
-                                  ? const Icon(
-                                      EvaIcons.checkmarkSquare,
-                                      color: Colors.white,
-                                    )
-                                  : const Icon(
-                                      EvaIcons.square,
-                                      color: Colors.white,
-                                    ),
-                          title: Text(device.label),
-                        ),
-                        onTap: () => _selectVideoInput(device),
-                      );
-                    }).toList()
-                ];
-              },
+            IconButton(
+              onPressed: _disableVideo, 
+              icon: const Icon(Icons.videocam),
             )
           else
             IconButton(
               onPressed: _enableVideo,
-              icon: const Icon(EvaIcons.videoOff),
+              icon: const Icon(Icons.videocam_off),
               tooltip: 'un-mute video',
             ),
           IconButton(
-            icon: Icon(position == CameraPosition.back
-                ? EvaIcons.camera
-                : EvaIcons.person),
+            icon: const Icon(Icons.cameraswitch),
             onPressed: () => _toggleCamera(),
             tooltip: 'toggle camera',
           ),
-          if (participant.isScreenShareEnabled())
-            IconButton(
-              icon: const Icon(EvaIcons.monitorOutline),
-              onPressed: () => _disableScreenShare(),
-              tooltip: 'unshare screen (experimental)',
-            )
-          else
-            IconButton(
-              icon: const Icon(EvaIcons.monitor),
-              onPressed: () => _enableScreenShare(),
-              tooltip: 'share screen (experimental)',
-            ),
+          // if (participant.isScreenShareEnabled())
+          //   IconButton(
+          //     icon: const Icon(EvaIcons.monitorOutline),
+          //     onPressed: () => _disableScreenShare(),
+          //     tooltip: 'unshare screen (experimental)',
+          //   )
+          // else
+          //   IconButton(
+          //     icon: const Icon(EvaIcons.monitor),
+          //     onPressed: () => _enableScreenShare(),
+          //     tooltip: 'share screen (experimental)',
+          //   ),
           IconButton(
             onPressed: _onTapDisconnect,
-            icon: const Icon(EvaIcons.closeCircle),
+            icon: const Icon(Icons.call_end),
             tooltip: 'disconnect',
           ),
-          IconButton(
-            onPressed: _onTapSendData,
-            icon: const Icon(EvaIcons.paperPlane),
-            tooltip: 'send demo data',
-          ),
-          IconButton(
-            onPressed: _onTapReconnect,
-            icon: const Icon(EvaIcons.refresh),
-            tooltip: 're-connect',
-          ),
-          IconButton(
-            onPressed: _onTapUpdateSubscribePermission,
-            icon: const Icon(EvaIcons.settings2),
-            tooltip: 'Subscribe permission',
-          ),
-          IconButton(
-            onPressed: _onTapSimulateScenario,
-            icon: const Icon(EvaIcons.alertTriangle),
-            tooltip: 'Simulate scenario',
-          ),
+          // IconButton(
+          //   onPressed: _onTapSendData,
+          //   icon: const Icon(EvaIcons.paperPlane),
+          //   tooltip: 'send demo data',
+          // ),
+          // IconButton(
+          //   onPressed: _onTapReconnect,
+          //   icon: const Icon(EvaIcons.refresh),
+          //   tooltip: 're-connect',
+          // ),
+          // IconButton(
+          //   onPressed: _onTapUpdateSubscribePermission,
+          //   icon: const Icon(EvaIcons.settings2),
+          //   tooltip: 'Subscribe permission',
+          // ),
+          // IconButton(
+          //   onPressed: _onTapSimulateScenario,
+          //   icon: const Icon(EvaIcons.alertTriangle),
+          //   tooltip: 'Simulate scenario',
+          // ),
         ],
       ),
     );
