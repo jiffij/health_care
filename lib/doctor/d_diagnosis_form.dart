@@ -1,16 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
+import '../helper/firebase_helper.dart';
 
 class DiagnosticForm extends StatefulWidget {
+  String patientName;
+  String patientBirth;
+  String patientUid;
+
+  DiagnosticForm(this.patientName, this.patientBirth, this.patientUid,
+      {super.key});
   @override
-  _DiagnosticFormState createState() => _DiagnosticFormState();
+  _DiagnosticFormState createState() => _DiagnosticFormState(
+      this.patientName, this.patientBirth, this.patientUid);
 }
 
 class _DiagnosticFormState extends State<DiagnosticForm> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _messageController = TextEditingController();
+  String patientName;
+  String patientBirth;
+  String patientUid;
+  _DiagnosticFormState(this.patientName, this.patientBirth, this.patientUid);
+
+  final _diagnosisController = TextEditingController();
+  final _MedController = TextEditingController();
+  final _noteController = TextEditingController();
 
 // Initialise a controller. It will contains signature points, stroke width and pen color.
 // It will allow you to interact with the widget
@@ -22,19 +36,22 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _messageController.dispose();
+    _diagnosisController.dispose();
+    _MedController.dispose();
+    _noteController.dispose();
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // double width = MediaQuery.of(context).size.width;
+    // double height = MediaQuery.of(context).size.height;
     return Scaffold(
       // appBar: AppBar(
       //   title: Text('My Page'),
       // ),
+
       body: Column(
         children: [
           Container(
@@ -43,14 +60,30 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: Text('Message 1')),
-                    Expanded(child: Text('Message 2')),
+                    Expanded(
+                        child: Text(
+                      'Patient:',
+                      style: TextStyle(fontSize: 18),
+                    )),
+                    Expanded(
+                        child: Text(
+                      'Date of Birth:',
+                      style: TextStyle(fontSize: 18),
+                    )),
                   ],
                 ),
                 Row(
                   children: [
-                    Expanded(child: Text('Text Box 1')),
-                    Expanded(child: Text('Text Box 2')),
+                    Expanded(
+                        child: Text(
+                      patientName,
+                      style: TextStyle(fontSize: 16),
+                    )),
+                    Expanded(
+                        child: Text(
+                      patientBirth,
+                      style: TextStyle(fontSize: 16),
+                    )),
                   ],
                 ),
               ],
@@ -62,23 +95,27 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
               child: Column(
                 children: [
                   TextField(
-                    controller: _nameController,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    controller: _diagnosisController,
                     decoration: InputDecoration(
                       hintText: 'Diagnosis',
                     ),
                   ),
                   TextField(
-                    controller: _emailController,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    controller: _MedController,
                     decoration: InputDecoration(
                       hintText: 'Medication',
                     ),
                   ),
                   TextField(
-                    controller: _messageController,
+                    controller: _noteController,
                     decoration: InputDecoration(
                       hintText: 'Extra notes',
                     ),
-                    maxLines: null,
+                    maxLines: 5,
                     keyboardType: TextInputType.multiline,
                   ),
                   SizedBox(
@@ -96,15 +133,42 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                     alignment: Alignment.centerRight,
                     child: ElevatedButton(
                       onPressed: () async {
-                        // Handle submit button press
-                        final name = _nameController.text;
-                        final email = _emailController.text;
-                        final message = _messageController.text;
-                        print('Name: $name, Email: $email, Message: $message');
+                        final diagnosis = _diagnosisController.text;
+                        final medicine = _MedController.text;
+                        final notes = _noteController.text;
+
+                        if (diagnosis.isEmpty ||
+                            medicine.isEmpty ||
+                            notes.isEmpty) {
+                          return;
+                        }
+
+                        String signId = '';
                         if (_controller.isNotEmpty) {
                           var signature = await _controller.toPngBytes();
-                          var signId = await uploadImageByte(
+                          signId = await uploadImageByte(
                               signature!, 'name', 'description');
+                        } else {
+                          return;
+                        }
+                        var uid = getUID();
+                        final now = getDateTime();
+                        // print('medical_history/$uid/$patientUid/$now');
+                        var data = {
+                          'doctor': uid,
+                          'patient': patientUid,
+                          'diagnosis': diagnosis,
+                          'medicine': medicine,
+                          'extra_notes': notes,
+                          'signature_url': signId,
+                        };
+                        // Handle submit button press
+                        var res1 = await writeToServer(
+                            'doctor/$uid/history/$patientUid/$now', data);
+                        var res2 = await writeToServer(
+                            'patient/$patientUid/history/$now', data);
+                        if (res1.statusCode != 200 || res2.statusCode != 200) {
+                          print('history upload error');
                         }
                       },
                       child: Text('Publish'),

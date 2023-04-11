@@ -72,7 +72,7 @@ class _HomePageState extends State<d_HomePage> {
       );
     } else if (index == 3) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => DiagnosticForm()),
+        MaterialPageRoute(builder: (context) => DiagnosticForm('John', '2020/03/12', 'L6S9xfMD3wWnLFGpRaJWDH8ulmt2')),
       );
     } else if (index == 4) {
       Navigator.of(context).push(

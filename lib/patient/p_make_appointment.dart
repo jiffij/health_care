@@ -288,7 +288,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
 
   void makeAppointment(String date, String time) {
     var uid = getUID();
-    writeToServer('doctor/$uid/appointment/$date', {
+    writeToServer('patient/$uid/appointment/$date', {
       time: {
         'name': '',
         'description': '',

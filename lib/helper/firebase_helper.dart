@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import '../main.dart';
 import 'encryption.dart';
@@ -35,6 +36,12 @@ String getUID() {
 
 bool checkEmailAuth() {
   return auth.currentUser!.emailVerified;
+}
+
+String getDateTime() {
+  final now = DateTime.now();
+  final formatted = DateFormat('yyyyMMddkkmm').format(now);
+  return formatted.toString();
 }
 
 //Get the identity of the user
@@ -276,7 +283,7 @@ Future<String> uploadImage(File img, String name, String description) async {
               'description': description
             }))
         .whenComplete(() => null);
-        
+
     // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return fileName; //gs://hola-85371.appspot.com/
     // Refresh the UI
@@ -292,7 +299,8 @@ Future<String> uploadImage(File img, String name, String description) async {
 ///just upload
 ///It will return the fileName(which is the url) of the Image
 ///please store the returned String into firestore database
-Future<String> uploadImageByte(Uint8List img, String name, String description) async {
+Future<String> uploadImageByte(
+    Uint8List img, String name, String description) async {
   // final String fileName = path.basename(img.path);
   var uid = getUID();
   String fileName;
@@ -312,7 +320,7 @@ Future<String> uploadImageByte(Uint8List img, String name, String description) a
               'description': description
             }))
         .whenComplete(() => null);
-        
+
     // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return fileName; //gs://hola-85371.appspot.com/
     // Refresh the UI
