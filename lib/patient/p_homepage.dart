@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_login/patient/p_medical_allergy.dart';
-// import 'package:simple_login/cancer_prediction.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
@@ -10,7 +8,7 @@ import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 import 'p_doctor_list.dart';
-// import 'cancer_prediction.dart';
+
 import 'p_medical_report_list.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
 
