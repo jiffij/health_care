@@ -283,7 +283,9 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     //print(timeslotslist);
   }
 
-  void makeAppointment() {
+  // Write the data to the server
+  void makeAppointment() async {
+    // 
   }
 
   Widget heading(double globalwidth, double globalheight) => DefaultTextStyle.merge(
