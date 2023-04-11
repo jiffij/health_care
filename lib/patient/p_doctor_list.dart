@@ -41,8 +41,8 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
@@ -51,6 +51,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             home(width, height),           
           ],
         ),
+      ),
     );
   }
 
