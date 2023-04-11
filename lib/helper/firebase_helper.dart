@@ -276,6 +276,43 @@ Future<String> uploadImage(File img, String name, String description) async {
               'description': description
             }))
         .whenComplete(() => null);
+        
+    // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    return fileName; //gs://hola-85371.appspot.com/
+    // Refresh the UI
+  } on FirebaseException catch (error) {
+    if (kDebugMode) {
+      print(error);
+    }
+  }
+
+  return '';
+}
+
+///just upload
+///It will return the fileName(which is the url) of the Image
+///please store the returned String into firestore database
+Future<String> uploadImageByte(Uint8List img, String name, String description) async {
+  // final String fileName = path.basename(img.path);
+  var uid = getUID();
+  String fileName;
+  do {
+    var salt = Random().nextInt(10000000).toString();
+    fileName = '$uid$salt';
+  } while (await checkStorageExists(fileName));
+
+  try {
+    // Uploading the selected image with some custom meta data
+    TaskSnapshot taskSnapshot = await storage
+        .ref(fileName)
+        .putData(
+            img,
+            SettableMetadata(customMetadata: {
+              'uploaded_by': name,
+              'description': description
+            }))
+        .whenComplete(() => null);
+        
     // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
     return fileName; //gs://hola-85371.appspot.com/
     // Refresh the UI
