@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
@@ -18,15 +17,15 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Patient Make Appointment page',
       theme: ThemeData(
-        // This is the theme of the application.
-      ),
+          // This is the theme of the application.
+          ),
       home: const p_MakeAppointmentPage('Default'),
     );
   }
@@ -34,7 +33,7 @@ class MyApp extends StatelessWidget {
 
 class p_MakeAppointmentPage extends StatefulWidget {
   final String doctor_uid;
-  
+
   const p_MakeAppointmentPage(this.doctor_uid, {super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -47,8 +46,8 @@ class p_MakeAppointmentPage extends StatefulWidget {
   // always marked "final".
 
   @override
-  
-  State<p_MakeAppointmentPage> createState() => _MakeAppointmentPageState(doctor_uid);
+  State<p_MakeAppointmentPage> createState() =>
+      _MakeAppointmentPageState(doctor_uid);
 }
 
 class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
@@ -72,23 +71,22 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-
       body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            heading(width, height),
-            calendar(width, height),
-            guide(width, height),
-            //timeslotlist(width, height, timeslotslist, _focusedDay),
-            home(width, height),
-          ],
-        ),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          heading(width, height),
+          calendar(width, height),
+          guide(width, height),
+          //timeslotlist(width, height, timeslotslist, _focusedDay),
+          home(width, height),
+        ],
+      ),
     );
   }
 
   String fullname = '';
   // Todo: Decide hard code access data one by one
-    bool tlshow = false;
+  bool tlshow = false;
   List<List> timeslotslist = [[]];
   // [
   //   ['00:00', false, '00:20', false, '00:40', false],
@@ -116,7 +114,6 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   //   ['22:00', true, '22:20', true, '22:40', true],
   //   ['23:00', true, '23:20', true, '23:40', true],
   // ];
-  
 
   @override
   void initState() {
@@ -133,7 +130,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
       print(data);
     });
   }
-  
+
   // All navigate direction calling method
   void navigator(int index) {
     switch (index) {
@@ -173,55 +170,59 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   // Pop out when selecting the unavailable tiimeslot
   void warning_message() {
     showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          content: const Text('Oops! The timeslot you selected is unavailable!'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'Exit'),
-              child: const Text('Exit'),
-            ),
-          ],
-        ),
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: const Text('Oops! The timeslot you selected is unavailable!'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Exit'),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
     );
   }
 
   // Pop out before the user finalize their booking
   void confirm_message() {
     showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          content: Text('Please confirm your booking timeslot:\n${getDate(_focusedDay)} - $selected_timeslot',style: const TextStyle(fontWeight: FontWeight.bold)),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => successful_message(),
-              child: const Text('Confirm'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.pop(context, 'Exit'),
-              child: const Text('Exit'),
-            ),
-          ],
-        ),
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Text(
+            'Please confirm your booking timeslot:\n${getDate(_focusedDay)} - $selected_timeslot',
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => successful_message(),
+            child: const Text('Confirm'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Exit'),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
     );
   }
 
   // Pop out successful after the user finalize their booking
   void successful_message() {
     showDialog<String>(
-        context: context,
-        builder: (BuildContext context) => AlertDialog(
-          content: Text('Your booking of appintment:\n${getDate(_focusedDay)} - $selected_timeslot\n is successful!',style: const TextStyle(fontWeight: FontWeight.bold)),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => navigator(1),
-              child: const Text('Exit'),
-            ),
-          ],
-        ),
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        content: Text(
+            'Your booking of appintment:\n${getDate(_focusedDay)} - $selected_timeslot\n is successful!',
+            style: const TextStyle(fontWeight: FontWeight.bold)),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => navigator(1),
+            child: const Text('Exit'),
+          ),
+        ],
+      ),
     );
   }
-  
+
   void changeTimeslotlist() {
     tlshow = !tlshow;
     setState(() {});
@@ -254,14 +255,16 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
       ['22:00', true, '22:20', true, '22:40', true],
       ['23:00', true, '23:20', true, '23:40', true],
     ];
-    List<String> existdatelist = await getColId('doctor/$doctor_uid/appointment');
+    List<String> existdatelist =
+        await getColId('doctor/$doctor_uid/appointment');
     List<String> existtimelist = [];
 
     // Get current exist datelist if available
     if (existdatelist.isNotEmpty) {
       for (var existdate in existdatelist) {
         if (existdate == dateToServer(_selectedDay!)) {
-          existtimelist = await getColId('doctor/$doctor_uid/appointment/$existdate');
+          existtimelist =
+              await getColId('doctor/$doctor_uid/appointment/$existdate');
         }
       }
     }
@@ -269,9 +272,9 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     if (existtimelist.isNotEmpty) {
       for (var existtime in existtimelist) {
         for (int i = 0; i < templist.length; i++) {
-          for (int j = 0; j < templist[i].length/2; j= j+2) {
+          for (int j = 0; j < templist[i].length / 2; j = j + 2) {
             if (existtime == templist[i][j]) {
-              templist[i][j+1] = 'false';
+              templist[i][j + 1] = 'false';
             }
           }
         }
@@ -279,152 +282,173 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     }
     //print('checkpoint 2');
     timeslotslist = templist;
-    setState(() { });
+    setState(() {});
     //print(timeslotslist);
   }
 
-  void makeAppointment() {
+  void makeAppointment(String date, String time) {
+    var uid = getUID();
+    writeToServer('doctor/$uid/appointment/$date', {
+      time: {
+        'name': '',
+        'description': '',
+      }
+    });
   }
 
-  Widget heading(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: Stack(
-      children: [
-        Container(
-          width: globalwidth,
-          height: globalheight*0.25,
-          color: const Color.fromARGB(255, 28, 107, 164),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () => navigator(0),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 15, top: 20),
-                    height: globalheight*0.06,
-                    width: globalheight*0.06,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                    ),
-                    child: FittedBox (
+  Widget heading(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Stack(
+          children: [
+            Container(
+              width: globalwidth,
+              height: globalheight * 0.25,
+              color: const Color.fromARGB(255, 28, 107, 164),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => navigator(0),
+                    child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Container(
-                        margin: const EdgeInsets.all(5),
-                        child: const Icon(Icons.arrow_back_rounded),
+                        margin: const EdgeInsets.only(left: 15, top: 20),
+                        height: globalheight * 0.06,
+                        width: globalheight * 0.06,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            child: const Icon(Icons.arrow_back_rounded),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(top: 10),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: FittedBox (
-                    fit: BoxFit.scaleDown,        
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Make Appointment', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text('Doctor: $fullname', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ), 
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget calendar(double globalwidth, double globalheight) => Card(
-    child: Expanded(
-      child: SizedBox(
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            SingleChildScrollView(
-              child: Column(
-                children: [
-                  TableCalendar(
-                    weekendDays: const [DateTime.sunday],
-                    rowHeight: globalheight*0.08,
-                    headerStyle: HeaderStyle(
-                      headerPadding: const EdgeInsets.symmetric(vertical: 2),
-                      formatButtonVisible: false,
-                      titleCentered: true,
-                      titleTextFormatter: (date, locale) => DateFormat.yMMM(locale).format(date),
-                      // Calendar title style
-                      titleTextStyle: TextStyle(
-                        color: const Color.fromARGB(255, 74, 84, 94), fontSize: MediaQuery.of(context).size.width*0.07),
-                      leftChevronIcon: Icon(
-                        Icons.chevron_left,
-                        color: const Color.fromARGB(255, 74, 84, 94),
-                        size: MediaQuery.of(context).size.width*0.07,
-                      ),
-                      rightChevronIcon: Icon(
-                        Icons.chevron_right,
-                        color: const Color.fromARGB(255, 74, 84, 94),
-                        size: MediaQuery.of(context).size.width*0.07,
+                  Container(
+                    margin: const EdgeInsets.only(top: 10),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Make Appointment',
+                                style: TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text('Doctor: $fullname',
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
                       ),
                     ),
-                    // Calendar days title style
-                    daysOfWeekStyle: const DaysOfWeekStyle(
-                      weekendStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                    ),
-                    // Calendar days style
-                    calendarStyle: const CalendarStyle(
-                    weekendTextStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                    todayDecoration: BoxDecoration(
-                      color: Color.fromARGB(165, 35, 185, 59),
-                      shape: BoxShape.rectangle,
-                    ),
-                    // highlighted color for selected day
-                    selectedDecoration: BoxDecoration(
-                      color: Color.fromARGB(255, 65, 95, 185),
-                      shape: BoxShape.rectangle,
-                    ),
-                    ),
-                    //calendarBuilders: CalendarBuilders(),
-                    firstDay: DateTime(2020),
-                    lastDay: DateTime(2050),
-                    focusedDay: _focusedDay,
-                    // Todo: Calendar interatives
-                    selectedDayPredicate: (day) {
-                      return isSameDay(_selectedDay, day);
-                    },
-                    onDaySelected: (selectedDay, focusedDay) {
-                      // Update the timeslotslist
-                      checkExist(dateToServer(selectedDay));
-                      setState(() {
-                        _selectedDay = selectedDay; 
-                        _focusedDay = focusedDay; // update `_focusedDay` here as well
-                        tlshow = !tlshow;
-                        // print('checkpoint 3');
-                        // print(_selectedDay);
-                        // print(tlshow);
-                        // print('checkpoint 4');
-                      });
-                    },
-                    onPageChanged: (focusedDay) {
-                      _focusedDay = focusedDay;
-                    },
                   ),
                 ],
               ),
             ),
-            tlshow? timeslotlist(globalwidth, globalheight, _focusedDay) : Container(),
           ],
         ),
-      ),
-    ),
-  );
+      );
+
+  Widget calendar(double globalwidth, double globalheight) => Card(
+        child: Expanded(
+          child: SizedBox(
+            child: Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TableCalendar(
+                        weekendDays: const [DateTime.sunday],
+                        rowHeight: globalheight * 0.08,
+                        headerStyle: HeaderStyle(
+                          headerPadding:
+                              const EdgeInsets.symmetric(vertical: 2),
+                          formatButtonVisible: false,
+                          titleCentered: true,
+                          titleTextFormatter: (date, locale) =>
+                              DateFormat.yMMM(locale).format(date),
+                          // Calendar title style
+                          titleTextStyle: TextStyle(
+                              color: const Color.fromARGB(255, 74, 84, 94),
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.07),
+                          leftChevronIcon: Icon(
+                            Icons.chevron_left,
+                            color: const Color.fromARGB(255, 74, 84, 94),
+                            size: MediaQuery.of(context).size.width * 0.07,
+                          ),
+                          rightChevronIcon: Icon(
+                            Icons.chevron_right,
+                            color: const Color.fromARGB(255, 74, 84, 94),
+                            size: MediaQuery.of(context).size.width * 0.07,
+                          ),
+                        ),
+                        // Calendar days title style
+                        daysOfWeekStyle: const DaysOfWeekStyle(
+                          weekendStyle:
+                              TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                        ),
+                        // Calendar days style
+                        calendarStyle: const CalendarStyle(
+                          weekendTextStyle:
+                              TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                          todayDecoration: BoxDecoration(
+                            color: Color.fromARGB(165, 35, 185, 59),
+                            shape: BoxShape.rectangle,
+                          ),
+                          // highlighted color for selected day
+                          selectedDecoration: BoxDecoration(
+                            color: Color.fromARGB(255, 65, 95, 185),
+                            shape: BoxShape.rectangle,
+                          ),
+                        ),
+                        //calendarBuilders: CalendarBuilders(),
+                        firstDay: DateTime(2020),
+                        lastDay: DateTime(2050),
+                        focusedDay: _focusedDay,
+                        // Todo: Calendar interatives
+                        selectedDayPredicate: (day) {
+                          return isSameDay(_selectedDay, day);
+                        },
+                        onDaySelected: (selectedDay, focusedDay) {
+                          // Update the timeslotslist
+                          checkExist(dateToServer(selectedDay));
+                          setState(() {
+                            _selectedDay = selectedDay;
+                            _focusedDay =
+                                focusedDay; // update `_focusedDay` here as well
+                            tlshow = !tlshow;
+                            // print('checkpoint 3');
+                            // print(_selectedDay);
+                            // print(tlshow);
+                            // print('checkpoint 4');
+                          });
+                        },
+                        onPageChanged: (focusedDay) {
+                          _focusedDay = focusedDay;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                tlshow
+                    ? timeslotlist(globalwidth, globalheight, _focusedDay)
+                    : Container(),
+              ],
+            ),
+          ),
+        ),
+      );
 
   String getDate(DateTime date) {
     var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
@@ -437,96 +461,108 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   }
 
   Widget guide(double globalwidth, double globalheight) => Column(
-    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Divider(),
-      Container(
-        height: globalheight*0.04,
-        margin: const EdgeInsets.only(bottom: 5),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              children: [
-                SizedBox(
-                  width: globalheight*0.02,
-                  height: globalheight*0.02,
-                  child: const FittedBox (
-                    fit: BoxFit.scaleDown,
-                    child: Icon(Icons.circle, color: Color.fromARGB(255, 28, 107, 164)),
-                  ),
-                ),
-                const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text (' : Available', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: globalheight*0.02,
-                  height: globalheight*0.02,
-                  child: const FittedBox (
-                    fit: BoxFit.scaleDown,
-                    child: Icon(Icons.circle, color: Color.fromARGB(255, 123, 141 , 158)),
-                  ),
-                ),
-                const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text (' : Full', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                SizedBox(
-                  width: globalheight*0.02,
-                  height: globalheight*0.02,
-                  child: const FittedBox (
-                    fit: BoxFit.scaleDown,
-                    child: Icon(Icons.circle, color: Color.fromARGB(255, 36, 242 , 31)),
-                  ),
-                ),
-                const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Text (' : Today', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-
-  Widget timeslotlist(double globalwidth, double globalheight, DateTime selectedDay) => DefaultTextStyle.merge(
-    child: Container(
-      padding: const EdgeInsets.all(12),
-      width: globalwidth,
-      height: globalheight*0.5,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-        color: Color.fromARGB(255, 28, 107, 164),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          GestureDetector(
+          const Divider(),
+          Container(
+            height: globalheight * 0.04,
+            margin: const EdgeInsets.only(bottom: 5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: globalheight * 0.02,
+                      height: globalheight * 0.02,
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(Icons.circle,
+                            color: Color.fromARGB(255, 28, 107, 164)),
+                      ),
+                    ),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(' : Available',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: globalheight * 0.02,
+                      height: globalheight * 0.02,
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(Icons.circle,
+                            color: Color.fromARGB(255, 123, 141, 158)),
+                      ),
+                    ),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(' : Full',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: globalheight * 0.02,
+                      height: globalheight * 0.02,
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Icon(Icons.circle,
+                            color: Color.fromARGB(255, 36, 242, 31)),
+                      ),
+                    ),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(' : Today',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+
+  Widget timeslotlist(
+          double globalwidth, double globalheight, DateTime selectedDay) =>
+      DefaultTextStyle.merge(
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          width: globalwidth,
+          height: globalheight * 0.5,
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            color: Color.fromARGB(255, 28, 107, 164),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
                 onTap: () => changeTimeslotlist(),
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Container(
                     margin: const EdgeInsets.only(left: 15),
-                    height: globalheight*0.06,
-                    width: globalheight*0.06,
+                    height: globalheight * 0.06,
+                    width: globalheight * 0.06,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: const Color.fromARGB(255, 255, 255, 255),
                     ),
-                    child: FittedBox (
+                    child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Container(
                         margin: const EdgeInsets.all(5),
@@ -536,253 +572,311 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                   ),
                 ),
               ),
-          Container(
-            height: globalheight*0.1,
-            width: globalwidth*0.8 ,
-            margin: const EdgeInsets.only(left: 15),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                children: [
-                  const FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      'Selected Date:',
-                      style: TextStyle(fontSize: 50, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  SizedBox(
-                    height: globalheight*0.1,
-                    width: globalwidth*0.1,
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: FittedBox(
+              Container(
+                height: globalheight * 0.1,
+                width: globalwidth * 0.8,
+                margin: const EdgeInsets.only(left: 15),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    children: [
+                      const FittedBox(
                         fit: BoxFit.scaleDown,
-                      child: Container(
-                        //margin: const EdgeInsets.only(left: 12, bottom: 5),
-                        height: globalheight*0.1,
-                        width: globalwidth,
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                          boxShadow: const [
-                            BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
-                          ],
+                        child: Text(
+                          'Selected Date:',
+                          style: TextStyle(
+                              fontSize: 50,
+                              color: Color.fromARGB(255, 255, 255, 255),
+                              fontWeight: FontWeight.bold),
                         ),
-                        child: FittedBox (
-                          alignment: Alignment.centerLeft,
+                      ),
+                      SizedBox(
+                        height: globalheight * 0.1,
+                        width: globalwidth * 0.1,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: FittedBox(
                           fit: BoxFit.scaleDown,
-                          child: Text(getDate(selectedDay), style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold)),
+                          child: Container(
+                            //margin: const EdgeInsets.only(left: 12, bottom: 5),
+                            height: globalheight * 0.1,
+                            width: globalwidth,
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: Color.fromARGB(100, 28, 107, 164),
+                                    spreadRadius: 2),
+                              ],
+                            ),
+                            child: FittedBox(
+                              alignment: Alignment.centerLeft,
+                              fit: BoxFit.scaleDown,
+                              child: Text(getDate(selectedDay),
+                                  style: const TextStyle(
+                                      fontSize: 50,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ),
                       ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // The list of the timeslots
-          Align(
-            alignment: Alignment.center,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: SizedBox(
-                height: globalheight*0.2,
-                width: globalwidth*0.8,
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 28, 107, 164),
-                    boxShadow: [
-                      BoxShadow(color: Color.fromARGB(0, 0, 0, 0), spreadRadius: 2),
                     ],
-                  ),
-                  child: ListView.separated(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    scrollDirection: Axis.vertical,
-                    // The number of itemCount depends on the number of appointment
-                    // 5 is the number of appointment for testing only
-                    itemCount : 24,
-                    separatorBuilder:  (context, index) {
-                      return SizedBox(height: globalheight*0.04);
-                    },
-                    itemBuilder: (context, index) {
-                      //check_exist(DateToServer(_selectedDay!));
-                      return timeslot(index, globalwidth, globalheight, timeslotslist[index]);
-                    },
                   ),
                 ),
               ),
-            ),
+              // The list of the timeslots
+              Align(
+                alignment: Alignment.center,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    height: globalheight * 0.2,
+                    width: globalwidth * 0.8,
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Color.fromARGB(255, 28, 107, 164),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Color.fromARGB(0, 0, 0, 0),
+                              spreadRadius: 2),
+                        ],
+                      ),
+                      child: ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        // The number of itemCount depends on the number of appointment
+                        // 5 is the number of appointment for testing only
+                        itemCount: 24,
+                        separatorBuilder: (context, index) {
+                          return SizedBox(height: globalheight * 0.04);
+                        },
+                        itemBuilder: (context, index) {
+                          //check_exist(DateToServer(_selectedDay!));
+                          return timeslot(index, globalwidth, globalheight,
+                              timeslotslist[index]);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => confirm_message(),
+                child: Align(
+                  alignment: Alignment.center,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      height: globalheight * 0.08,
+                      width: globalwidth * 0.7,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        boxShadow: const [
+                          BoxShadow(
+                              color: Color.fromARGB(150, 255, 255, 255),
+                              spreadRadius: 2),
+                        ],
+                      ),
+                      child: const Text('Make Appointment',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Color.fromARGB(255, 28, 107, 164),
+                              fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          GestureDetector(
-            onTap: () => confirm_message(),
-            child: Align(
-              alignment: Alignment.center,
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
+        ),
+      );
+
+  Widget timeslot(
+          int index, double globalwidth, double globalheight, List list) =>
+      Align(
+        //alignment: Alignment.center,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () => list[1] == true
+                    ? changeTimeslot(list[0])
+                    : warning_message(),
                 child: Container(
-                  height: globalheight*0.08,
-                  width: globalwidth*0.7,
+                  height: globalheight * 0.08,
+                  width: globalwidth * 0.22,
+                  padding: EdgeInsets.all(globalheight * 0.02),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: list[1] == true
+                        ? list[0] == selected_timeslot
+                            ? const Color.fromARGB(255, 224, 159, 31)
+                            : const Color.fromARGB(255, 28, 107, 164)
+                        : const Color.fromARGB(255, 123, 141, 158),
                     boxShadow: const [
-                      BoxShadow(color: Color.fromARGB(150, 255, 255, 255), spreadRadius: 2),
+                      BoxShadow(
+                          color: Color.fromARGB(255, 190, 202, 218),
+                          spreadRadius: 2),
                     ],
                   ),
-                  child: const Text('Make Appointment', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 28, 107, 164), fontWeight: FontWeight.bold)),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('${list[0]}',
+                        style: const TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 255, 255, 255))),
+                  ),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-
-  Widget timeslot(int index, double globalwidth, double globalheight, List list) => Align(
-    //alignment: Alignment.center,
-    child: FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => list[1] == true ? changeTimeslot(list[0]) : warning_message(),
-            child: Container(
-              height: globalheight*0.08,
-              width: globalwidth*0.22,
-              padding: EdgeInsets.all(globalheight*0.02),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: list[1] == true ? list[0] == selected_timeslot ? const Color.fromARGB(255, 224, 159, 31) : const Color.fromARGB(255, 28, 107, 164) : const Color.fromARGB(255, 123, 141, 158),
-                boxShadow: const [
-                  BoxShadow(color: Color.fromARGB(255, 190, 202, 218), spreadRadius: 2),
-                ],
+              SizedBox(
+                width: globalwidth * 0.06,
               ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text('${list[0]}', style: const TextStyle(fontSize: 20,color: Color.fromARGB(255, 255, 255, 255))),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: globalwidth*0.06,
-          ),
-          GestureDetector(
-            onTap: () => list[3] == true ? changeTimeslot(list[2]) : warning_message(),
-            child: Container(
-              height: globalheight*0.08,
-              width: globalwidth*0.22,
-              padding: EdgeInsets.all(globalheight*0.02),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: list[3] == true ? list[2] == selected_timeslot ? const Color.fromARGB(255, 224, 159, 31) : const Color.fromARGB(255, 28, 107, 164) : const Color.fromARGB(255, 123, 141, 158),
-                boxShadow: const [
-                  BoxShadow(color: Color.fromARGB(255, 190, 202, 218), spreadRadius: 2),
-                ],
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text('${list[2]}', style: const TextStyle(fontSize: 20,color: Color.fromARGB(255, 255, 255, 255))),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: globalwidth*0.06,
-          ),
-          GestureDetector(
-            onTap: () => list[5] == true ? changeTimeslot(list[4]) : warning_message(),
-            child: Container(
-              height: globalheight*0.08,
-              width: globalwidth*0.22,
-              padding: EdgeInsets.all(globalheight*0.02),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: list[5] == true ? list[4] == selected_timeslot ? const Color.fromARGB(255, 224, 159, 31) : const Color.fromARGB(255, 28, 107, 164) : const Color.fromARGB(255, 123, 141, 158),
-                boxShadow: const [
-                  BoxShadow(color: Color.fromARGB(255, 190, 202, 218), spreadRadius: 2),
-                ],
-              ),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Text('${list[4]}', style: const TextStyle(fontSize: 20,color: Color.fromARGB(255, 255, 255, 255))),
-              ),
-            ),
-          ),
-        ],
-      ),  
-    ),
-  );
-
-  Widget home(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      width: globalwidth,
-      height: globalheight*0.07,
-      color : const Color.fromARGB(255, 217, 217, 217),
-      child : DefaultTextStyle(
-        style : const TextStyle(color : Color.fromARGB(255, 123, 141, 158)),
-        child : Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [   
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(1),
-                child: Column(
-                  children: const [
-                    Icon(Icons.home,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Home'),
-                  ],
+              GestureDetector(
+                onTap: () => list[3] == true
+                    ? changeTimeslot(list[2])
+                    : warning_message(),
+                child: Container(
+                  height: globalheight * 0.08,
+                  width: globalwidth * 0.22,
+                  padding: EdgeInsets.all(globalheight * 0.02),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: list[3] == true
+                        ? list[2] == selected_timeslot
+                            ? const Color.fromARGB(255, 224, 159, 31)
+                            : const Color.fromARGB(255, 28, 107, 164)
+                        : const Color.fromARGB(255, 123, 141, 158),
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Color.fromARGB(255, 190, 202, 218),
+                          spreadRadius: 2),
+                    ],
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('${list[2]}',
+                        style: const TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 255, 255, 255))),
+                  ),
                 ),
               ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(2),
-                child: Column(
-                  children: const [
-                    Icon(Icons.calendar_month,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Calendar', style: TextStyle(color: Color.fromARGB(255, 123, 141, 158))),
-                  ],
+              SizedBox(
+                width: globalwidth * 0.06,
+              ),
+              GestureDetector(
+                onTap: () => list[5] == true
+                    ? changeTimeslot(list[4])
+                    : warning_message(),
+                child: Container(
+                  height: globalheight * 0.08,
+                  width: globalwidth * 0.22,
+                  padding: EdgeInsets.all(globalheight * 0.02),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: list[5] == true
+                        ? list[4] == selected_timeslot
+                            ? const Color.fromARGB(255, 224, 159, 31)
+                            : const Color.fromARGB(255, 28, 107, 164)
+                        : const Color.fromARGB(255, 123, 141, 158),
+                    boxShadow: const [
+                      BoxShadow(
+                          color: Color.fromARGB(255, 190, 202, 218),
+                          spreadRadius: 2),
+                    ],
+                  ),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text('${list[4]}',
+                        style: const TextStyle(
+                            fontSize: 20,
+                            color: Color.fromARGB(255, 255, 255, 255))),
+                  ),
                 ),
               ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(3),
-                child: Column(
-                  children: const [
-                    Icon(Icons.message,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Message'),
-                  ],
-                ),
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(4),
-                child: Column(
-                  children: const [
-                    Icon(Icons.person,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('My Profile'),
-                  ],
-                ),
-              ),
-            ),
-          ]
+            ],
+          ),
         ),
-      ),
-    ),
-  );
+      );
+
+  Widget home(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          width: globalwidth,
+          height: globalheight * 0.07,
+          color: const Color.fromARGB(255, 217, 217, 217),
+          child: DefaultTextStyle(
+            style: const TextStyle(color: Color.fromARGB(255, 123, 141, 158)),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(1),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.home,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Home'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(2),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.calendar_month,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Calendar',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 123, 141, 158))),
+                        ],
+                      ),
+                    ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(3),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.message,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Message'),
+                        ],
+                      ),
+                    ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(4),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.person,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('My Profile'),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]),
+          ),
+        ),
+      );
 }
