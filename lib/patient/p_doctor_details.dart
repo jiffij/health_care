@@ -83,8 +83,6 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
   String title = '';
   double fRating = 0.0;
 
-  
-
   @override
   void initState() {
     super.initState();
@@ -92,20 +90,17 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
   }
 
   void start() async {
-    Map<String, dynamic>? data = await readFromServer('doctor/${doctor_uid.substring(0,28)}');
-    print(doctor_uid);
-    print(data);
+    Map<String, dynamic>? data = await readFromServer('doctor/$doctor_uid');
     var firstname = data?['first name'];
     var lastname = data?['last name'];
     fullname = '$firstname $lastname';
     exp = data?['exp'];
-    profilePic = await loadStorageUrl(doctor_uid);
+    var uid = data?['profilePic'];
+    profilePic = await loadStorageUrl(uid);
     title = data?['title'];
     fRating = calRating(data?['rating']);
     setState(() {
-      print(fullname);
-      print(profilePic);
-      print(fRating);
+      print(data);
     });
   }
 
@@ -137,7 +132,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
         break;
       case 5:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_MakeAppointmentPage()),
+          MaterialPageRoute(builder: (context) => p_MakeAppointmentPage(doctor_uid)),
         );
         break;
       default:

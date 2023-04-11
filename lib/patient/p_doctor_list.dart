@@ -86,7 +86,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       var fRating = calRating(data?['rating']);
       print(data);
       setState(() {
-        doctorlist.insert(0, [fullname, uid, profilePic, title, fRating]);
+        doctorlist.insert(0, [fullname, id, profilePic, title, fRating]);
         //doctorlistsort.insert(0, [fullname, uid, profilePic, title, fRating]);
       });
       doctorlistsort = ratingSort();
