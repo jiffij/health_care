@@ -164,7 +164,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                         };
                         // Handle submit button press
                         var res1 = await writeToServer(
-                            'doctor/$uid/history/$patientUid/$now', data);
+                            'doctor/$uid/$patientUid/$now', data);
                         var res2 = await writeToServer(
                             'patient/$patientUid/history/$now', data);
                         if (res1.statusCode != 200 || res2.statusCode != 200) {
