@@ -44,6 +44,7 @@ dependencies:
   image: ^3.0.2
   image_picker: ^0.8.5+3
   intl: ^0.17.0
+  livekit_client: ^1.2.2
   loading_animation_widget: ^1.2.0+4
   logger: ^1.1.0
   lottie: ^2.2.0

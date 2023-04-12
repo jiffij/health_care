@@ -3,8 +3,12 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  connectivity_plus
   fast_rsa
   flutter_secure_storage_windows
+  flutter_webrtc
+  flutter_window_close
+  livekit_client
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
