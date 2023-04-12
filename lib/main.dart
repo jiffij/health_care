@@ -16,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();// binding with plugin with flutter engine 
   await Firebase.initializeApp();// make sure firebase is init
   runApp(const MyApp()); //MaterialApp(home: MyApp()));
-}
+} 
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

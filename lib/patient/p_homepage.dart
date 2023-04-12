@@ -69,7 +69,7 @@ class _HomePageState extends State<p_HomePage> {
     String uid = getUID();
     Map<String, dynamic>? data = await readFromServer('patient/$uid');
     setState(() {
-      fullname = data?['first name'] + data?['last name'];
+      fullname = data?['first name'] + ' ' + data?['last name'];
       print(fullname);
     });
   }

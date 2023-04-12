@@ -10,6 +10,7 @@ import 'd_myprofile.dart';
 import 'd_myprofile.dart';
 import 'cancer_prediction.dart';
 import '../register.dart';
+import 'd_diagnosis_form.dart';
 
 class d_HomePage extends StatefulWidget {
   const d_HomePage({super.key});
@@ -71,7 +72,7 @@ class _HomePageState extends State<d_HomePage> {
       );
     } else if (index == 3) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const Register()),
+        MaterialPageRoute(builder: (context) => DiagnosticForm('John', '2020/03/12', 'L6S9xfMD3wWnLFGpRaJWDH8ulmt2')),
       );
     } else if (index == 4) {
       Navigator.of(context).push(

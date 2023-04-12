@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -6,6 +8,7 @@ import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 
+import '../helper/firebase_helper.dart';
 import 'p_make_appointment.dart';
 
 void main() {
@@ -23,13 +26,15 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const p_DoctorDetailPage(),
+      //home: const p_DoctorDetailPage('Default'),
     );
   }
 }
 
 class p_DoctorDetailPage extends StatefulWidget {
-  const p_DoctorDetailPage({super.key});
+
+  final String doctor_uid;
+  const p_DoctorDetailPage(this.doctor_uid, {super.key});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -41,12 +46,13 @@ class p_DoctorDetailPage extends StatefulWidget {
   // always marked "final".
 
   @override
-
-  State<p_DoctorDetailPage> createState() => _DoctorDetailPageState();
+  State<p_DoctorDetailPage> createState() => _DoctorDetailPageState(doctor_uid);
 }
 
 class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
-  
+  String doctor_uid;
+  _DoctorDetailPageState(this.doctor_uid);
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -69,6 +75,33 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
           ],
         ),
     );
+  }
+
+  String fullname = '';
+  String exp = '';
+  String profilePic = '';
+  String title = '';
+  double fRating = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    Map<String, dynamic>? data = await readFromServer('doctor/$doctor_uid');
+    var firstname = data?['first name'];
+    var lastname = data?['last name'];
+    fullname = '$firstname $lastname';
+    exp = data?['exp'];
+    var uid = data?['profilePic'];
+    profilePic = await loadStorageUrl(uid);
+    title = data?['title'];
+    fRating = calRating(data?['rating']);
+    setState(() {
+      print(data);
+    });
   }
 
   // All navigate direction calling method
@@ -99,7 +132,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
         break;
       case 5:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_MakeAppointmentPage()),
+          MaterialPageRoute(builder: (context) => p_MakeAppointmentPage(doctor_uid)),
         );
         break;
       default:
@@ -183,8 +216,8 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
                   height: globalheight*0.1,
                   decoration : BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
+                    image: DecorationImage(
+                      image: NetworkImage(profilePic),
                       fit: BoxFit.cover,
                     ),
                   ),    
@@ -195,18 +228,18 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
                   children: [
                     Container (
                       margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
-                        alignment: Alignment.centerLeft,
+                      child: FittedBox (
+                        //alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
-                        child: Text('Doctor Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        child: Text('Doctor Name: $fullname', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     Container (
                       margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
+                      child: FittedBox (
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
-                        child: Text('Doctor Title', style: TextStyle(fontSize: 12)),
+                        child: Text('Title: $title', style: const TextStyle(fontSize: 12)),
                       ),
                     ),
                   ],
@@ -258,9 +291,9 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
               child: FittedBox(
                 fit: BoxFit.scaleDown,        
                 child: Column(
-                  children: const [
-                    Text('Exp.', style: TextStyle(fontSize: 12)),
-                    Text('Year', style: TextStyle(fontSize: 10)),
+                  children: [
+                    const Text('Exp.', style: TextStyle(fontSize: 12)),
+                    Text('$exp', style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -289,7 +322,7 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                         const Text('Rating', style: TextStyle(fontSize: 12)),
                       ],
                     ),
-                    const Text('rate/5.0', style: TextStyle(fontSize: 12)),
+                    Text('$fRating/5.0', style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
