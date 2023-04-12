@@ -15,7 +15,7 @@ class SearchBar extends StatelessWidget {
             right: 0,
             child: Container(
               alignment: Alignment.center,
-              margin: EdgeInsets.symmetric(horizontal: defaultHorPadding),
+              //margin: EdgeInsets.symmetric(horizontal: defaultHorPadding),
               padding: EdgeInsets.symmetric(horizontal: defaultHorPadding),
               height: 54,
               decoration: BoxDecoration(

@@ -109,7 +109,7 @@ class _CalendarPageState extends State<CalendarPage> {
           children: [
             //the calendar
             Container(
-              margin: EdgeInsets.symmetric(horizontal: defaultHorPadding, vertical: defaultVerPadding),
+              margin: EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5, vertical: defaultVerPadding),
               padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/3, vertical: defaultVerPadding/3),
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.6),
@@ -170,7 +170,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     itemBuilder: (context, index) {
                       return Container(
                         margin: const EdgeInsets.symmetric(
-                          horizontal: 12.0,
+                          horizontal: 4.0,
                           vertical: 4.0,
                         ),
                         decoration: BoxDecoration(
@@ -187,7 +187,7 @@ class _CalendarPageState extends State<CalendarPage> {
                         ),
                       );
                     },
-                  ) : Expanded(child: Container(margin: EdgeInsets.only(top: defaultVerPadding), child: Text('There is no appointment on this day.', textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 15),))),
+                  ) : Expanded(child: Container(margin: EdgeInsets.only(top: defaultVerPadding), child: Text('There is no appointment.', textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 15),))),
                 );
               },
             ),
