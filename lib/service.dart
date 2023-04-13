@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/doctor_search.dart';
+import 'package:simple_login/index.dart';
+import 'package:simple_login/search.dart';
 
 import 'color.dart';
 
@@ -43,7 +45,7 @@ class Services extends StatelessWidget {
                 splashColor: goodColor.withOpacity(0.1),
                 child: Ink(
                   width: size.width * 0.87,
-                  height: size.height * 0.2,
+                  height: size.height * 0.18,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Colors.white,

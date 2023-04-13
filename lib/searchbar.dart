@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 
 import 'color.dart';
 
@@ -43,7 +44,7 @@ class SearchBar extends StatelessWidget {
                         focusedBorder: InputBorder.none,
                         // surffix isn't working properly  with SVG
                         // thats why we use row
-                        // suffixIcon: SvgPicture.asset("assets/icons/search.svg"),
+                        suffixIcon: Icon(Icons.search),
                       ),
                     ),
                   ),

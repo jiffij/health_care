@@ -1,24 +1,24 @@
 import 'dart:math';
 
+import 'package:badges/badges.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:simple_login/searchbar.dart';
-
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'color.dart';
+
 import 'doctorCard.dart';
 
-class DoctorSearch extends StatefulWidget {
-  const DoctorSearch({
-    Key? key
-  }) : super(key: key);
+class IndexScreen extends StatefulWidget {
+  const IndexScreen({Key? key}) : super(key: key);
 
   @override
-  State<DoctorSearch> createState() => _DoctorSearchState();
+  State<IndexScreen> createState() => _IndexScreenState();
 }
 
-class _DoctorSearchState extends State<DoctorSearch> {
-
+class _IndexScreenState extends State<IndexScreen> {
+  Faker faker = Faker();
   final PageController _pageController = PageController(viewportFraction: 0.9);
   double _price = 0;
   List<String> priceRange = [
@@ -48,64 +48,34 @@ class _DoctorSearchState extends State<DoctorSearch> {
   int selectedExp = 0;
   String selectedGender = "None";
 
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
-      onTap: () {
-        FocusScopeNode currentFocus = FocusScope.of(context);
-        if (!currentFocus.hasPrimaryFocus) {
-          currentFocus.unfocus();
-        }
-      },
-      child: Scaffold(
-        backgroundColor: bgColor,
-        appBar: AppBar(
-          title: Text('Search For Doctor'),
-          elevation: 0,
-          toolbarHeight: 80,
-          backgroundColor: Colors.white,
-          titleTextStyle: appbar_title,
-          centerTitle: true,
-          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
-          leading: Padding(
-            padding: EdgeInsets.symmetric(vertical: defaultVerPadding/2, horizontal: defaultHorPadding/1.5),
-            child: ElevatedButton(
-            style: ButtonStyle(
-              elevation: MaterialStatePropertyAll(0),
-              side: MaterialStatePropertyAll(BorderSide(
-                  width: 1,
-                  color: themeColor,
-                )),
-              backgroundColor: MaterialStatePropertyAll(Colors.white),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))))
-            ),
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Icon(Icons.arrow_back, size: 23,color: themeColor,)
-            )),
-          leadingWidth: 95,
-        ),
-        body: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(left: defaultHorPadding/1.5, right: defaultHorPadding/1.5, top: defaultVerPadding),
-               child: Column(
-                children: [ TextFormField(
+    return Scaffold(body: SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(
+            height: 35,
+          ),
+          
+          SizedBox(
+            width: size.width * 0.9,
+            child: TextFormField(
               style: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black)),
-              cursorColor: themeColor,
-              cursorWidth: 1,
+              cursorColor: greenMed,
               enableSuggestions: true,
               textAlign: TextAlign.start,
               decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 25, horizontal: defaultHorPadding),
                   filled: true,
                   alignLabelWithHint: true,
                   fillColor: Colors.white,
-                  hintStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Color.fromARGB(255, 148, 148, 148), fontSize: 15)),
-                  // prefixIcon: Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5),
-                  //   child: Icon(Icons.search, color: themeColor,size: 30,),
-                  // ),
+                  hintStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Icon(Icons.search, color: themeColor,),
+                  ),
                   suffixIcon: GestureDetector(
                     onTap: () {
                       showModalBottomSheet(
@@ -571,12 +541,14 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                 ),
                               ));
                     },
-                    child: Padding(padding: EdgeInsets.only(right: defaultHorPadding), child: Icon(Icons.tune, color: themeColor, size: 25,)),
+                    child: Icon(Icons.tune, color: themeColor),
                   ),
-                  hintText: "Enter doctor's name",
-                  //prefixIconConstraints:
-                      //const BoxConstraints(maxHeight: 17, maxWidth: 50),
+                  hintText: "Search for doctor",
+                  prefixIconConstraints:
+                      const BoxConstraints(maxHeight: 17, maxWidth: 50),
                   isDense: true,
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                   prefixStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor)),
                   enabledBorder: const OutlineInputBorder(
                                             borderSide: BorderSide(color: themeColor),
@@ -587,21 +559,16 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                             borderRadius:
                                                 BorderRadius.all(Radius.circular(30))),),
             ),
-            SizedBox(height: 20,),
-                        Expanded(
-                          child: ListView.builder(
-                            physics: BouncingScrollPhysics(),
-                            shrinkWrap: false,
-                            primary: true,
-                            itemCount: min(5, 12),
-                            itemBuilder: (context, index) => DoctorCard(faker: faker),
-                          )
-                        )
-                ],
-              )
+          ),
+          
+          ListView.builder(
+            shrinkWrap: true,
+            primary: false,
+            itemCount: min(10, 12),
+            itemBuilder: (context, index) => DoctorCard(faker: faker),
           )
-        )
-      )
-    );
+        ],
+      ),
+    ));
   }
 }
