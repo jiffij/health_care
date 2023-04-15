@@ -13,6 +13,7 @@ import 'p_doctor_list.dart';
 // import 'cancer_prediction.dart';
 import 'p_medical_report_list.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
+import '../news/news.dart';
 
 class p_HomePage extends StatefulWidget {
   const p_HomePage({super.key});
@@ -104,7 +105,7 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 6:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_HomePage()),
+          MaterialPageRoute(builder: (context) => NewsPage()),
         );
       break;
       case 7:
