@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/navigator.dart';
 import 'package:simple_login/welcome.dart';
+import 'doctor_info.dart';
 import 'old/login_screen.dart';
 // import 'home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
       ),
       home: //const welcome(),
             const BottomNav(),
+            //const DoctorDetailScreen(),
     );
   }
 }

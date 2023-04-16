@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/doctor_search.dart';
-import 'package:simple_login/index.dart';
-import 'package:simple_login/search.dart';
 
 import 'color.dart';
 

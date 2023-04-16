@@ -3,9 +3,11 @@ import 'dart:math';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/doctor.dart';
 import 'package:simple_login/searchbar.dart';
 
 import 'color.dart';
+import 'constant.dart';
 import 'doctorCard.dart';
 
 class DoctorSearch extends StatefulWidget {
@@ -20,34 +22,11 @@ class DoctorSearch extends StatefulWidget {
 class _DoctorSearchState extends State<DoctorSearch> {
 
   final PageController _pageController = PageController(viewportFraction: 0.9);
-  double _price = 0;
-  List<String> priceRange = [
-    "None", 
-    "below \$150",
-    "\$150 - \$300",
-    "\$301 - \$500",
-    "\$501 - \$700",
-    "above \$700",
-  ];
-
-  List<String> categoryRange = [
-    "None", 
-    
-    "Psychiatrist",
-    "Pediatrician",
-    "Gynecologist",
-    "Dermatologist",
-    "Otolaryngologist",
-    
-    "Internal Medicine",
-  ];
+ 
   int selectedPrice = 0;
-  int selectedCategory = 0;
-  double exp = 0;
-  List<String> expRange = ["0+", "2+", "5+", "10+", "15+", "20+"];
+  int selectedSpecialty = 0;
   int selectedExp = 0;
   String selectedGender = "None";
-
 
   @override
   Widget build(BuildContext context) {
@@ -62,10 +41,10 @@ class _DoctorSearchState extends State<DoctorSearch> {
       child: Scaffold(
         backgroundColor: bgColor,
         appBar: AppBar(
-          title: Text('Search For Doctor'),
+          title: Text('Doctor List'),
           elevation: 0,
           toolbarHeight: 80,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           titleTextStyle: appbar_title,
           centerTitle: true,
           //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
@@ -73,13 +52,15 @@ class _DoctorSearchState extends State<DoctorSearch> {
             padding: EdgeInsets.symmetric(vertical: defaultVerPadding/2, horizontal: defaultHorPadding/1.5),
             child: ElevatedButton(
             style: ButtonStyle(
-              elevation: MaterialStatePropertyAll(0),
+              //maximumSize: MaterialStatePropertyAll(Size(5, 5)),
+              elevation: MaterialStatePropertyAll(1),
+              shadowColor: MaterialStatePropertyAll(themeColor),
               side: MaterialStatePropertyAll(BorderSide(
                   width: 1,
                   color: themeColor,
                 )),
               backgroundColor: MaterialStatePropertyAll(Colors.white),
-              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(30))))
+              shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))))
             ),
               onPressed: () => Navigator.of(context).pop(true),
               child: Icon(Icons.arrow_back, size: 23,color: themeColor,)
@@ -87,10 +68,12 @@ class _DoctorSearchState extends State<DoctorSearch> {
           leadingWidth: 95,
         ),
         body: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(left: defaultHorPadding/1.5, right: defaultHorPadding/1.5, top: defaultVerPadding),
+            //child: Padding(
+              //padding: EdgeInsets.only(left: defaultHorPadding/2, right: defaultHorPadding/2, top: defaultVerPadding),
                child: Column(
-                children: [ TextFormField(
+                children: [ Padding(
+                  padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5, vertical: defaultVerPadding/1.5),
+                  child: TextFormField(
               style: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black)),
               cursorColor: themeColor,
               cursorWidth: 1,
@@ -148,7 +131,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                       Row(
                                         children: [
                                           Text(
-                                            "Categories",
+                                            "Specialty",
                                             style: GoogleFonts.comfortaa(textStyle: TextStyle(
                                                 fontSize: 16,
                                                 color: greenDark,
@@ -167,13 +150,13 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                           crossAxisAlignment:
                                               WrapCrossAlignment.start,
                                           children: List.generate(
-                                              categoryRange.length,
+                                              specialtyRange.length,
                                               (index) => IntrinsicWidth(
                                                     child: GestureDetector(
                                                       onTap: () {
                                                         setState(
                                                           () {
-                                                            selectedCategory =
+                                                            selectedSpecialty =
                                                                 index;
                                                           },
                                                         );
@@ -186,7 +169,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                                 horizontal: 16),
                                                         decoration: BoxDecoration(
                                                             color: index ==
-                                                                    selectedCategory
+                                                                    selectedSpecialty
                                                                 ? themeColor
                                                                 : bgColor,
                                                             borderRadius:
@@ -196,10 +179,10 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                         alignment:
                                                             Alignment.center,
                                                         child: Text(
-                                                          categoryRange[index],
+                                                          specialtyRange[index],
                                                           style: GoogleFonts.comfortaa(textStyle: TextStyle(
                                                               color: index ==
-                                                                      selectedCategory
+                                                                      selectedSpecialty
                                                                   ? Colors.white
                                                                   : themeColor,
                                                               fontWeight:
@@ -405,7 +388,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                     height: 30,
                                                     padding: const EdgeInsets
                                                             .symmetric(
-                                                        horizontal: 32),
+                                                        horizontal: 16),
                                                     decoration: BoxDecoration(
                                                         color: "None" ==
                                                                 selectedGender
@@ -440,7 +423,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                     height: 30,
                                                     padding: const EdgeInsets
                                                             .symmetric(
-                                                        horizontal: 32),
+                                                        horizontal: 20),
                                                     decoration: BoxDecoration(
                                                         color: "Male" ==
                                                                 selectedGender
@@ -475,7 +458,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                     height: 30,
                                                     padding: const EdgeInsets
                                                             .symmetric(
-                                                        horizontal: 32),
+                                                        horizontal: 20),
                                                     decoration: BoxDecoration(
                                                         color: "Female" ==
                                                                 selectedGender
@@ -538,7 +521,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                             setState(() {
                                               selectedPrice = 0;
                                               selectedExp = 0;
-                                              selectedCategory = 0;
+                                              selectedSpecialty = 0;
                                               selectedGender = "None";
                                             });
                                           },
@@ -555,8 +538,8 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                       Colors.white),
                                               overlayColor:
                                                   MaterialStateProperty.all(
-                                                      greenLight.withOpacity(
-                                                          0.2)),
+                                                      themeColor.withOpacity(
+                                                          0.1)),
                                               shape: MaterialStateProperty.all(
                                                   RoundedRectangleBorder(
                                                       borderRadius:
@@ -581,25 +564,47 @@ class _DoctorSearchState extends State<DoctorSearch> {
                   enabledBorder: const OutlineInputBorder(
                                             borderSide: BorderSide(color: themeColor),
                                             borderRadius:
-                                                BorderRadius.all(Radius.circular(30))),
+                                                BorderRadius.all(Radius.circular(20))),
                   focusedBorder: const OutlineInputBorder(
                                             borderSide: BorderSide(color: themeColor),
                                             borderRadius:
-                                                BorderRadius.all(Radius.circular(30))),),
-            ),
+                                                BorderRadius.all(Radius.circular(20))),),
+            )),
             SizedBox(height: 20,),
-                        Expanded(
-                          child: ListView.builder(
-                            physics: BouncingScrollPhysics(),
-                            shrinkWrap: false,
-                            primary: true,
-                            itemCount: min(5, 12),
-                            itemBuilder: (context, index) => DoctorCard(faker: faker),
-                          )
-                        )
+            Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/2),
+              child: ShaderMask(
+              shaderCallback: (Rect rect) {
+                return LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color.fromARGB(255, 183, 176, 184),
+                    Colors.transparent,
+                    Colors.transparent,
+                    Color.fromARGB(255, 208, 191, 211),
+                  ],
+                  stops: [0.0, 0.04, 0.93, 1.0],
+                ).createShader(rect);
+              },
+              blendMode: BlendMode.dstOut,
+              child: ClipRect(
+                child: ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
+                  primary: true,
+                  itemCount: topDoctors.length,
+                  itemBuilder: (context, index) => DoctorCard(doctor: topDoctors[index]),
+                ),
+              ),
+            )),
+          ),
+                        
                 ],
               )
-          )
+          //)
         )
       )
     );

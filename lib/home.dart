@@ -41,7 +41,8 @@ class _HomeState extends State<Home> {
                               TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: true,),
                               //const Upcoming(),
                               Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding/1.2), child: SizedBox(
-                                height: 150,
+                                height: 140,
+                                //width: size.width*0.9,
                                 child: PageView.builder(
                                   controller: _pageController,
                                   padEnds: true,

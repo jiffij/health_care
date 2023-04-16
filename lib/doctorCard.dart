@@ -1,40 +1,63 @@
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/constant.dart';
+import 'doctor.dart';
 
 import 'color.dart';
+import 'doctor_info.dart';
 
 class DoctorCard extends StatelessWidget {
   const DoctorCard({
     Key? key,
-    required this.faker,
+    required Doctor this.doctor,
   }) : super(key: key);
 
-  final Faker faker;
+  final Doctor doctor;
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: defaultVerPadding/3),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-            color: Colors.white.withOpacity(0.9),
-            boxShadow: [
-                    BoxShadow(
-                      offset: const Offset(0, 10),
-                      blurRadius: 10,
-                      color: goodColor.withOpacity(0.13),
-                    ),
-                  ],
-        ),
-        child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(30),
+      padding: EdgeInsets.symmetric(vertical: defaultVerPadding/4, horizontal: 0),
+      // child: DecoratedBox(
+      //   decoration: BoxDecoration(
+      //     borderRadius: BorderRadius.circular(30),
+      //       color: Colors.white.withOpacity(0.9),
+      //       boxShadow: [
+      //               BoxShadow(
+      //                 offset: const Offset(0, 8),
+      //                 blurRadius: 5,
+      //                 color: goodColor.withOpacity(0.13),
+      //               ),
+      //             ],
+      //   ),
+        child: Material(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+          elevation: 4,
+          shadowColor: bgColor,
+          color: Colors.transparent,
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(_createRoute(DoctorDetailScreen(doctor: doctor)));
+        },
+        borderRadius: BorderRadius.circular(20),
         splashFactory: InkRipple.splashFactory,
-        splashColor: lighttheme.withOpacity(0.8),
+        splashColor: lighttheme.withOpacity(0.1),
         child: Ink(
+          decoration: BoxDecoration(
+            //border: Border.all(color: themeColor),
+          borderRadius: BorderRadius.circular(20),
+            color: Colors.white,
+            // boxShadow: [
+            //         BoxShadow(
+            //           offset: const Offset(0, 8),
+            //           blurRadius: 5,
+            //           color: goodColor.withOpacity(0.13),
+            //         ),
+            //       ],
+        ),
           padding: const EdgeInsets.symmetric(
             horizontal: defaultHorPadding/2,
             vertical: defaultHorPadding/2,
@@ -44,13 +67,14 @@ class DoctorCard extends StatelessWidget {
           child: Row(
         children: [
           Container(
-            width: size.height* 0.1,
+            width: size.width* 0.26,
             decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(30),
+              color: lighttheme.withOpacity(0.3),
+              //border: Border.all(color: themeColor),
+              borderRadius: BorderRadius.circular(50),
               image: DecorationImage(
                 fit: BoxFit.cover,
-                image: NetworkImage("https://hips.hearstapps.com/hmg-prod/images/portrait-of-a-happy-young-doctor-in-his-clinic-royalty-free-image-1661432441.jpg?crop=0.66698xw:1xh;center,top&resize=1200:*"))
+                image: AssetImage('assets/doctor_images/${doctor.doctorPicture}'))
             ),
             ),
           const SizedBox(
@@ -62,7 +86,7 @@ class DoctorCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text(
-                "Doctor's Name",
+                doctor.doctorName,
                 style: GoogleFonts.comfortaa(textStyle: TextStyle(fontSize: 17, color: themeColor, fontWeight: FontWeight.w500)),
               ),
               Flexible(
@@ -70,7 +94,7 @@ class DoctorCard extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "Category",
+                    doctor.doctorSpecialty,
                     style: GoogleFonts.comfortaa(textStyle: TextStyle(
                         fontSize: 14,
                         color: themeColor)),
@@ -83,7 +107,7 @@ class DoctorCard extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "\$200 ~ \$300",
+                    doctor.doctorPrice,
                     style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xff91919F),
@@ -98,7 +122,26 @@ class DoctorCard extends StatelessWidget {
       ),
         ),
       ))
+      //)
       
     );
   }
+}
+
+Route _createRoute(Widget destinition) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => destinition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }

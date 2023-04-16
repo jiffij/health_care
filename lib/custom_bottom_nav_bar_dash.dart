@@ -124,7 +124,7 @@ class _CustomBottomNavBarDashState extends State<CustomBottomNavBarDash> {
 
   Widget selectedIndicator() {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 250),
+      duration: Duration(milliseconds: 500),
       width: 40,
       height: 4,
       margin: const EdgeInsets.only(top: 3),
@@ -139,7 +139,7 @@ class _CustomBottomNavBarDashState extends State<CustomBottomNavBarDash> {
 
   Widget unselectedIndicator() {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 250),
+      duration: Duration(milliseconds: 500),
       width: 40,
       height: 0,
       margin: const EdgeInsets.only(top: 7),

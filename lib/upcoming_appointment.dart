@@ -67,7 +67,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
           height: size.height * 0.15,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            color: lighttheme.withOpacity(0.9),
+            color: lighttheme,
             boxShadow: [
                     BoxShadow(
                       offset: const Offset(0, 10),
@@ -88,7 +88,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     Container(
                       width: parentWidth*0.35,
                       height: parentHeight,
-                      margin: EdgeInsets.only(right: parentWidth*0.03),
+                      margin: EdgeInsets.only(left: parentWidth*0.05),
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -103,7 +103,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(30)),
                       ),
-                      child: Padding(padding: EdgeInsets.symmetric(horizontal: parentWidth*0.1), child: Column(
+                      child: Padding(padding: EdgeInsets.symmetric(horizontal: parentWidth*0, vertical: parentHeight*0.05), child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text('08:30 AM', style: card, textAlign: TextAlign.left,),
