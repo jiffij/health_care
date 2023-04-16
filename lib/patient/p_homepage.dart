@@ -65,8 +65,10 @@ class _HomePageState extends State<p_HomePage> {
 
   String fullname = '';
   late List<Article> articles;
-  int index = 0;
-  List<String> newsUrl = ['', '', ''];
+  // int index = 0;
+  List<String> newsUrl = ['https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'];
 
   @override
   void initState() {
@@ -85,11 +87,11 @@ class _HomePageState extends State<p_HomePage> {
     print('start');
     setState(() {
       for (int i = 0; i < 3; i++) {
-      newsUrl[i] = articles[i].urlToImage;
-      print(articles[i].urlToImage);
-    }
+        newsUrl[i] = articles[i].urlToImage;
+        print(articles[i].urlToImage);
+      }
     });
-    
+
     print('ends');
   }
 
@@ -258,46 +260,55 @@ class _HomePageState extends State<p_HomePage> {
   // TODO: Change to another news
   Widget news(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
-        child: SwipeWidget(
-          angle: 0,
-          child: Container(
-            width: globalwidth * 0.8,
-            height: globalheight * 0.15,
-            // padding: const EdgeInsets.all(10),
-            // decoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(10),
-            //   color: const Color.fromARGB(255, 220, 237, 249),
-            //   boxShadow: const [
-            //     BoxShadow(
-            //       color: Color.fromARGB(255, 0, 0, 0),
-            //       blurRadius: 0.5,
-            //       offset: Offset(0.5, 0.5),
-            //     ),
-            //   ],
-            // ),
-            child: FittedBox(
-              fit: BoxFit.fill,
-              // child: InkWell(
-              //   onTap: () {
-              //     Navigator.push(
-              //         context,
-              //         MaterialPageRoute(
-              //             builder: (context) => ArticlePage(
-              //                   article: articles[index],
-              //                 )));
-              //   },
-                
+        // child: SwipeWidget(
+        //   angle: 0,
+
+        child: Container(
+          width: globalwidth * 0.8,
+          height: globalheight * 0.15,
+          // padding: const EdgeInsets.all(10),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(10),
+          //   color: const Color.fromARGB(255, 220, 237, 249),
+          //   boxShadow: const [
+          //     BoxShadow(
+          //       color: Color.fromARGB(255, 0, 0, 0),
+          //       blurRadius: 0.5,
+          //       offset: Offset(0.5, 0.5),
+          //     ),
+          //   ],
+          // ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: globalwidth * 0.8,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ArticlePage(
+                                    article: articles[index],
+                                  )));
+                    },
                     child: Image.network(
                       newsUrl[index],
                       fit: BoxFit.fill,
                     ),
-                  
-              // ),
-            ),
+                  ),
+                ),
+              );
+            },
           ),
-          // Change to another page
-          onSwipeRight: () => news(globalwidth, globalheight),
         ),
+        // Change to another page
+        //   onSwipeRight: () => news(globalwidth, globalheight),
+        // ),
       );
 
   Widget services(double globalwidth, double globalheight) =>
