@@ -5,6 +5,9 @@ import 'package:simple_login/helper/firebase_helper.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
+import '../news/model/article_model.dart';
+import '../news/pages/articles_details_page.dart';
+import '../news/services/api_service.dart';
 import 'd_calendar.dart';
 import 'd_myprofile.dart';
 import 'd_myprofile.dart';
@@ -29,6 +32,15 @@ class d_HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<d_HomePage> {
+  ApiService client = ApiService();
+
+  String fullname = '';
+  late List<Article> articles;
+  // int index = 0;
+  List<String> newsUrl = ['https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'];
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -57,6 +69,26 @@ class _HomePageState extends State<d_HomePage> {
     super.initState();
     var uid = getUID();
     // var res = awaitreadFromServer('');
+    start();
+  }
+
+  void start() async {
+    // String uid = getUID();
+    // Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    // setState(() {
+    //   fullname = data?['first name'] + ' ' + data?['last name'];
+    //   print(fullname);
+    // });
+    articles = await client.getArticle();
+    print('start');
+    setState(() {
+      for (int i = 0; i < 3; i++) {
+        newsUrl[i] = articles[i].urlToImage;
+        print(articles[i].urlToImage);
+      }
+    });
+
+    print('ends');
   }
 
   // All navigate direction calling method
@@ -72,7 +104,9 @@ class _HomePageState extends State<d_HomePage> {
       );
     } else if (index == 3) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => DiagnosticForm()),
+        MaterialPageRoute(
+            builder: (context) => DiagnosticForm(
+                'John', '2020/03/12', 'L6S9xfMD3wWnLFGpRaJWDH8ulmt2')),
       );
     } else if (index == 4) {
       Navigator.of(context).push(
@@ -158,31 +192,55 @@ class _HomePageState extends State<d_HomePage> {
   // Todo: Change to another news
   Widget news(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
-        child: SwipeWidget(
-          angle: 0,
-          child: Container(
-            width: globalwidth * 0.8,
-            height: globalheight * 0.15,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 220, 237, 249),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  blurRadius: 0.5,
-                  offset: Offset(0.5, 0.5),
+        // child: SwipeWidget(
+        //   angle: 0,
+
+        child: Container(
+          width: globalwidth * 0.8,
+          height: globalheight * 0.15,
+          // padding: const EdgeInsets.all(10),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(10),
+          //   color: const Color.fromARGB(255, 220, 237, 249),
+          //   boxShadow: const [
+          //     BoxShadow(
+          //       color: Color.fromARGB(255, 0, 0, 0),
+          //       blurRadius: 0.5,
+          //       offset: Offset(0.5, 0.5),
+          //     ),
+          //   ],
+          // ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: globalwidth * 0.8,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ArticlePage(
+                                    article: articles[index],
+                                  )));
+                    },
+                    child: Image.network(
+                      newsUrl[index],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            child: const FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text('This is the place for news'),
-            ),
+              );
+            },
           ),
-          // Change to another page
-          onSwipeRight: () => news(globalwidth, globalheight),
         ),
+        // Change to another page
+        //   onSwipeRight: () => news(globalwidth, globalheight),
+        // ),
       );
 
   Widget services(double globalwidth, double globalheight) =>

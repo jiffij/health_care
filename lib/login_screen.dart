@@ -15,6 +15,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'helper/firebase_helper.dart';
 import 'helper/loading_screen.dart';
 import 'helper/message_page.dart';
+import 'forget_password.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -37,7 +38,8 @@ class _loginScreenState extends State<loginScreen> {
       FirebaseFirestore.instance.collection('users');
 
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text.trim());
+    await _storage.write(
+        key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
   }
 
@@ -59,7 +61,8 @@ class _loginScreenState extends State<loginScreen> {
     dynamic credential;
     try {
       credential = await auth.signInWithEmailAndPassword(
-          email: _usernameController.text.trim(), password: _passwordController.text);
+          email: _usernameController.text.trim(),
+          password: _passwordController.text);
       print(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -179,7 +182,29 @@ class _loginScreenState extends State<loginScreen> {
                           _passwordController.text != '' &&
                           await _firestoreLogin()) {
                         if (!checkEmailAuth()) {
-                          await auth.currentUser!.sendEmailVerification();
+                          auth
+                              .checkActionCode(auth.currentUser!.email!)
+                              .then((ActionCodeInfo info) async {
+                            if (info.operation ==
+                                ActionCodeInfoOperation.verifyEmail) {
+                              // The email verification link is still valid
+                              // Apply the action by calling the applyActionCode method
+                              auth
+                                  .applyActionCode(auth.currentUser!.email!)
+                                  .then((value) {
+                                // Email verified successfully
+                              }).catchError((error) {
+                                // Handle any errors that occur during the applyActionCode call
+                              });
+                            } else {
+                              // The link has expired or is invalid
+                              // Display an error message or take appropriate action
+                              await auth.currentUser!.sendEmailVerification();
+                            }
+                          }).catchError((error) {
+                            // Handle any errors that occur during the checkActionCode call
+                          });
+
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -259,15 +284,7 @@ class _loginScreenState extends State<loginScreen> {
                       }).catchError((e) => print(e));
                     },
                   ),
-                  // ElevatedButton(
-                  //   child: Text('Google Logout'),
-                  //   style: ButtonStyle(
-                  //       backgroundColor:
-                  //           MaterialStateProperty.all(Colors.amber)),
-                  //   onPressed: () async {
-                  //     await signOut();
-                  //   },
-                  // ),
+                   SizedBox(height: 10.0),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
@@ -277,6 +294,21 @@ class _loginScreenState extends State<loginScreen> {
                       TextSpan(text: 'Don\'t have an account ', children: [
                         TextSpan(
                           text: 'Signup',
+                          style: TextStyle(color: Color(0xffEE7B23)),
+                        ),
+                      ]),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+                    },
+                    child: Text.rich(
+                      TextSpan(text: 'Forget password ', children: [
+                        TextSpan(
+                          text: 'Reset Password',
                           style: TextStyle(color: Color(0xffEE7B23)),
                         ),
                       ]),
@@ -313,7 +345,8 @@ class _SignupState extends State<Signup> {
 
   //local storing password
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text.trim());
+    await _storage.write(
+        key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
     print('signed up');
   }

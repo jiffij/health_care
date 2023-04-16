@@ -4,6 +4,8 @@ import 'package:simple_login/patient/p_medical_allergy.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
+import '../news/components/customHorizontalListTile.dart';
+import '../news/pages/articles_details_page.dart';
 import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
@@ -11,6 +13,9 @@ import 'p_doctor_list.dart';
 
 import 'p_medical_report_list.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
+import '../news/news.dart';
+import '../news/services/api_service.dart';
+import '../news/model/article_model.dart';
 
 class p_HomePage extends StatefulWidget {
   const p_HomePage({super.key});
@@ -29,6 +34,7 @@ class p_HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<p_HomePage> {
+  ApiService client = ApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +51,7 @@ class _HomePageState extends State<p_HomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          heading(width, height),
+          heading(width, height, context),
           services(width, height),
           meetadoctor(width, height),
           upcomingappointmentlist(width, height),
@@ -58,6 +64,11 @@ class _HomePageState extends State<p_HomePage> {
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
+  late List<Article> articles;
+  // int index = 0;
+  List<String> newsUrl = ['https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'];
 
   @override
   void initState() {
@@ -95,6 +106,16 @@ class _HomePageState extends State<p_HomePage> {
       appointments = appointments.reversed.toList();
     }
     setState(() {});
+    articles = await client.getArticle();
+    print('start');
+    setState(() {
+      for (int i = 0; i < 3; i++) {
+        newsUrl[i] = articles[i].urlToImage;
+        print(articles[i].urlToImage);
+      }
+    });
+
+    print('ends');
   }
 
   // All navigate direction calling method
@@ -127,9 +148,9 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 6:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_HomePage()),
+          MaterialPageRoute(builder: (context) => NewsPage()),
         );
-      break;
+        break;
       case 7:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_MedicalAllergyPage()),
@@ -137,13 +158,14 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 8:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_MedicalReportListPage()),
+          MaterialPageRoute(
+              builder: (context) => const p_MedicalReportListPage()),
         );
         break;
-    default:
+      default:
     }
     setState(() {});
-  }  
+  }
 
   String getCurrentDate() {
     var date = DateTime.now();
@@ -164,7 +186,8 @@ class _HomePageState extends State<p_HomePage> {
     }
   }
 
-  Widget heading(double globalwidth, double globalheight) =>
+  Widget heading(
+          double globalwidth, double globalheight, BuildContext context) =>
       DefaultTextStyle.merge(
         child: Stack(
           children: [
@@ -185,14 +208,14 @@ class _HomePageState extends State<p_HomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(getCurrentDate(),
-                          style: const TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.bold)),
+                            style: const TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold)),
                         Text(greetingMessage(),
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
                         Text(fullname,
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
                       ]),
                 ),
               ),
@@ -213,38 +236,102 @@ class _HomePageState extends State<p_HomePage> {
                 ],
               ),
             ),
+            // newsList(context),
           ],
         ),
       );
 
-  // Todo: Change to another news
+  // Widget newsList(
+  //         BuildContext context, double globalwidth, double globalheight) =>
+  //     ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: 3,
+  //       itemBuilder: (context, index) {
+  //         //let's check if we got a response or not
+  //         if (newsUrl.isNotEmpty) {
+  //           //Now let's make a list of articles
+
+  //           return InkWell(
+  //             onTap: () {
+  //               Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                       builder: (context) => ArticlePage(
+  //                             article: articles[index],
+  //                           )));
+  //             },
+  //             child: Container(
+  //               height: globalheight * 0.8,
+  //               width: globalwidth * 0.15,
+  //               decoration: BoxDecoration(
+  //                 //let's add the height
+
+  //                 image: DecorationImage(
+  //                     image: NetworkImage(articles[index].urlToImage),
+  //                     fit: BoxFit.cover),
+  //                 borderRadius: BorderRadius.circular(12.0),
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //         return Center(
+  //           child: CircularProgressIndicator(),
+  //         );
+  //       },
+  //     );
+
+  // TODO: Change to another news
   Widget news(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
-        child: SwipeWidget(
-          angle: 0,
-          child: Container(
-            width: globalwidth * 0.8,
-            height: globalheight * 0.15,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 220, 237, 249),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  blurRadius: 0.5,
-                  offset: Offset(0.5, 0.5),
+        // child: SwipeWidget(
+        //   angle: 0,
+
+        child: Container(
+          width: globalwidth * 0.8,
+          height: globalheight * 0.15,
+          // padding: const EdgeInsets.all(10),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(10),
+          //   color: const Color.fromARGB(255, 220, 237, 249),
+          //   boxShadow: const [
+          //     BoxShadow(
+          //       color: Color.fromARGB(255, 0, 0, 0),
+          //       blurRadius: 0.5,
+          //       offset: Offset(0.5, 0.5),
+          //     ),
+          //   ],
+          // ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: globalwidth * 0.8,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ArticlePage(
+                                    article: articles[index],
+                                  )));
+                    },
+                    child: Image.network(
+                      newsUrl[index],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            child: const FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text('This is the place for news'),
-            ),
+              );
+            },
           ),
-          // Change to another page
-          onSwipeRight: () => news(globalwidth, globalheight),
         ),
+        // Change to another page
+        //   onSwipeRight: () => news(globalwidth, globalheight),
+        // ),
       );
 
   Widget services(double globalwidth, double globalheight) =>
@@ -269,88 +356,80 @@ class _HomePageState extends State<p_HomePage> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: GestureDetector(
-                    onTap: () => navigator(7),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      height: globalheight * 0.08,
-                      width: globalheight * 0.08,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 220, 237, 249),
-                      ),
-                      // Todo: Change the icon
-                      child: Image.asset(
-                        'assets/pill.png',
-                        fit: BoxFit.fill,
-                        color: const Color.fromARGB(255, 28, 107, 164),
-                      ),
-                    ),
-                  ),
-                ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: GestureDetector(
-                    onTap: () => navigator(8),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      height: globalheight * 0.08,
-                      width: globalheight * 0.08,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 250, 240, 219),
-                      ),
-                      child: Image.asset(
-                        'assets/doctor.png',
-                        fit: BoxFit.fill,
-                        color: const Color.fromARGB(255, 224, 159, 31)
-                      ),
-                    ),
-                  ),
-                ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(7),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     height: globalheight * 0.08,
                     width: globalheight * 0.08,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(38, 247, 56, 89),
+                      color: const Color.fromARGB(255, 220, 237, 249),
                     ),
+                    // Todo: Change the icon
                     child: Image.asset(
-                      'assets/message.png',
+                      'assets/pill.png',
                       fit: BoxFit.fill,
-                      color: const Color.fromARGB(255, 247, 56, 89)
+                      color: const Color.fromARGB(255, 28, 107, 164),
                     ),
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: GestureDetector(
-                    onTap: () => navigator(6),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      height: globalheight * 0.08,
-                      width: globalheight * 0.08,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 242, 227, 233),
-                      ),
-                      child: Image.asset(
-                        'assets/virus.png',
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    height: globalheight * 0.08,
+                    width: globalheight * 0.08,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 250, 240, 219),
+                    ),
+                    child: Image.asset('assets/doctor.png',
+                        fit: BoxFit.fill,
+                        color: const Color.fromARGB(255, 224, 159, 31)),
+                  ),
+                ),
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  height: globalheight * 0.08,
+                  width: globalheight * 0.08,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(38, 247, 56, 89),
+                  ),
+                  child: Image.asset('assets/message.png',
+                      fit: BoxFit.fill,
+                      color: const Color.fromARGB(255, 247, 56, 89)),
+                ),
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(6),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    height: globalheight * 0.08,
+                    width: globalheight * 0.08,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 242, 227, 233),
+                    ),
+                    child: Image.asset('assets/virus.png',
                         fit: BoxFit.fill,
                         color: const Color.fromARGB(255, 157, 76, 108)),
-                    ),
                   ),
                 ),
-              ]
-            ),
+              ),
+            ]),
           ],
         ),
       );
