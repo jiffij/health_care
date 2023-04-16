@@ -80,15 +80,16 @@ class _HomePageState extends State<d_HomePage> {
     //   print(fullname);
     // });
     articles = await client.getArticle();
-    print('start');
+
     setState(() {
       for (int i = 0; i < 3; i++) {
-        newsUrl[i] = articles[i].urlToImage;
-        print(articles[i].urlToImage);
+        if(articles[i].urlToImage != ""){
+          newsUrl[i] = articles[i].urlToImage;
+        }
+
       }
     });
 
-    print('ends');
   }
 
   // All navigate direction calling method
