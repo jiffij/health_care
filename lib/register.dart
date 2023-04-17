@@ -24,12 +24,13 @@ class _RegisterState extends State<Register> {
   bool idError = false;
   bool lastnameError = false;
   bool titleError = false;
-  bool expError = false;
+  // bool expError = false;
   String pos = 'patient';
   String errorText = '';
   String profilePic = '';
   // Image? displayImg;
   File? imgFile;
+  double _currentSliderValue = 0;
 
   final _storage = const FlutterSecureStorage();
   final TextEditingController _nameController = TextEditingController(text: "");
@@ -38,7 +39,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _idController = TextEditingController(text: "");
   final TextEditingController _titleController =
       TextEditingController(text: "");
-  final TextEditingController _expController = TextEditingController(text: "");
+  // final TextEditingController _expController = TextEditingController(text: "");
 
   final CollectionReference Users =
       FirebaseFirestore.instance.collection('users');
@@ -66,7 +67,7 @@ class _RegisterState extends State<Register> {
       return;
     }
 
-    nameError = lastnameError = idError = titleError = expError = false;
+    nameError = lastnameError = idError = titleError = false;
     if (_nameController.text.isEmpty) {
       nameError = true;
     }
@@ -79,10 +80,10 @@ class _RegisterState extends State<Register> {
     if (_titleController.text.isEmpty && pos == 'doctor') {
       titleError = true;
     }
-    if (_expController.text.isEmpty && pos == 'doctor') {
-      expError = true;
-    }
-    if (nameError || lastnameError || idError || titleError || expError) return;
+    // if (_expController.text.isEmpty && pos == 'doctor') {
+    //   expError = true;
+    // }
+    if (nameError || lastnameError || idError || titleError) return;
     String url = '';
     final String uid = getUID();
     if (pos == 'doctor') {
@@ -101,7 +102,7 @@ class _RegisterState extends State<Register> {
       'HKID': _idController.text.trim(),
       if (pos == 'doctor') 'profilePic': url,
       if (pos == 'doctor') 'title': _titleController.text.trim(),
-      if (pos == 'doctor') 'exp': _expController.text.trim(),
+      if (pos == 'doctor') 'exp': _currentSliderValue.round().toString() + " years",
       if (pos == 'doctor')
         'rating': {
           '1': '0',
@@ -303,25 +304,41 @@ class _RegisterState extends State<Register> {
                 SizedBox(
                   height: 20.0,
                 ),
+              // if (pos == 'doctor')
+              //   TextField(
+              //     controller: _expController,
+              //     decoration: InputDecoration(
+              //       labelText: 'Experience:',
+              //       filled: expError,
+              //       fillColor: Colors.red,
+              //       hintText: 'Experience',
+              //       border: OutlineInputBorder(
+              //         borderRadius: BorderRadius.circular(20.0),
+              //       ),
+              //     ),
+              //   ),
               if (pos == 'doctor')
-                TextField(
-                  controller: _expController,
-                  decoration: InputDecoration(
-                    labelText: 'Experience:',
-                    filled: expError,
-                    fillColor: Colors.red,
-                    hintText: 'Experience',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                  ),
-                ),
+              SizedBox(height: 10,),
+              if (pos == 'doctor')
+              Text("Experience", style: TextStyle(fontSize: 16)),
+              if (pos == 'doctor')
+              Slider(
+                value: _currentSliderValue,
+                max: 80,
+                divisions: 80,
+                label: _currentSliderValue.round().toString() + " years",
+                onChanged: (double value) {
+                  setState(() {
+                    _currentSliderValue = value;
+                  });
+                },
+              ),
               if (pos == 'doctor')
                 SizedBox(
                   height: 20.0,
                 ),
               Text(
-                nameError || lastnameError || idError || titleError || expError
+                nameError || lastnameError || idError || titleError
                     ? 'Invalid input.'
                     : errorText != ''
                         ? errorText

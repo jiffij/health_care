@@ -16,7 +16,9 @@ import 'dart:math';
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
+final int MAX_TRIES = 20;
 const URL = 'http://143.89.130.155:8080';
+// const URL = 'http://192.168.0.178:5000';
 
 // FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseStorage storage = FirebaseStorage.instance;
@@ -162,34 +164,57 @@ Future<String> getServerPublicKey() async {
 
 Future<http.Response> writeToServer(
     String docID, Map<String, dynamic> body) async {
-  final bool exist = await checkDocExist(docID);
-  var dir = exist ? 'add' : 'set';
-  var server_key = await getServerPublicKey();
-  // print(server_key);
-  var new_body = await rsaEncrypt(jsonEncode(body), server_key);
-  // print(new_body);
-  return http.post(
-    Uri.parse('$URL/$dir'),
-    headers: <String, String>{
-      'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
-      'path': docID,
-    },
-    body: new_body,
-  );
+  http.Response res;
+  int count = 0;
+  do {
+    if(count > 0){
+      await generateKey();
+    }
+    
+    final bool exist = await checkDocExist(docID);
+    var dir = exist ? 'add' : 'set';
+    var server_key = await getServerPublicKey();
+    // print(server_key);
+    var new_body = await rsaEncrypt(jsonEncode(body), server_key);
+    // print(new_body);
+
+    res = await http.post(
+      Uri.parse('$URL/$dir'),
+      headers: <String, String>{
+        'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
+        'path': docID,
+      },
+      body: new_body,
+    );
+    count++;
+  } while (!(await checkDocExist(docID)) && count < MAX_TRIES);
+  return res;
 }
 
 Future<Map<String, dynamic>?> readFromServer(String docID) async {
-  var public_key = await getMyPublicKey();
-  var response = await http.post(
-    Uri.parse('$URL/list'),
-    headers: <String, String>{
-      'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
-      'path': docID,
-    },
-    body: public_key,
-  );
+  http.Response response;
+  int count = 0;
+  do {
+    if (count > 0){
+      await generateKey();
+    }
+    
+    var public_key = await getMyPublicKey();
+    response = await http.post(
+      Uri.parse('$URL/list'),
+      headers: <String, String>{
+        'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
+        'path': docID,
+      },
+      body: public_key,
+    );
+    count++;
+  } while (response.statusCode == 204 && count < MAX_TRIES);
+
+  print(response.body);
   print('status code:$response.statusCode');
   if (response.statusCode == 204) return null;
+  print(jsonDecode(await rsaDecrypt(response.body)));
   return jsonDecode(await rsaDecrypt(response.body));
   // return jsonDecode(response.body);
 }

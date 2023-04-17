@@ -8,6 +8,7 @@ import 'package:swipe_widget/swipe_widget.dart';
 import '../news/model/article_model.dart';
 import '../news/pages/articles_details_page.dart';
 import '../news/services/api_service.dart';
+import '../video_call/join_call_waiting.dart';
 import 'd_calendar.dart';
 import 'd_myprofile.dart';
 import 'd_myprofile.dart';
@@ -97,7 +98,7 @@ class _HomePageState extends State<d_HomePage> {
   void navigator(int index) {
     if (index == 1) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const d_HomePage()),
+        MaterialPageRoute(builder: (context) => Register()),
       );
     } else if (index == 2) {
       Navigator.of(context).push(
