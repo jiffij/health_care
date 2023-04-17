@@ -8,6 +8,8 @@ import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 
+import 'package:simple_login/helper/firebase_helper.dart';
+
 // Details for calendar customization:
 // https://blog.logrocket.com/build-custom-calendar-flutter/
 // https://stackoverflow.com/questions/69818820/how-to-change-header-formatting-in-flutter-table-calendar-package
@@ -74,13 +76,57 @@ class _CalendarPageState extends State<p_CalendarPage> {
           children: [
             heading(width, height),
             calendar(width, height),
-            upcomingappointmentlist(width, height, _focusedDay),
+            //upcomingappointmentlist(width, height, _focusedDay),
             home(width, height),           
           ],
         ),
     );
   }
   
+  String fullname = '';
+  bool tlshow = false;
+  int numOfAppointment = 0;
+  List<List> appointmentslist = [];
+  List<List> appointmentslistsort = [];
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    fullname = data?['first name'] + ' ' + data?['last name'];
+    List<String> existdatelist = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? existtimemap;
+    if (existdatelist.isNotEmpty) {
+      for (var existdate in existdatelist) {
+        existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+        List timeList = existtimemap!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = existtimemap[time]['doctorID'];
+          //print(id);
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var dFullname = '$dFirstname $dLastname';
+          dailyAppointmentList.insert(0, [existdate, time, dFullname]);
+        }
+        //print(dailyAppointmentList);
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+        print(dailyAppointmentList);
+        for (var list in dailyAppointmentList) {
+          appointmentslist.insert(0, list);
+        }
+      }
+      appointmentslist = appointmentslist.reversed.toList();
+    }
+    setState(() {});
+  }
+
   // All navigate direction calling method
   void navigator(int index) {
     switch (index) {
@@ -109,6 +155,24 @@ class _CalendarPageState extends State<p_CalendarPage> {
     setState(() {});
   }
 
+  String dateToServer(DateTime date) {
+    var formattedDate = DateFormat('yMMdd').format(date);
+    return formattedDate.toString();
+  }
+
+  List<List> appointmentSort(String input) {
+    List<List> temp = [];
+    for (var appointment in appointmentslist)
+    {
+      var date = '${appointment[0]}';
+      if ((date).toLowerCase().trim().contains(input.toLowerCase().trim()))
+      {
+        temp.insert(0, appointment);
+      }
+    }
+    return temp;
+  }
+
   Widget heading(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Stack(
       children: [
@@ -121,7 +185,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 15),
                 child: const Align(
                   alignment: Alignment.center,
                   child: FittedBox (
@@ -141,76 +205,80 @@ class _CalendarPageState extends State<p_CalendarPage> {
   Widget calendar(double globalwidth, double globalheight) => Card(
     child: Expanded(
       child: SizedBox(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TableCalendar(
-                weekendDays: const [DateTime.sunday],
-                rowHeight: globalheight*0.08,
-                headerStyle: HeaderStyle(
-                  headerPadding: const EdgeInsets.symmetric(vertical: 2),
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  titleTextFormatter: (date, locale) => DateFormat.yMMM(locale).format(date),
-                  // Calendar title style
-                  titleTextStyle: TextStyle(
-                    color: const Color.fromARGB(255, 74, 84, 94), fontSize: MediaQuery.of(context).size.width*0.07),
-                  leftChevronIcon: Icon(
-                    Icons.chevron_left,
-                    color: const Color.fromARGB(255, 74, 84, 94),
-                    size: MediaQuery.of(context).size.width*0.07,
+        child: Column(
+          children: [
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  TableCalendar(
+                    weekendDays: const [DateTime.sunday],
+                    rowHeight: globalheight * 0.08,
+                    headerStyle: HeaderStyle(
+                      headerPadding:
+                          const EdgeInsets.symmetric(vertical: 2),
+                      formatButtonVisible: false,
+                      titleCentered: true,
+                      titleTextFormatter: (date, locale) =>
+                          DateFormat.yMMM(locale).format(date),
+                      // Calendar title style
+                      titleTextStyle: TextStyle(
+                          color: const Color.fromARGB(255, 74, 84, 94),
+                          fontSize:
+                              MediaQuery.of(context).size.width * 0.07),
+                      leftChevronIcon: Icon(
+                        Icons.chevron_left,
+                        color: const Color.fromARGB(255, 74, 84, 94),
+                        size: MediaQuery.of(context).size.width * 0.07,
+                      ),
+                      rightChevronIcon: Icon(
+                        Icons.chevron_right,
+                        color: const Color.fromARGB(255, 74, 84, 94),
+                        size: MediaQuery.of(context).size.width * 0.07,
+                      ),
+                    ),
+                    // Calendar days title style
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekendStyle:
+                          TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                    ),
+                    // Calendar days style
+                    calendarStyle: const CalendarStyle(
+                      weekendTextStyle:
+                          TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                      todayDecoration: BoxDecoration(
+                        color: Color.fromARGB(165, 35, 185, 59),
+                        shape: BoxShape.rectangle,
+                      ),
+                      // highlighted color for selected day
+                      selectedDecoration: BoxDecoration(
+                        color: Color.fromARGB(255, 65, 95, 185),
+                        shape: BoxShape.rectangle,
+                      ),
+                    ),
+                    //calendarBuilders: CalendarBuilders(),
+                    firstDay: DateTime(2020),
+                    lastDay: DateTime(2050),
+                    focusedDay: _focusedDay,
+                    // Todo: Calendar interatives
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      setState(() {
+                        _selectedDay = selectedDay;
+                        _focusedDay = focusedDay; // update `_focusedDay` here as well
+                        appointmentslistsort = appointmentSort(dateToServer(_focusedDay));
+                      });
+                    },
+                    onPageChanged: (focusedDay) {
+                      _focusedDay = focusedDay;
+                    },
                   ),
-                  rightChevronIcon: Icon(
-                    Icons.chevron_right,
-                    color: const Color.fromARGB(255, 74, 84, 94),
-                    size: MediaQuery.of(context).size.width*0.07,
-                  ),
-                ),
-                // Calendar days title style
-                daysOfWeekStyle: const DaysOfWeekStyle(
-                  weekendStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                ),
-                // Calendar days style
-                calendarStyle: const CalendarStyle(
-                weekendTextStyle: TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                todayDecoration: BoxDecoration(
-                  color: Color.fromARGB(165, 35, 185, 59),
-                  shape: BoxShape.rectangle,
-                ),
-                // highlighted color for selected day
-                selectedDecoration: BoxDecoration(
-                  color: Color.fromARGB(255, 65, 95, 185),
-                  shape: BoxShape.rectangle,
-                ),
-                ),
-                calendarBuilders: CalendarBuilders(
-                  // defaultBuilder: (context, day, events) {
-                  //   return Center(
-                  //     child: Center(
-                  //       //child: Text('${day.day}', style: TextStyle(color: day.weekday == DateTime.sunday ? const Color.fromARGB(255, 255, 0, 0) : const Color.fromARGB(255, 0, 0, 0))),
-                  //     ),
-                  //   );
-                  // },
-                ),
-                firstDay: DateTime(2020),
-                lastDay: DateTime(2050),
-                focusedDay: _focusedDay,
-                // Todo: Calendar interatives
-                selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _selectedDay = selectedDay; 
-                    _focusedDay = focusedDay; // update `_focusedDay` here as well
-                  });
-                },
-                onPageChanged: (focusedDay) {
-                  _focusedDay = focusedDay;
-                },
+                ],
               ),
-            ],
-          ),
+            ),
+            upcomingappointmentlist(globalwidth, globalheight, _focusedDay),
+          ],
         ),
       ),
     ),
@@ -247,12 +315,12 @@ class _CalendarPageState extends State<p_CalendarPage> {
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
-            itemCount : 5,
+            itemCount : appointmentslistsort.length,
             separatorBuilder:  (context, index) {
               return const SizedBox(height: 5);
             },
             itemBuilder: (context, index) {
-              return upcomingappointment(index, globalheight);
+              return upcomingappointment(index, globalwidth, globalheight);
             },
           ),
         ),
@@ -260,33 +328,109 @@ class _CalendarPageState extends State<p_CalendarPage> {
     ),
   );
 
-  // Todo: Access database and update the upcommingappointment list
-  Widget upcomingappointment(int index, double globalheight) => Column(
+  Widget upcomingappointment(int index, double globalwidth, double globalheight) => Column(
     mainAxisSize: MainAxisSize.min,
     children: [
       Container(
-        height: globalheight*0.1,
+        height: globalheight*0.12,
+        width: globalwidth*0.8,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: const Color.fromARGB(80, 224, 159, 31),
         ),
-        child: Row(
-          children: [
-            SizedBox(
-              width: globalheight*0.05,
-              height: globalheight*0.05,
-              child: const FittedBox (
-                fit: BoxFit.scaleDown,
-                child: Icon(Icons.call_rounded),
+        child: GestureDetector(
+          //onTap: () => navigator(5, appointments[index][1]),
+          child: Row(
+            children: [
+              Container(
+                width: globalheight*0.2,
+                height: globalheight*0.13,
+                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(right: 10),
+                decoration : BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromARGB(255, 220, 237, 249),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: globalheight*0.05,
+                          height: globalheight*0.05,
+                          child: const FittedBox (
+                            fit: BoxFit.scaleDown,
+                            child: Icon(Icons.call_rounded),
+                          ),
+                        ),
+                        SizedBox(
+                          width: globalheight*0.12,
+                          child: const FittedBox (
+                            fit: BoxFit.scaleDown,
+                            child: Text ('Click the Icon \nto join the call!', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const FittedBox (
+                      fit: BoxFit.scaleDown,
+                      child: Text ('You can only join the call on time', style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Text ('This is the appointment $index'),
-          ],
+              SizedBox(
+                width: globalwidth * 0.3,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Time: ${appointmentslistsort[index][1]}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),),
+                      Text('Doctor: ${appointmentslistsort[index][2]}', style: const TextStyle(fontSize: 20)),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       const Divider(),
     ],
   );
+
+  // Todo: Access database and update the upcommingappointment list
+  // Widget upcomingappointment(int index, double globalheight) => Column(
+  //   mainAxisSize: MainAxisSize.min,
+  //   children: [
+  //     Container(
+  //       height: globalheight*0.12,
+  //       decoration: BoxDecoration(
+  //         borderRadius: BorderRadius.circular(10),
+  //         color: const Color.fromARGB(80, 224, 159, 31),
+  //       ),
+  //       child: Row(
+  //         children: [
+  //           SizedBox(
+  //             width: globalheight*0.05,
+  //             height: globalheight*0.05,
+  //             child: const FittedBox (
+  //               fit: BoxFit.scaleDown,
+  //               child: Icon(Icons.call_rounded),
+  //             ),
+  //           ),
+  //           Text ('This is the appointment $index'),
+  //         ],
+  //       ),
+  //     ),
+  //     const Divider(),
+  //   ],
+  // );
 
   Widget home(double globalwidth, double globalheight) => DefaultTextStyle.merge(
     child: Container(

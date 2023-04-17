@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+// Other files
 import 'p_calendar.dart';
 import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
+
+import '../helper/firebase_helper.dart';
 
 void main() {
   runApp(const MyApp());
@@ -62,10 +65,28 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
           children: [
             heading(width, height),
             detaillist(width, height),
+            booknow(width, height),
             home(width, height),           
           ],
         ),
     );
+  }
+
+  String fullname = '';
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    setState(() {
+      fullname = data?['first name'] + ' ' + data?['last name'];
+      print(fullname);
+    });
   }
 
   // All navigate direction calling method
@@ -187,20 +208,20 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
                   children: [
                     Container (
                       margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
+                      child: FittedBox (
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
-                        child: Text('Patient Full Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        child: Text('User Full Name: $fullname', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    Container (
-                      margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
-                        alignment: Alignment.centerLeft,
-                        fit: BoxFit.scaleDown,
-                        child: Text('Doctor Title', style: TextStyle(fontSize: 12)),
-                      ),
-                    ),
+                    // Container (
+                    //   margin: const EdgeInsets.only(left: 10),
+                    //   child: const FittedBox (
+                    //     alignment: Alignment.centerLeft,
+                    //     fit: BoxFit.scaleDown,
+                    //     child: Text('Doctor Title', style: TextStyle(fontSize: 12)),
+                    //   ),
+                    // ),
                   ],
                 ),
               ],
@@ -215,80 +236,6 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
 Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
   child: Column(
     children: [
-      Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-            height: globalheight*0.12,
-            width: globalheight*0.12,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 232, 235, 237),
-            ),
-            child: Container(
-              margin: const EdgeInsets.all(5),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,        
-                child: Column(
-                  children: const [
-                    Text('Patient', style: TextStyle(fontSize: 12)),
-                    Text('Number', style: TextStyle(fontSize: 10)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            height: globalheight*0.12,
-            width: globalheight*0.12,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 232, 235, 237),
-            ),
-            child: Container(
-              margin: const EdgeInsets.all(5),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,        
-                child: Column(
-                  children: const [
-                    Text('Exp.', style: TextStyle(fontSize: 12)),
-                    Text('Year', style: TextStyle(fontSize: 10)),
-                  ],
-                ),
-              ),
-            ),
-          ),Container(
-            height: globalheight*0.12,
-            width: globalheight*0.12,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 232, 235, 237),
-            ),
-            child: Container(
-              margin: const EdgeInsets.all(5),
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Stack(
-                          children: const [
-                            Icon(Icons.star, color: Color.fromARGB(255, 0, 0, 0), size: 16,),
-                            Icon(Icons.star, color: Color.fromARGB(255, 245, 245, 9), size: 15,),
-                          ],
-                        ), 
-                        const Text('Rating', style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                    const Text('rate/5.0', style: TextStyle(fontSize: 12)),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
       Align(
         alignment: Alignment.centerLeft,
         child: FittedBox(
@@ -300,7 +247,7 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
             child: const FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: Text('About', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              child: Text('Emergency Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
           ),
         ),
@@ -317,12 +264,12 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text('Doctor Details:\nDoctor Details 1\nDoctor Details 2\nDoctor Details 3\nDoctor Details 4\nDoctor Details 5\nDoctor Details 6', style: TextStyle(fontSize: 10)),
-                  Text('This Doctor Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 10)),
-                  Text('Doctor Details 7', style: TextStyle(fontSize: 10)),
-                  Text('Doctor Details 8', style: TextStyle(fontSize: 10)),
-                  Text('Doctor Details 9', style: TextStyle(fontSize: 10)),
-                  Text('Doctor Details 10', style: TextStyle(fontSize: 10)),
+                  Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
+                  Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 7', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 8', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 9', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 10', style: TextStyle(fontSize: 16)),
                 ],
               ),
             ),
@@ -330,71 +277,72 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
         ),
       ),
       Align(
-        alignment: Alignment.center,
+        alignment: Alignment.centerLeft,
         child: FittedBox(
-          fit: BoxFit.scaleDown,
+            fit: BoxFit.scaleDown,
           child: Container(
-            height: globalheight*0.1,
-            width: globalwidth*0.7,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 255, 255, 255),
-              boxShadow: const [
-                BoxShadow(color: Color.fromARGB(255, 215, 222, 234), spreadRadius: 1),
-              ],
+            margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
+            height: globalheight*0.05,
+            width: globalwidth,
+            child: const FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Text('Allergy Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             ),
-            child: Row(
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 5, right: 10),
-                    height: globalheight*0.07,
-                    width: globalheight*0.07,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(255, 220, 237, 249),
-                    ),
-                    child: FittedBox (
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        margin: const EdgeInsets.all(5),
-                        child:  const Icon(Icons.access_time_filled, color: Color.fromARGB(255, 28, 107, 164)),
-                      ),
-                    ),
-                  ),
-                ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,     
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      FittedBox(
-                        child: Text('Daily Availability', style: TextStyle(fontSize: 10)),
-                      ),
-                      FittedBox(
-                        child: Text('9 a.m. - 11 p.m.', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ),
-                const Spacer(),
-                Container(
-                  margin: const EdgeInsets.only(right: 10),
-                    height: globalheight*0.03,
-                    width: globalheight*0.03,
-                  child: const FittedBox(
-                    fit: BoxFit.scaleDown,
-                      child: Icon(Icons.arrow_forward_ios, color: Color.fromARGB(255, 28, 107, 164)),
-                  ),
-                ),
-              ],
+          ),
+        ),
+      ),
+      Align(alignment: Alignment.centerLeft,
+        child: FittedBox(
+            fit: BoxFit.scaleDown,
+          child: Container(
+            margin: const EdgeInsets.only(left: 12, bottom: 12),
+            width: globalwidth,
+            height: globalheight*0.15,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  TextField(),
+                  Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
+                  Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
+                  Text('Allergy Details 7', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 8', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 9', style: TextStyle(fontSize: 16)),
+                  Text('Patient Details 10', style: TextStyle(fontSize: 16)),
+                ],
+              ),
             ),
           ),
         ),
       ),
     ],
+  ),
+);
+
+Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  child: GestureDetector(
+    onTap: () => navigator(5),
+    child: Align(
+      alignment: Alignment.center,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Container(
+          height: globalheight*0.08,
+          width: globalwidth*0.7,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: const Color.fromARGB(255, 28, 107, 164),
+            boxShadow: const [
+              BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
+            ],
+          ),
+          child: const Text('~~Click here to modify the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
+        ),
+      ),
+    ),
   ),
 );
 

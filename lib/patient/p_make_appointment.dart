@@ -83,37 +83,36 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
       ),
     );
   }
-
+  
   String fullname = '';
   // Todo: Decide hard code access data one by one
   bool tlshow = false;
-  List<List> timeslotslist = [[]];
-  // [
-  //   ['00:00', false, '00:20', false, '00:40', false],
-  //   ['01:00', true, '01:20', false, '01:40', true],
-  //   ['02:00', true, '02:20', true, '02:40', true],
-  //   ['03:00', true, '03:20', true, '03:40', true],
-  //   ['04:00', false, '04:20', false, '04:40', false],
-  //   ['05:00', false, '05:20', false, '05:40', false],
-  //   ['06:00', true, '06:20', true, '06:40', true],
-  //   ['07:00', true, '07:20', true, '07:40', true],
-  //   ['08:00', true, '08:20', true, '08:40', true],
-  //   ['09:00', true, '09:20', true, '09:40', true],
-  //   ['10:00', true, '10:20', true, '10:40', true],
-  //   ['11:00', true, '11:20', true, '11:40', true],
-  //   ['12:00', true, '12:20', true, '12:40', true],
-  //   ['13:00', true, '13:20', false, '13:40', false],
-  //   ['14:00', false, '14:20', false, '14:40', true],
-  //   ['15:00', true, '15:20', true, '15:40', true],
-  //   ['16:00', true, '16:20', false, '16:40', false],
-  //   ['17:00', true, '17:20', true, '17:40', true],
-  //   ['18:00', true, '18:20', true, '18:40', true],
-  //   ['19:00', true, '19:20', true, '19:40', true],
-  //   ['20:00', true, '20:20', true, '20:40', true],
-  //   ['21:00', true, '21:20', true, '21:40', true],
-  //   ['22:00', true, '22:20', true, '22:40', true],
-  //   ['23:00', true, '23:20', true, '23:40', true],
-  // ];
+  List<List> timeslotslist = [
+      ['00:00', true, '00:20', true, '00:40', true],
+      ['01:00', true, '01:20', true, '01:40', true],
+      ['02:00', true, '02:20', true, '02:40', true],
+      ['03:00', true, '03:20', true, '03:40', true],
+      ['04:00', true, '04:20', true, '04:40', true],
+      ['05:00', true, '05:20', true, '05:40', true],
+      ['06:00', true, '06:20', true, '06:40', true],
+      ['07:00', true, '07:20', true, '07:40', true],
+      ['08:00', true, '08:20', true, '08:40', true],
+      ['09:00', true, '09:20', true, '09:40', true],
+      ['10:00', true, '10:20', true, '10:40', true],
+      ['11:00', true, '11:20', true, '11:40', true],
+      ['12:00', true, '12:20', true, '12:40', true],
+      ['13:00', true, '13:20', true, '13:40', true],
+      ['14:00', true, '14:20', true, '14:40', true],
+      ['15:00', true, '15:20', true, '15:40', true],
+      ['16:00', true, '16:20', true, '16:40', true],
+      ['17:00', true, '17:20', true, '17:40', true],
+      ['18:00', true, '18:20', true, '18:40', true],
+      ['19:00', true, '19:20', true, '19:40', true],
+      ['20:00', true, '20:20', true, '20:40', true],
+      ['21:00', true, '21:20', true, '21:40', true],
+      ['22:00', true, '22:20', true, '22:40', true],
+      ['23:00', true, '23:20', true, '23:40', true],
+    ];
 
   @override
   void initState() {
@@ -138,22 +137,22 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
         Navigator.of(context).pop(context);
         break;
       case 1:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_HomePage()),
         );
         break;
       case 2:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_CalendarPage()),
         );
         break;
       case 3:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MessagePage()),
         );
         break;
       case 4:
-        Navigator.of(context).push(
+        Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
         );
         break;
@@ -193,7 +192,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
             style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: <Widget>[
           TextButton(
-            onPressed: () => successful_message(),
+            onPressed: () => makeAppointment(),
             child: const Text('Confirm'),
           ),
           TextButton(
@@ -255,45 +254,64 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
       ['22:00', true, '22:20', true, '22:40', true],
       ['23:00', true, '23:20', true, '23:40', true],
     ];
-    List<String> existdatelist =
-        await getColId('doctor/$doctor_uid/appointment');
-    List<String> existtimelist = [];
-
+    List<String> existdatelist = await getColId('doctor/$doctor_uid/appointment');
+    print(existdatelist);
+    Map<String, dynamic>? existtimemap;
     // Get current exist datelist if available
     if (existdatelist.isNotEmpty) {
       for (var existdate in existdatelist) {
         if (existdate == dateToServer(_selectedDay!)) {
-          existtimelist =
-              await getColId('doctor/$doctor_uid/appointment/$existdate');
+          print(existdate);
+          existtimemap = await readFromServer('doctor/$doctor_uid/appointment/$existdate');
+          print(existtimemap);
         }
       }
-    }
-    //print('checkpoint 1');
-    if (existtimelist.isNotEmpty) {
-      for (var existtime in existtimelist) {
-        for (int i = 0; i < templist.length; i++) {
-          for (int j = 0; j < templist[i].length / 2; j = j + 2) {
-            if (existtime == templist[i][j]) {
-              templist[i][j + 1] = 'false';
+      if (existtimemap != null) {
+        final keyList = existtimemap.keys.toList();
+        for (var existtime in keyList) {
+          for (int i = 0; i < templist.length; i++) {
+            for (int j = 0; j < templist[i].length; j = j + 2) {
+              if (existtime == templist[i][j]) {
+                templist[i][j + 1] = 'false';
+              }
             }
           }
         }
       }
     }
-    //print('checkpoint 2');
+    //print('checkpoint 1');
     timeslotslist = templist;
     setState(() {});
     //print(timeslotslist);
   }
 
-  void makeAppointment(String date, String time) {
+  String getDate(DateTime date) {
+    var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
+    return formattedDate.toString();
+  }
+
+  String dateToServer(DateTime date) {
+    var formattedDate = DateFormat('yMMdd').format(date);
+    return formattedDate.toString();
+  }
+
+  void makeAppointment() {
     var uid = getUID();
+    var date = dateToServer(_selectedDay!);
+    var time = selected_timeslot;
     writeToServer('patient/$uid/appointment/$date', {
       time: {
-        'name': '',
+        'doctorID': doctor_uid,
         'description': '',
       }
     });
+    writeToServer('doctor/$doctor_uid/appointment/$date', {
+      time: {
+        'patientID': uid,
+        'description': '',
+      }
+    });
+    successful_message();
   }
 
   Widget heading(double globalwidth, double globalheight) =>
@@ -425,8 +443,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                           checkExist(dateToServer(selectedDay));
                           setState(() {
                             _selectedDay = selectedDay;
-                            _focusedDay =
-                                focusedDay; // update `_focusedDay` here as well
+                            _focusedDay = focusedDay; // update `_focusedDay` here as well
                             tlshow = !tlshow;
                             // print('checkpoint 3');
                             // print(_selectedDay);
@@ -449,16 +466,6 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
           ),
         ),
       );
-
-  String getDate(DateTime date) {
-    var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
-    return formattedDate.toString();
-  }
-
-  String dateToServer(DateTime date) {
-    var formattedDate = DateFormat('yMMdd').format(date);
-    return formattedDate.toString();
-  }
 
   Widget guide(double globalwidth, double globalheight) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
