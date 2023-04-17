@@ -61,6 +61,7 @@ class _HomePageState extends State<p_HomePage> {
     );
   }
 
+  var now = DateTime.now();
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
@@ -83,24 +84,28 @@ class _HomePageState extends State<p_HomePage> {
     List<String> existdatelist = await getColId('patient/$uid/appointment');
     Map<String, dynamic>? existtimemap;
     if (existdatelist.isNotEmpty) {
+      var date = dateToServer(now);
       for (var existdate in existdatelist) {
-        existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
-        List timeList = existtimemap!.keys.toList();
-        List<List> dailyAppointmentList = [];
-        for (var time in timeList) {
-          var id = existtimemap[time]['doctorID'];
-          //print(id);
-          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
-          var dFirstname = doctor?['first name'];
-          var dLastname = doctor?['last name'];
-          var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [existdate, time, dFullname]);
-        }
-        //print(dailyAppointmentList);
-        dailyAppointmentList = dailyAppointmentList.reversed.toList();
-        print(dailyAppointmentList);
-        for (var list in dailyAppointmentList) {
-          appointments.insert(0, list);
+        // Check if the appointment has passed alreadly or not
+        if (int.parse(existdate) >= int.parse(date)) {
+          existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+          List timeList = existtimemap!.keys.toList();
+          List<List> dailyAppointmentList = [];
+          for (var time in timeList) {
+            var id = existtimemap[time]['doctorID'];
+            //print(id);
+            Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+            var dFirstname = doctor?['first name'];
+            var dLastname = doctor?['last name'];
+            var dFullname = '$dFirstname $dLastname';
+            dailyAppointmentList.insert(0, [existdate, time, dFullname]);
+          }
+          //print(dailyAppointmentList);
+          dailyAppointmentList = dailyAppointmentList.reversed.toList();
+          print(dailyAppointmentList);
+          for (var list in dailyAppointmentList) {
+            appointments.insert(0, list);
+          }
         }
       }
       appointments = appointments.reversed.toList();
@@ -170,6 +175,11 @@ class _HomePageState extends State<p_HomePage> {
   String getCurrentDate() {
     var date = DateTime.now();
     var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
+    return formattedDate.toString();
+  }
+
+  String dateToServer(DateTime date) {
+    var formattedDate = DateFormat('yMMdd').format(date);
     return formattedDate.toString();
   }
 
