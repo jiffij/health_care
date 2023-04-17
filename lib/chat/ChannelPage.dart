@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:stream_chat_flutter/stream_chat_flutter.dart'; // Chat
 
-import 'package:collection/collection.dart'; // For using firstWhereOrNull()
-
-/// Displays the list of messages inside the channel
 class ChannelPage extends StatelessWidget {
   const ChannelPage({
     Key? key,

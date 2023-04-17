@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:simple_login/patient/p_homepage.dart';
+import 'package:simple_login/register.dart';
 import 'doctor/d_homepage.dart';
 import 'package:simple_login/home_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +12,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:simple_login/helper/ImageUpDownload.dart';
 import 'main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'helper/firebase_helper.dart';
+import 'helper/loading_screen.dart';
+import 'helper/message_page.dart';
+import 'forget_password.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({Key? key}) : super(key: key);
@@ -19,6 +25,8 @@ class loginScreen extends StatefulWidget {
 }
 
 class _loginScreenState extends State<loginScreen> {
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   final _storage = const FlutterSecureStorage();
   bool hidePassword = true, LoginSuccess = false;
   final TextEditingController _usernameController =
@@ -30,7 +38,8 @@ class _loginScreenState extends State<loginScreen> {
       FirebaseFirestore.instance.collection('users');
 
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(
+        key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
   }
 
@@ -49,10 +58,11 @@ class _loginScreenState extends State<loginScreen> {
   }
 
   _firestoreLogin() async {
-    var credential;
+    dynamic credential;
     try {
       credential = await auth.signInWithEmailAndPassword(
-          email: _usernameController.text, password: _passwordController.text);
+          email: _usernameController.text.trim(),
+          password: _passwordController.text);
       print(credential);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -63,35 +73,20 @@ class _loginScreenState extends State<loginScreen> {
         return false;
       }
     }
-    // print(auth.currentUser!);
-    if (credential.user.emailVerified == false) {
-      await auth.currentUser?.sendEmailVerification();
-      if (auth.currentUser?.emailVerified == true) return true;
-      return false;
-    }
-
     return true;
-  }
-
-  _login() async {
-    await _readFromStorage();
-    print(UserName + Password);
-    if (UserName != null && Password != null) {
-      if (UserName == _usernameController.text &&
-          Password == _passwordController.text) {
-        setState(() {
-          LoginSuccess = true;
-        });
-        print('login success');
-        return true;
-      }
-    }
-    print('login fail');
-    return false;
+    // if (auth.currentUser?.emailVerified == true) {
+    //   return true;
+    // } else {
+    //   await auth.currentUser?.sendEmailVerification();
+    //   if (auth.currentUser?.emailVerified == true) return true;
+    //   return false;
+    // }
   }
 
   Future<UserCredential> signInWithGoogle() async {
     // Trigger the authentication flow
+    await signOut();
+
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     // Obtain the auth details from the request
@@ -106,6 +101,12 @@ class _loginScreenState extends State<loginScreen> {
 
     // Once signed in, return the UserCredential
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  Future<void> signOut() async {
+    if (!checkSignedin()) return;
+    await googleSignIn.signOut();
+    await auth.signOut();
   }
 
   @override
@@ -180,10 +181,67 @@ class _loginScreenState extends State<loginScreen> {
                       if (_usernameController.text != '' &&
                           _passwordController.text != '' &&
                           await _firestoreLogin()) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const d_HomePage()));
+                        if (!checkEmailAuth()) {
+                          auth
+                              .checkActionCode(auth.currentUser!.email!)
+                              .then((ActionCodeInfo info) async {
+                            if (info.operation ==
+                                ActionCodeInfoOperation.verifyEmail) {
+                              // The email verification link is still valid
+                              // Apply the action by calling the applyActionCode method
+                              auth
+                                  .applyActionCode(auth.currentUser!.email!)
+                                  .then((value) {
+                                // Email verified successfully
+                              }).catchError((error) {
+                                // Handle any errors that occur during the applyActionCode call
+                              });
+                            } else {
+                              // The link has expired or is invalid
+                              // Display an error message or take appropriate action
+                              await auth.currentUser!.sendEmailVerification();
+                            }
+                          }).catchError((error) {
+                            // Handle any errors that occur during the checkActionCode call
+                          });
+
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MessagePage(
+                                      duration: 5,
+                                      color: Colors.blue,
+                                      message:
+                                          'Please authenticate your email.\nIf you could not find it, please check junk mail.')));
+                          return;
+                        }
+
+                        if (FirebaseAuth.instance.currentUser != null) {
+                          switch (await patientOrdoc()) {
+                            case ID.DOCTOR:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const d_HomePage()));
+                              break;
+                            case ID.PATIENT:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const p_HomePage()));
+                              break;
+                            case ID.ADMIN:
+                              break;
+                            case ID.NOBODY:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Register()));
+                              break;
+                          }
+                        }
                       }
                     },
                   ),
@@ -194,18 +252,39 @@ class _loginScreenState extends State<loginScreen> {
                         backgroundColor:
                             MaterialStateProperty.all(Colors.amber)),
                     onPressed: () async {
-                      signInWithGoogle().then((value) {
+                      signInWithGoogle().then((value) async {
                         // print(FirebaseAuth.instance.authStateChanges());
                         print(FirebaseAuth.instance.currentUser.toString());
                         if (FirebaseAuth.instance.currentUser != null) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const d_HomePage()));
+                          switch (await patientOrdoc()) {
+                            case ID.DOCTOR:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const d_HomePage()));
+                              break;
+                            case ID.PATIENT:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const p_HomePage()));
+                              break;
+                            case ID.ADMIN:
+                              break;
+                            case ID.NOBODY:
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Register()));
+                              break;
+                          }
                         }
                       }).catchError((e) => print(e));
                     },
                   ),
+                   SizedBox(height: 10.0),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(context,
@@ -215,6 +294,21 @@ class _loginScreenState extends State<loginScreen> {
                       TextSpan(text: 'Don\'t have an account ', children: [
                         TextSpan(
                           text: 'Signup',
+                          style: TextStyle(color: Color(0xffEE7B23)),
+                        ),
+                      ]),
+                    ),
+                  ),
+                  SizedBox(height: 10.0),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ForgotPasswordPage()));
+                    },
+                    child: Text.rich(
+                      TextSpan(text: 'Forget password ', children: [
+                        TextSpan(
+                          text: 'Reset Password',
                           style: TextStyle(color: Color(0xffEE7B23)),
                         ),
                       ]),
@@ -233,7 +327,7 @@ class _SignupState extends State<Signup> {
   bool hidePassword = true;
   bool hideRePassword = true;
   bool email_error = false;
-  bool user_name_error = false;
+  // bool user_name_error = false;
   bool password_error = false;
 
   final _storage = const FlutterSecureStorage();
@@ -241,8 +335,8 @@ class _SignupState extends State<Signup> {
       TextEditingController(text: "");
   final TextEditingController _passwordController =
       TextEditingController(text: "");
-  final TextEditingController _nicknameController =
-      TextEditingController(text: "");
+  // final TextEditingController _nicknameController =
+  //     TextEditingController(text: "");
   final TextEditingController _retypePasswordController =
       TextEditingController(text: "");
 
@@ -251,16 +345,17 @@ class _SignupState extends State<Signup> {
 
   //local storing password
   _onFormSubmit() async {
-    await _storage.write(key: "KEY_USERNAME", value: _usernameController.text);
+    await _storage.write(
+        key: "KEY_USERNAME", value: _usernameController.text.trim());
     await _storage.write(key: "KEY_PASSWORD", value: _passwordController.text);
     print('signed up');
   }
 
   //firestore auth
-  _signup() async {
+  Future<bool> _signup() async {
     try {
       final credential = await auth.createUserWithEmailAndPassword(
-        email: _usernameController.text,
+        email: _usernameController.text.trim(),
         password: _passwordController.text,
       );
     } on FirebaseAuthException catch (e) {
@@ -269,15 +364,18 @@ class _SignupState extends State<Signup> {
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
       }
+      return false;
     } catch (e) {
       print(e);
+      return false;
     }
     User? user = auth.currentUser;
 
     if (user != null) {
-      await auth.currentUser?.updateDisplayName(_nicknameController.text);
+      // await auth.currentUser?.updateDisplayName(_nicknameController.text);
       if (!user.emailVerified) await user.sendEmailVerification();
     }
+    return true;
   }
 
   //firestore
@@ -291,13 +389,6 @@ class _SignupState extends State<Signup> {
         }, SetOptions(merge: true))
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
-    //create a document
-    // return Users.add({
-    //   'Id': _usernameController.text,
-    //   'Password': _passwordController.text,
-    // })
-    //     .then((value) => print("User Added"))
-    //     .catchError((error) => print("Failed to add user: $error"));
   }
 
   @override
@@ -352,21 +443,21 @@ class _SignupState extends State<Signup> {
               SizedBox(
                 height: 20.0,
               ),
-              TextField(
-                controller: _nicknameController,
-                decoration: InputDecoration(
-                  filled: user_name_error,
-                  fillColor: Colors.red,
-                  hintText: 'User Name',
-                  suffixIcon: Icon(Icons.assignment_ind),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20.0,
-              ),
+              // TextField(
+              //   controller: _nicknameController,
+              //   decoration: InputDecoration(
+              //     filled: user_name_error,
+              //     fillColor: Colors.red,
+              //     hintText: 'User Name',
+              //     suffixIcon: Icon(Icons.assignment_ind),
+              //     border: OutlineInputBorder(
+              //       borderRadius: BorderRadius.circular(20.0),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(
+              //   height: 20.0,
+              // ),
               TextField(
                 controller: _passwordController,
                 obscureText: hidePassword,
@@ -415,9 +506,7 @@ class _SignupState extends State<Signup> {
                 ),
               ),
               Text(
-                email_error || user_name_error || password_error
-                    ? 'Invalid input.'
-                    : '',
+                email_error || password_error ? 'Invalid input.' : '',
                 style: TextStyle(fontSize: 18.0, color: Colors.red),
               ),
               Padding(
@@ -439,7 +528,7 @@ class _SignupState extends State<Signup> {
                         // await _onFormSubmit();
                         // await addUser();
                         bool email = false;
-                        bool user_name = false;
+                        // bool user_name = false;
                         bool password = false;
                         RegExp regex = RegExp(r'\S+@\S+\.\S+');
                         if (_usernameController.text == '' ||
@@ -452,14 +541,14 @@ class _SignupState extends State<Signup> {
                           email = true;
                         }
 
-                        if (_nicknameController.text == '') {
-                          setState(() {
-                            user_name_error = true;
-                          });
-                        } else {
-                          user_name_error = false;
-                          user_name = true;
-                        }
+                        // if (_nicknameController.text == '') {
+                        //   setState(() {
+                        //     user_name_error = true;
+                        //   });
+                        // } else {
+                        //   user_name_error = false;
+                        //   user_name = true;
+                        // }
 
                         if (_passwordController.text == '' ||
                             _passwordController.text !=
@@ -471,8 +560,18 @@ class _SignupState extends State<Signup> {
                           password_error = false;
                           password = true;
                         }
-                        if (email && password && user_name) {
-                          await _signup();
+                        if (email && password) {
+                          var go = await _signup();
+                          if (go)
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => MessagePage(
+                                        duration: 6,
+                                        color: Colors.blue,
+                                        message:
+                                            'Please authenticate your email.\nIf you could not find it, please check junk mail.',
+                                      )),
+                            );
                         }
                       },
                     ),

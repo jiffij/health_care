@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/patient/p_medical_allergy.dart';
 // import 'package:simple_login/cancer_prediction.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
+import '../news/components/customHorizontalListTile.dart';
+import '../news/pages/articles_details_page.dart';
 import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 import 'p_doctor_list.dart';
 // import 'cancer_prediction.dart';
 import 'p_medical_report_list.dart';
+import 'package:simple_login/helper/firebase_helper.dart';
+import '../news/news.dart';
+import '../news/services/api_service.dart';
+import '../news/model/article_model.dart';
+
+// Chat - Integration
+import '../main.dart';
+import '../chat/ChatSetup.dart';
+// Chat - Integration
 
 class p_HomePage extends StatefulWidget {
   const p_HomePage({super.key});
@@ -29,6 +41,8 @@ class p_HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<p_HomePage> {
+  ApiService client = ApiService();
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -39,11 +53,12 @@ class _HomePageState extends State<p_HomePage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          heading(width, height),
+          heading(width, height, context),
           services(width, height),
           meetadoctor(width, height),
           upcomingappointmentlist(width, height),
@@ -51,6 +66,39 @@ class _HomePageState extends State<p_HomePage> {
         ],
       ),
     );
+  }
+
+  String fullname = '';
+  late List<Article> articles;
+  // int index = 0;
+  List<String> newsUrl = [
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    setState(() {
+      fullname = data?['first name'] + ' ' + data?['last name'];
+      print(fullname);
+    });
+    articles = await client.getArticle();
+
+    setState(() {
+      for (int i = 0; i < 3; i++) {
+        if (articles[i].urlToImage != "") {
+          newsUrl[i] = articles[i].urlToImage;
+        }
+      }
+    });
   }
 
   // All navigate direction calling method
@@ -66,11 +114,16 @@ class _HomePageState extends State<p_HomePage> {
           MaterialPageRoute(builder: (context) => const p_CalendarPage()),
         );
         break;
+      // Chat - Integration
       case 3:
+        Navigator.of(context).pushNamed(routeChatHome);
+        /* backup
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MessagePage()),
         );
+        */
         break;
+      // Chat - Integration
       case 4:
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
@@ -83,15 +136,21 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 6:
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_HomePage()),
-        );
-      break;
-      case 7:
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => const p_MedicalReportListPage()),
+          MaterialPageRoute(builder: (context) => NewsPage()),
         );
         break;
-    default:
+      case 7:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => const p_MedicalAllergyPage()),
+        );
+        break;
+      case 8:
+        Navigator.of(context).push(
+          MaterialPageRoute(
+              builder: (context) => const p_MedicalReportListPage()),
+        );
+        break;
+      default:
     }
     setState(() {});
   }
@@ -115,7 +174,8 @@ class _HomePageState extends State<p_HomePage> {
     }
   }
 
-  Widget heading(double globalwidth, double globalheight) =>
+  Widget heading(
+          double globalwidth, double globalheight, BuildContext context) =>
       DefaultTextStyle.merge(
         child: Stack(
           children: [
@@ -141,6 +201,9 @@ class _HomePageState extends State<p_HomePage> {
                         Text(greetingMessage(),
                             style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold)),
+                        Text(fullname,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.bold)),
                       ]),
                 ),
               ),
@@ -161,38 +224,102 @@ class _HomePageState extends State<p_HomePage> {
                 ],
               ),
             ),
+            // newsList(context),
           ],
         ),
       );
 
-  // Todo: Change to another news
+  // Widget newsList(
+  //         BuildContext context, double globalwidth, double globalheight) =>
+  //     ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: 3,
+  //       itemBuilder: (context, index) {
+  //         //let's check if we got a response or not
+  //         if (newsUrl.isNotEmpty) {
+  //           //Now let's make a list of articles
+
+  //           return InkWell(
+  //             onTap: () {
+  //               Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                       builder: (context) => ArticlePage(
+  //                             article: articles[index],
+  //                           )));
+  //             },
+  //             child: Container(
+  //               height: globalheight * 0.8,
+  //               width: globalwidth * 0.15,
+  //               decoration: BoxDecoration(
+  //                 //let's add the height
+
+  //                 image: DecorationImage(
+  //                     image: NetworkImage(articles[index].urlToImage),
+  //                     fit: BoxFit.cover),
+  //                 borderRadius: BorderRadius.circular(12.0),
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //         return Center(
+  //           child: CircularProgressIndicator(),
+  //         );
+  //       },
+  //     );
+
+  // TODO: Change to another news
   Widget news(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
-        child: SwipeWidget(
-          angle: 0,
-          child: Container(
-            width: globalwidth * 0.8,
-            height: globalheight * 0.15,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 220, 237, 249),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  blurRadius: 0.5,
-                  offset: Offset(0.5, 0.5),
+        // child: SwipeWidget(
+        //   angle: 0,
+
+        child: Container(
+          width: globalwidth * 0.8,
+          height: globalheight * 0.15,
+          // padding: const EdgeInsets.all(10),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(10),
+          //   color: const Color.fromARGB(255, 220, 237, 249),
+          //   boxShadow: const [
+          //     BoxShadow(
+          //       color: Color.fromARGB(255, 0, 0, 0),
+          //       blurRadius: 0.5,
+          //       offset: Offset(0.5, 0.5),
+          //     ),
+          //   ],
+          // ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: 3,
+            itemBuilder: (context, index) {
+              return Container(
+                width: globalwidth * 0.8,
+                height: globalheight * 0.15,
+                child: FittedBox(
+                  fit: BoxFit.fill,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ArticlePage(
+                                    article: articles[index],
+                                  )));
+                    },
+                    child: Image.network(
+                      newsUrl[index],
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
-              ],
-            ),
-            child: const FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text('This is the place for news'),
-            ),
+              );
+            },
           ),
-          // Change to another page
-          onSwipeRight: () => news(globalwidth, globalheight),
         ),
+        // Change to another page
+        //   onSwipeRight: () => news(globalwidth, globalheight),
+        // ),
       );
 
   Widget services(double globalwidth, double globalheight) =>
@@ -217,11 +344,11 @@ class _HomePageState extends State<p_HomePage> {
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FittedBox(
-                  fit: BoxFit.scaleDown,
+            Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(7),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     height: globalheight * 0.08,
@@ -238,27 +365,29 @@ class _HomePageState extends State<p_HomePage> {
                     ),
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: GestureDetector(
-                    onTap: () => navigator(7),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      height: globalheight * 0.08,
-                      width: globalheight * 0.08,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 250, 240, 219),
-                      ),
-                      child: Image.asset(
-                        'assets/doctor.png',
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    height: globalheight * 0.08,
+                    width: globalheight * 0.08,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 250, 240, 219),
+                    ),
+                    child: Image.asset('assets/doctor.png',
                         fit: BoxFit.fill,
                         color: const Color.fromARGB(255, 224, 159, 31)),
-                    ),
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(3), // Chat - Integration
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     height: globalheight * 0.08,
@@ -267,34 +396,31 @@ class _HomePageState extends State<p_HomePage> {
                       borderRadius: BorderRadius.circular(10),
                       color: const Color.fromARGB(38, 247, 56, 89),
                     ),
-                    child: Image.asset(
-                      'assets/message.png',
-                      fit: BoxFit.fill,
-                      color: const Color.fromARGB(255, 247, 56, 89)
-                    ),
+                    child: Image.asset('assets/message.png',
+                        fit: BoxFit.fill,
+                        color: const Color.fromARGB(255, 247, 56, 89)),
                   ),
                 ),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: GestureDetector(
-                    onTap: () => navigator(6),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      height: globalheight * 0.08,
-                      width: globalheight * 0.08,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 242, 227, 233),
-                      ),
-                      child: Image.asset(
-                        'assets/virus.png',
+              ), // chat
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: GestureDetector(
+                  onTap: () => navigator(6),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    height: globalheight * 0.08,
+                    width: globalheight * 0.08,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 242, 227, 233),
+                    ),
+                    child: Image.asset('assets/virus.png',
                         fit: BoxFit.fill,
                         color: const Color.fromARGB(255, 157, 76, 108)),
-                    ),
                   ),
                 ),
-              ]
-            ),
+              ),
+            ]),
           ],
         ),
       );

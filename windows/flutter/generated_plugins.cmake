@@ -6,8 +6,12 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus
   dart_vlc
   desktop_drop
+  fast_rsa
   file_selector_windows
   flutter_secure_storage_windows
+  flutter_webrtc
+  flutter_window_close
+  livekit_client
   thumblr_windows
   url_launcher_windows
 )
