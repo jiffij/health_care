@@ -81,7 +81,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
   String exp = '';
   String profilePic = '';
   String title = '';
-  double fRating = 0.0;
+  String fRating = '0';
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
     var uid = data?['profilePic'];
     profilePic = await loadStorageUrl(uid);
     title = data?['title'];
-    fRating = calRating(data?['rating']);
+    fRating = calRating(data?['1'], data?['2'], data?['3'], data?['4'], data?['5']);
     setState(() {
       print(data);
     });

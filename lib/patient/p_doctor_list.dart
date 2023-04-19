@@ -84,7 +84,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
       var uid = data?['profilePic'];
       var profilePic = await loadStorageUrl(uid);
       var title = data?['title'];
-      var fRating = calRating(data?['rating']);
+      var fRating = calRating(data?['1'], data?['2'], data?['3'], data?['4'], data?['5']);
       print(data);
       setState(() {
         doctorlist.insert(0, [fullname, id, profilePic, title, fRating]);
@@ -384,7 +384,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
                       Text('Doctor name: ${doctorlistsort[index][0]}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       Text('Doctor title: ${doctorlistsort[index][3]}', style: const TextStyle(fontSize: 14)),
-                      Text('Rating: ${doctorlistsort[index][4].toString()}/5.0', style: const TextStyle(fontSize: 14)),
+                      Text('Rating: ${doctorlistsort[index][4]}/5.0', style: const TextStyle(fontSize: 14)),
                     ],
                   ),
                 ),

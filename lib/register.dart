@@ -104,13 +104,22 @@ class _RegisterState extends State<Register> {
       if (pos == 'doctor') 'title': _titleController.text.trim(),
       if (pos == 'doctor') 'exp': _currentSliderValue.round().toString() + " years",
       if (pos == 'doctor')
-        'rating': {
-          '1': '0',
-          '2': '0',
-          '3': '0',
-          '4': '0',
-          '5': '0',
-        },
+      '1': '0',
+      if (pos == 'doctor')
+      '2': '0',
+      if (pos == 'doctor')
+      '3': '0',
+      if (pos == 'doctor')
+      '4': '0',
+      if (pos == 'doctor')
+      '5': '0',
+        // 'rating': {
+        //   '1': '0',
+        //   '2': '0',
+        //   '3': '0',
+        //   '4': '0',
+        //   '5': '0',
+        // },
     });
     updateAuthInfo(_nameController.text);
     var result = await Navigator.of(context).push(
