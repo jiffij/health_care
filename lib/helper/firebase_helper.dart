@@ -16,7 +16,9 @@ import 'dart:math';
 
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
+final int MAX_TRIES = 20;
 const URL = 'http://143.89.130.155:8080';
+// const URL = 'http://192.168.0.178:5000';
 
 // FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseStorage storage = FirebaseStorage.instance;
@@ -162,13 +164,21 @@ Future<String> getServerPublicKey() async {
 
 Future<http.Response> writeToServer(
     String docID, Map<String, dynamic> body) async {
+  http.Response res;
+  // int count = 0;
+  // do {
+  //   if(count > 0){
+  //     await generateKey();
+  //   }
+
   final bool exist = await checkDocExist(docID);
   var dir = exist ? 'add' : 'set';
   var server_key = await getServerPublicKey();
   // print(server_key);
   var new_body = await rsaEncrypt(jsonEncode(body), server_key);
   // print(new_body);
-  return http.post(
+
+  res = await http.post(
     Uri.parse('$URL/$dir'),
     headers: <String, String>{
       'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
@@ -176,11 +186,21 @@ Future<http.Response> writeToServer(
     },
     body: new_body,
   );
+  // count++;
+  // } while (!(await checkDocExist(docID)) && count < MAX_TRIES);
+  return res;
 }
 
 Future<Map<String, dynamic>?> readFromServer(String docID) async {
+  http.Response response;
+  // int count = 0;
+  // do {
+  //   if (count > 0){
+  //     await generateKey();
+  //   }
+
   var public_key = await getMyPublicKey();
-  var response = await http.post(
+  response = await http.post(
     Uri.parse('$URL/list'),
     headers: <String, String>{
       'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
@@ -188,8 +208,13 @@ Future<Map<String, dynamic>?> readFromServer(String docID) async {
     },
     body: public_key,
   );
+  //   count++;
+  // } while (response.statusCode == 204 && count < MAX_TRIES);
+
+  print(response.body);
   print('status code:$response.statusCode');
   if (response.statusCode == 204) return null;
+  print(jsonDecode(await rsaDecrypt(response.body)));
   return jsonDecode(await rsaDecrypt(response.body));
   // return jsonDecode(response.body);
 }
@@ -397,13 +422,19 @@ Future<List<String>> getColId(String path) async {
   return documentNames;
 }
 
-double calRating(Map<String, dynamic> rating) {
-  double sum = 0;
-  double count = 0;
-  for (String key in rating.keys) {
-    sum += int.parse(rating[key]) * int.parse(rating[key]);
-    count += int.parse(rating[key]);
-  }
+String calRating(
+    String one, String two, String three, String four, String five) {
+  double sum = int.parse(one) * 1 +
+      int.parse(two) * 2 +
+      int.parse(three) * 3 +
+      int.parse(four) * 4 +
+      int.parse(five) * 5;
+  int count = int.parse(one) +
+      int.parse(two) +
+      int.parse(three) +
+      int.parse(four) +
+      int.parse(five);
   sum /= count;
-  return sum;
+  if (count == 0) return '0';
+  return sum.toStringAsFixed(2);
 }

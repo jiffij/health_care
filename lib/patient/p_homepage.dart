@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/patient/p_diagnostic_survey.dart';
 import 'package:simple_login/patient/p_medical_allergy.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
 import '../news/components/customHorizontalListTile.dart';
 import '../news/pages/articles_details_page.dart';
+import '../register.dart';
 import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
@@ -112,15 +114,14 @@ class _HomePageState extends State<p_HomePage> {
     }
     setState(() {});
     articles = await client.getArticle();
-    print('start');
+
     setState(() {
       for (int i = 0; i < 3; i++) {
-        newsUrl[i] = articles[i].urlToImage;
-        print(articles[i].urlToImage);
+        if(articles[i].urlToImage != ""){
+          newsUrl[i] = articles[i].urlToImage;
+        }
       }
     });
-
-    print('ends');
   }
 
   // All navigate direction calling method
@@ -138,7 +139,7 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 3:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const p_MessagePage()),
+          MaterialPageRoute(builder: (context) => DiagnosticSurvey('hi', '20230414', '13:30')),
         );
         break;
       case 4:
