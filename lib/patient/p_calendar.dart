@@ -105,6 +105,21 @@ class _CalendarPageState extends State<p_CalendarPage> {
       for (var existdate in existdatelist) {
         existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
         List timeList = existtimemap!.keys.toList();
+        List timeListint = [];
+        for (var time in timeList) {
+          var temp = time[0] + time[1] + time[3] + time[4];
+          temp = int.parse(temp);
+          // Todo Check if the funciton is work
+          timeListint.add(temp);
+        }
+        timeListint.sort();
+        print(timeListint);
+        timeList.clear();
+        for (var time in timeList) {
+          var temp = '${time[0]}${time[1]}:${time[3]}${time[4]}';
+          // Todo Check if the funciton is work
+          timeList.add(temp);
+        }
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
           var id = existtimemap[time]['doctorID'];
@@ -115,7 +130,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
           var dFullname = '$dFirstname $dLastname';
           dailyAppointmentList.insert(0, [existdate, time, dFullname]);
         }
-        //print(dailyAppointmentList);
+        print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();
         print(dailyAppointmentList);
         for (var list in dailyAppointmentList) {
@@ -123,6 +138,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
         }
       }
       appointmentslist = appointmentslist.reversed.toList();
+      print(appointmentslist);
     }
     setState(() {});
   }
@@ -268,6 +284,7 @@ class _CalendarPageState extends State<p_CalendarPage> {
                         _selectedDay = selectedDay;
                         _focusedDay = focusedDay; // update `_focusedDay` here as well
                         appointmentslistsort = appointmentSort(dateToServer(_focusedDay));
+                        appointmentslistsort = appointmentslistsort.reversed.toList();
                       });
                     },
                     onPageChanged: (focusedDay) {

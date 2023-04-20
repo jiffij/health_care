@@ -63,9 +63,16 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
       body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                detaillist(width, height),
+                modifybutton(width, height),
+                mdshow ? modifypage(width, height)
+                    : Container(),
+              ],
+            ),
             heading(width, height),
-            detaillist(width, height),
-            booknow(width, height),
             home(width, height),           
           ],
         ),
@@ -73,6 +80,11 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
   }
 
   String fullname = '';
+  bool mdshow = false;
+  final TextEditingController _nameController = TextEditingController(text: "");
+  final TextEditingController _contactController = TextEditingController(text: "");
+  final TextEditingController _relationController = TextEditingController(text: "");
+  final TextEditingController _allergyController = TextEditingController(text: "");
 
   @override
   void initState() {
@@ -252,9 +264,10 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
           ),
         ),
       ),
-      Align(alignment: Alignment.centerLeft,
+      Align(
+        alignment: Alignment.centerLeft,
         child: FittedBox(
-            fit: BoxFit.scaleDown,
+          fit: BoxFit.scaleDown,
           child: Container(
             margin: const EdgeInsets.only(left: 12, bottom: 12),
             width: globalwidth,
@@ -292,9 +305,10 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
           ),
         ),
       ),
-      Align(alignment: Alignment.centerLeft,
+      Align(
+        alignment: Alignment.centerLeft,
         child: FittedBox(
-            fit: BoxFit.scaleDown,
+          fit: BoxFit.scaleDown,
           child: Container(
             margin: const EdgeInsets.only(left: 12, bottom: 12),
             width: globalwidth,
@@ -321,9 +335,9 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
   ),
 );
 
-Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+Widget modifybutton(double globalwidth, double globalheight) => DefaultTextStyle.merge(
   child: GestureDetector(
-    onTap: () => navigator(5),
+    onTap: () => setState(() {mdshow = !mdshow;}),
     child: Align(
       alignment: Alignment.center,
       child: FittedBox(
@@ -341,6 +355,43 @@ Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merg
           ),
           child: const Text('~~Click here to modify the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
         ),
+      ),
+    ),
+  ),
+);
+
+Widget modifypage(double globalwidth, double globalheight) =>DefaultTextStyle.merge(
+  child: Container(
+    height: globalheight*0.4,
+    width: globalwidth,
+    child: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 30.0,
+                ),
+                TextField(
+                  controller: _nameController,
+                  // cursorColor: Colors.orange,
+                  decoration: InputDecoration(
+                    labelText: 'Emergency Contact Name:',
+                    hintText: 'Emergency Contact Name',
+                    // suffixIcon: Icon(Icons.email),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     ),
   ),
