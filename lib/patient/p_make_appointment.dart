@@ -606,8 +606,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
         ],
       );
 
-  Widget timeslotlist(
-          double globalwidth, double globalheight, DateTime selectedDay) =>
+  Widget timeslotlist(double globalwidth, double globalheight, DateTime selectedDay) =>
       DefaultTextStyle.merge(
         child: Container(
           padding: const EdgeInsets.all(12),
