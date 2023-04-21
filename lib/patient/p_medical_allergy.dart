@@ -59,23 +59,17 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-
-      body: Column(
+      body: SingleChildScrollView(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                detaillist(width, height),
-                modifybutton(width, height),
-                mdshow ? modifypage(width, height)
-                    : Container(),
-              ],
-            ),
             heading(width, height),
+            detaillist(width, height),
+            modifybutton(width, height),
             home(width, height),           
           ],
         ),
+      ),
     );
   }
 
@@ -226,14 +220,6 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
                         child: Text('User Full Name: $fullname', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                    // Container (
-                    //   margin: const EdgeInsets.only(left: 10),
-                    //   child: const FittedBox (
-                    //     alignment: Alignment.centerLeft,
-                    //     fit: BoxFit.scaleDown,
-                    //     child: Text('Doctor Title', style: TextStyle(fontSize: 12)),
-                    //   ),
-                    // ),
                   ],
                 ),
               ],
@@ -246,91 +232,98 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
 );
 
 Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: Column(
+  child: Stack (
+    alignment: Alignment.center,
     children: [
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FittedBox(
-            fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
-            height: globalheight*0.05,
-            width: globalwidth,
-            child: const FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text('Emergency Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ),
-      ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.only(left: 12, bottom: 12),
-            width: globalwidth,
-            height: globalheight*0.15,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
-                  Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 7', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 8', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 9', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 10', style: TextStyle(fontSize: 16)),
-                ],
+      Column(
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
+                fit: BoxFit.scaleDown,
+              child: Container(
+                margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
+                height: globalheight*0.05,
+                width: globalwidth,
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text('Emergency Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
               ),
             ),
           ),
-        ),
-      ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FittedBox(
-            fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
-            height: globalheight*0.05,
-            width: globalwidth,
-            child: const FittedBox(
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
               fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Text('Allergy Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ),
-      ),
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.only(left: 12, bottom: 12),
-            width: globalwidth,
-            height: globalheight*0.15,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.vertical,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  TextField(),
-                  Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
-                  Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
-                  Text('Allergy Details 7', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 8', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 9', style: TextStyle(fontSize: 16)),
-                  Text('Patient Details 10', style: TextStyle(fontSize: 16)),
-                ],
+              child: Container(
+                margin: const EdgeInsets.only(left: 12, bottom: 12),
+                width: globalwidth,
+                height: globalheight*0.15,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
+                      Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 7', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 8', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 9', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 10', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
+                fit: BoxFit.scaleDown,
+              child: Container(
+                margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
+                height: globalheight*0.05,
+                width: globalwidth,
+                child: const FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text('Allergy Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Container(
+                margin: const EdgeInsets.only(left: 12, bottom: 12),
+                width: globalwidth,
+                height: globalheight*0.15,
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      TextField(),
+                      Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
+                      Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
+                      Text('Allergy Details 7', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 8', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 9', style: TextStyle(fontSize: 16)),
+                      Text('Patient Details 10', style: TextStyle(fontSize: 16)),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
+      mdshow ? modifypage(globalwidth, globalheight)
+          : Container(),
     ],
   ),
 );
@@ -353,7 +346,9 @@ Widget modifybutton(double globalwidth, double globalheight) => DefaultTextStyle
               BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
             ],
           ),
-          child: const Text('~~Click here to modify the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
+          child: mdshow ? 
+          const Text('~~Click here to save the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold))
+          : const Text('~~Click here to modify the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
         ),
       ),
     ),
@@ -362,8 +357,16 @@ Widget modifybutton(double globalwidth, double globalheight) => DefaultTextStyle
 
 Widget modifypage(double globalwidth, double globalheight) =>DefaultTextStyle.merge(
   child: Container(
-    height: globalheight*0.4,
-    width: globalwidth,
+    height: globalheight*0.44,
+    width: globalwidth*0.96,
+    decoration: const BoxDecoration(
+      color: Color.fromARGB(255, 255, 255, 255),
+      borderRadius: BorderRadius.only(
+        topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+        boxShadow: [
+          BoxShadow(color: Colors.black, spreadRadius: 3),
+          ],
+    ),
     child: SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -371,20 +374,25 @@ Widget modifypage(double globalwidth, double globalheight) =>DefaultTextStyle.me
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(
-                  height: 30.0,
-                ),
-                TextField(
-                  controller: _nameController,
-                  // cursorColor: Colors.orange,
-                  decoration: InputDecoration(
-                    labelText: 'Emergency Contact Name:',
-                    hintText: 'Emergency Contact Name',
-                    // suffixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
+                Container(
+                  alignment: Alignment.center,
+                  height: globalheight*0.066,
+                  width: globalwidth*0.8,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      fillColor: Colors.red,
+                      hintText: 'Emergency Contact Name:',
+                      labelText: 'Emergency Contact Name:',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                     ),
                   ),
                 ),
