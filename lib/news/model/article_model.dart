@@ -36,7 +36,7 @@ class Article {
           (json['description'] == null ? "" : json['description'] as String),
       url: json['url'] as String,
       urlToImage:
-          (json['urlToImage'] == null ? "" : json['urlToImage'] as String),
+          (json['urlToImage'] == null ? "https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c" : json['urlToImage'] as String),
       publishedAt: json['publishedAt'] as String,
       content: json['content'] ?? "",
     );

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+
 import '../model/article_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,11 +36,20 @@ class ApiService {
       Map<String, dynamic> json = jsonDecode(res.body);
 
       List<dynamic> body = json['articles'];
+      print('news length');
       print(body.length);
       //this line will allow us to get the different articles from the json file and putting them into a list
       List<Article> articles =
           body.map((dynamic item) => Article.fromJson(item)).toList();
-
+      // for (int i = 0; i < articles.length; i++) {
+      //   String u = articles[i].urlToImage;
+      //   Uri uri = Uri.dataFromString(u);
+      //   if(uri.host.isEmpty){
+      //     // URI is not valid
+      //     articles.removeAt(i);
+      //     i--;
+      //   }
+      // }
       return articles;
     } else {
       throw ("Can't get the Articles");

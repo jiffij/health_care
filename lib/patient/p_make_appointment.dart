@@ -71,6 +71,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -254,6 +255,52 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
       ['22:00', true, '22:20', true, '22:40', true],
       ['23:00', true, '23:20', true, '23:40', true],
     ];
+
+    // The booking is unavailable 1 hour before the required meeting timeslot
+    var time = getOneHourAfterAsServer(DateTime.now());
+    bool timecheck = false;
+    if (_selectedDay!.year <= DateTime.now().year) {
+      print('Year');
+      print(_selectedDay!.year);
+      print(DateTime.now().year);
+      if (_selectedDay!.month <= DateTime.now().month) {
+        print('Month:');
+        print(_selectedDay!.month);
+        print(DateTime.now().month);
+        print('Day:');
+        print(_selectedDay!.day);
+        print(DateTime.now().day);
+        print('Hour:');
+        print(time);
+        // Passed day
+        if (_selectedDay!.day < DateTime.now().day) {
+          for (int i = 0; i < templist.length; i++) {
+            for (int j = 0; j < templist[i].length; j = j + 2) {
+              templist[i][j+1] = 'false';
+            }
+          }
+        }
+        // Selected day = today
+        else if (_selectedDay!.day == DateTime.now().day) {
+          for (int i = 0; i < templist.length; i++) {
+            for (int j = 0; j < templist[i].length; j = j + 2) {
+              print(templist[i][j]);
+              if (templist[i][j] != time)
+              {
+                templist[i][j+1] = 'false';
+              }
+              else {
+                timecheck = true;
+                break;
+              }
+            }
+            if (timecheck == true) {
+              break;
+            }
+          }
+        }
+      }
+    }
     List<String> existdatelist = await getColId('doctor/$doctor_uid/appointment');
     print(existdatelist);
     Map<String, dynamic>? existtimemap;
@@ -271,17 +318,17 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
         for (var existtime in keyList) {
           for (int i = 0; i < templist.length; i++) {
             for (int j = 0; j < templist[i].length; j = j + 2) {
+              // The timeslot has been booked
               if (existtime == templist[i][j]) {
                 templist[i][j + 1] = 'false';
-              }
+              }       
             }
           }
         }
       }
     }
     //print('checkpoint 1');
-    timeslotslist = templist;
-    setState(() {});
+    setState(() {timeslotslist = templist;});
     //print(timeslotslist);
   }
 
@@ -293,6 +340,25 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
   String dateToServer(DateTime date) {
     var formattedDate = DateFormat('yMMdd').format(date);
     return formattedDate.toString();
+  }
+
+  String getOneHourAfterAsServer(DateTime date) {
+    var tempH = date.hour;
+    var tempM = date.minute;
+    tempH = tempH + 1;
+    var hour = tempH.toString();
+    if (tempM >= 0 && tempM <= 20) {
+      tempM = 00;
+    }
+    else if (tempM >= 21 && tempM <= 40) {
+      tempM = 20;
+    }
+    else {
+      tempM = 40;
+    }
+    var minute = tempM.toString();
+    hour = '$hour:$minute';
+    return hour.toString();
   }
 
   void makeAppointment() {
@@ -541,8 +607,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
         ],
       );
 
-  Widget timeslotlist(
-          double globalwidth, double globalheight, DateTime selectedDay) =>
+  Widget timeslotlist(double globalwidth, double globalheight, DateTime selectedDay) =>
       DefaultTextStyle.merge(
         child: Container(
           padding: const EdgeInsets.all(12),

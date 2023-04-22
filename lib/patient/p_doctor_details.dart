@@ -64,7 +64,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

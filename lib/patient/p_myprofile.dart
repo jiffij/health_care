@@ -68,7 +68,7 @@ class _MyProfilePageState extends State<p_MyProfilePage> {
     ];
 
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

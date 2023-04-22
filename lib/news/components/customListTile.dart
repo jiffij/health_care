@@ -2,15 +2,16 @@ import '../model/article_model.dart';
 import '../pages/articles_details_page.dart';
 import 'package:flutter/material.dart';
 
+import '../web_view.dart';
+
+
 Widget customListTile(Article article, BuildContext context) {
   return InkWell(
     onTap: () {
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => ArticlePage(
-                    article: article,
-                  )));
+              context,
+              MaterialPageRoute(builder: (context) => MyWebView(url: article.url)),
+            );
     },
     child: Container(
       margin: EdgeInsets.all(12.0),
@@ -64,7 +65,23 @@ Widget customListTile(Article article, BuildContext context) {
               fontWeight: FontWeight.bold,
               fontSize: 16.0,
             ),
-          )
+          ),
+          // GestureDetector(
+          //   child: Text(
+          //   article.url,
+          //   style: TextStyle(
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 16.0,
+          //   ),
+          // ),
+          // onTap: (){
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(builder: (context) => MyWebView(url: article.url)),
+          //   );
+          // },
+          // ),
+          
         ],
       ),
     ),

@@ -43,7 +43,7 @@ class _NewsPageState extends State<NewsPage> {
             List<Article> articles = snapshot.data!;
             return ListView.builder(
               //Now let's create our custom List tile
-              itemCount: articles.length,
+              itemCount: 9,
               itemBuilder: (context, index) =>
                   customListTile(articles[index], context),
             );

@@ -9,6 +9,7 @@ import 'package:swipe_widget/swipe_widget.dart';
 import '../news/model/article_model.dart';
 import '../news/pages/articles_details_page.dart';
 import '../news/services/api_service.dart';
+import '../news/web_view.dart';
 import '../video_call/join_call_waiting.dart';
 import 'd_calendar.dart';
 import 'd_myprofile.dart';
@@ -228,11 +229,9 @@ class _HomePageState extends State<d_HomePage> {
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ArticlePage(
-                                    article: articles[index],
-                                  )));
+                        context,
+                        MaterialPageRoute(builder: (context) => MyWebView(url: articles[index].url)),
+                      );
                     },
                     child: Image.network(
                       newsUrl[index],

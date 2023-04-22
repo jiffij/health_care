@@ -8,6 +8,7 @@ import 'package:swipe_widget/swipe_widget.dart';
 // Other files
 import '../news/components/customHorizontalListTile.dart';
 import '../news/pages/articles_details_page.dart';
+import '../news/web_view.dart';
 import '../register.dart';
 import 'p_calendar.dart';
 import 'p_message.dart';
@@ -53,6 +54,7 @@ class _HomePageState extends State<p_HomePage> {
     return !startDone
         ? LoadingScreen()
         : Scaffold(
+            resizeToAvoidBottomInset: false,
             body: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -66,6 +68,7 @@ class _HomePageState extends State<p_HomePage> {
           );
   }
 
+  var now = DateTime.now();
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
@@ -91,7 +94,9 @@ class _HomePageState extends State<p_HomePage> {
     List<String> existdatelist = await getColId('patient/$uid/appointment');
     Map<String, dynamic>? existtimemap;
     if (existdatelist.isNotEmpty) {
+      var date = dateToServer(now);
       for (var existdate in existdatelist) {
+// <<<<<<< HEAD
         existtimemap =
             await readFromServer('patient/$uid/appointment/$existdate');
         List timeList = existtimemap!.keys.toList();
@@ -110,6 +115,48 @@ class _HomePageState extends State<p_HomePage> {
         print(dailyAppointmentList);
         for (var list in dailyAppointmentList) {
           appointments.insert(0, list);
+// =======
+//         // Check if the appointment has passed alreadly or not
+//         if (int.parse(existdate) >= int.parse(date)) {
+//           existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+//           List timeList = existtimemap!.keys.toList();
+//           // print('timeList');
+//           List timeListint = [];
+//           for (var time in timeList) {
+//             var temp = time[0] + time[1] + time[3] + time[4];
+//             temp = int.parse(temp);
+//             // Todo Check if the funciton is work
+//             timeListint.add(temp);
+//           }
+//           timeListint.sort();
+//           timeList.clear();
+//           for (var time in timeListint) {
+//             String temp = time.toString();
+//             if (temp.length == 3) {
+//               temp = '0${temp[0]}:${temp[1]}${temp[2]}';
+//             }
+//             else {
+//               temp = '${temp[0]}${temp[1]}:${temp[2]}${temp[3]}';
+//             }
+//             timeList.add(temp);
+//           }
+//           List<List> dailyAppointmentList = [];
+//           for (var time in timeList) {
+//             var id = existtimemap[time]['doctorID'];
+//             //print(id);
+//             Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+//             var dFirstname = doctor?['first name'];
+//             var dLastname = doctor?['last name'];
+//             var dFullname = '$dFirstname $dLastname';
+//             dailyAppointmentList.insert(0, [existdate, time, dFullname]);
+//           }
+//           //print(dailyAppointmentList);
+//           dailyAppointmentList = dailyAppointmentList.reversed.toList();
+//           print(dailyAppointmentList);
+//           for (var list in dailyAppointmentList) {
+//             appointments.insert(0, list);
+//           }
+// >>>>>>> leon_dev1
         }
       }
       appointments = appointments.reversed.toList();
@@ -181,6 +228,11 @@ class _HomePageState extends State<p_HomePage> {
   String getCurrentDate() {
     var date = DateTime.now();
     var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
+    return formattedDate.toString();
+  }
+
+  String dateToServer(DateTime date) {
+    var formattedDate = DateFormat('yMMdd').format(date);
     return formattedDate.toString();
   }
 
@@ -324,11 +376,9 @@ class _HomePageState extends State<p_HomePage> {
                   child: InkWell(
                     onTap: () {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ArticlePage(
-                                    article: articles[index],
-                                  )));
+                        context,
+                        MaterialPageRoute(builder: (context) => MyWebView(url: articles[index].url)),
+                      );
                     },
                     child: Image.network(
                       newsUrl[index],
