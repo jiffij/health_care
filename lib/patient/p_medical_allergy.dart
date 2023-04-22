@@ -59,16 +59,15 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            heading(width, height),
-            detaillist(width, height),
-            modifybutton(width, height),
-            home(width, height),           
-          ],
-        ),
+      resizeToAvoidBottomInset: false,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          heading(width, height),
+          detaillist(width, height),
+          modifybutton(width, height),
+          home(width, height),           
+        ],
       ),
     );
   }
@@ -89,6 +88,15 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
   void start() async {
     String uid = getUID();
     Map<String, dynamic>? data = await readFromServer('patient/$uid');
+    Map<String, dynamic>? emergencydata = await readFromServer('patient/$uid/emergency');
+    print(emergencydata);
+    if (emergencydata != null) {
+      _nameController.text = emergencydata['emergency contact name'];
+      _contactController.text = emergencydata['emergency contact phone number'];
+      _relationController.text = emergencydata['emergency contact relation'];
+      _allergyController.text = emergencydata['allergy record'];
+    }
+    defaultText();
     setState(() {
       fullname = data?['first name'] + ' ' + data?['last name'];
       print(fullname);
@@ -123,6 +131,34 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
         break;
       default:
     }
+    setState(() {});
+  }
+
+  void defaultText() {
+    if (_nameController.text == "") {
+      _nameController.text = "There is no emergency contact name";
+    }
+    if (_contactController.text == "") {
+      _contactController.text = "There is no emergency contact phone number";
+    }
+    if (_relationController.text == "") {
+      _relationController.text = "There is no emergency contact relation";
+    }
+    if (_allergyController.text == "") {
+      _allergyController.text = "There is no allergy details";
+    }
+  }
+
+  void updateEmergencyDetail() {
+    var uid = getUID();
+    print(uid);
+    print("Writing to server");
+    writeToServer("patient/$uid/emergency", {
+      'emergency contact name': _nameController.text,
+      'emergency contact phone number': _contactController.text,
+      'emergency contact relation': _relationController.text,
+      'allergy record': _allergyController.text,
+    });
     setState(() {});
   }
 
@@ -248,7 +284,7 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                 child: const FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
-                  child: Text('Emergency Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: Text('Emergency Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -265,19 +301,20 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                   scrollDirection: Axis.vertical,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
-                      Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 7', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 8', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 9', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 10', style: TextStyle(fontSize: 16)),
+                    children: [
+                      const Text('Emergency Contact Name:', style: TextStyle(fontSize: 16)),
+                      Text(_nameController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text('Emergency Contact Phone Number:', style: TextStyle(fontSize: 16)),
+                      Text(_contactController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text('Emergency Contact Relation:', style: TextStyle(fontSize: 16)),
+                      Text(_relationController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
               ),
             ),
           ),
+          const Divider(),
           Align(
             alignment: Alignment.centerLeft,
             child: FittedBox(
@@ -289,7 +326,7 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                 child: const FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
-                  child: Text('Allergy Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  child: Text('Allergy Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 ),
               ),
             ),
@@ -306,14 +343,8 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                   scrollDirection: Axis.vertical,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      TextField(),
-                      Text('Patient Details:\nPatient Details 1\nPatient Details 2\nPatient Details 3\nPatient Details 4\nPatient Details 5\nPatient Details 6', style: TextStyle(fontSize: 16)),
-                      Text('This Patient Details is a very long information. It is a paragrath that may used multiple lines.', style: TextStyle(fontSize: 16)),
-                      Text('Allergy Details 7', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 8', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 9', style: TextStyle(fontSize: 16)),
-                      Text('Patient Details 10', style: TextStyle(fontSize: 16)),
+                    children: [
+                      Text(_allergyController.text, style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                 ),
@@ -330,7 +361,13 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
 
 Widget modifybutton(double globalwidth, double globalheight) => DefaultTextStyle.merge(
   child: GestureDetector(
-    onTap: () => setState(() {mdshow = !mdshow;}),
+    onTap: () => setState(() {
+      if(mdshow) {
+        print('Make change');
+        updateEmergencyDetail();
+      } 
+      mdshow = !mdshow; 
+      }),
     child: Align(
       alignment: Alignment.center,
       child: FittedBox(
@@ -373,30 +410,126 @@ Widget modifypage(double globalwidth, double globalheight) =>DefaultTextStyle.me
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  alignment: Alignment.center,
-                  height: globalheight*0.066,
-                  width: globalwidth*0.8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      fillColor: Colors.red,
-                      hintText: 'Emergency Contact Name:',
-                      labelText: 'Emergency Contact Name:',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
+            child:Container(
+              alignment: Alignment.center,
+              height: globalheight*0.1,
+              width: globalwidth*0.8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.red,
+                        hintText: 'Emergency Contact Name:',
+                        labelText: 'Emergency Contact Name:',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
                       ),
                     ),
-                  ),
+                  ]
                 ),
-              ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:Container(
+              alignment: Alignment.center,
+              height: globalheight*0.1,
+              width: globalwidth*0.8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _contactController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.red,
+                        hintText: 'Emergency Contact Phone Number:',
+                        labelText: 'Emergency Contact Phone Number:',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ]
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:Container(
+              alignment: Alignment.center,
+              height: globalheight*0.1,
+              width: globalwidth*0.8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _relationController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.red,
+                        hintText: 'Emergency Contact Relation:',
+                        labelText: 'Emergency Contact Relation:',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ]
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:Container(
+              alignment: Alignment.center,
+              height: globalheight*0.1,
+              width: globalwidth*0.8,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: const Color.fromARGB(255, 255, 255, 255),
+              ),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: _allergyController,
+                      decoration: InputDecoration(
+                        fillColor: Colors.red,
+                        hintText: 'Allergy Record:',
+                        labelText: 'Allergy Record:',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                      ),
+                    ),
+                  ]
+                ),
+              ),
             ),
           ),
         ],

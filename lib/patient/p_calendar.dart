@@ -70,13 +70,12 @@ class _CalendarPageState extends State<p_CalendarPage> {
     
     
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
             calendar(width, height),
-            //upcomingappointmentlist(width, height, _focusedDay),
             home(width, height),           
           ],
         ),
@@ -100,32 +99,31 @@ class _CalendarPageState extends State<p_CalendarPage> {
     Map<String, dynamic>? data = await readFromServer('patient/$uid');
     fullname = data?['first name'] + ' ' + data?['last name'];
     List<String> existdatelist = await getColId('patient/$uid/appointment');
-    print('Existdatelist');
-    print(existdatelist);
     Map<String, dynamic>? existtimemap;
     if (existdatelist.isNotEmpty) {
       for (var existdate in existdatelist) {
-        print('Existdate');
-        print(existdate);
         existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
-        print(existtimemap);
         List timeList = existtimemap!.keys.toList();
         print('timeList');
-        // List timeListint = [];
-        // for (var time in timeList) {
-        //   var temp = time[0] + time[1] + time[3] + time[4];
-        //   temp = int.parse(temp);
-        //   // Todo Check if the funciton is work
-        //   timeListint.add(temp);
-        // }
-        // timeListint.sort();
-        // print(timeListint);
-        // timeList.clear();
-        // for (var time in timeList) {
-        //   var temp = '${time[0]}${time[1]}:${time[3]}${time[4]}';
-        //   // Todo Check if the funciton is work
-        //   timeList.add(temp);
-        // }
+        List timeListint = [];
+        for (var time in timeList) {
+          var temp = time[0] + time[1] + time[3] + time[4];
+          temp = int.parse(temp);
+          // Todo Check if the funciton is work
+          timeListint.add(temp);
+        }
+        timeListint.sort();
+        timeList.clear();
+        for (var time in timeListint) {
+          String temp = time.toString();
+          if (temp.length == 3) {
+            temp = '0${temp[0]}:${temp[1]}${temp[2]}';
+          }
+          else {
+            temp = '${temp[0]}${temp[1]}:${temp[2]}${temp[3]}';
+          }
+          timeList.add(temp);
+        }
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
           var id = existtimemap[time]['doctorID'];

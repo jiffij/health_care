@@ -71,6 +71,7 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
     double width = MediaQuery.of(context).size.width;
 
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
