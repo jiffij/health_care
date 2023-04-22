@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/helper/loading_screen.dart';
 
 // Other files
 import 'p_calendar.dart';
@@ -15,15 +16,15 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Medical Allergy page',
       theme: ThemeData(
-        // This is the theme of the application.
-      ),
+          // This is the theme of the application.
+          ),
       home: const p_MedicalAllergyPage(),
     );
   }
@@ -42,11 +43,12 @@ class p_MedicalAllergyPage extends StatefulWidget {
   // always marked "final".
 
   @override
-
   State<p_MedicalAllergyPage> createState() => _MedicalAllergyPageState();
 }
 
 class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
+  
+  bool startDone = false;
   
   @override
   Widget build(BuildContext context) {
@@ -58,26 +60,33 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          heading(width, height),
-          detaillist(width, height),
-          modifybutton(width, height),
-          home(width, height),           
-        ],
-      ),
-    );
+    
+
+    return !startDone
+        ? LoadingScreen()
+        : Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                heading(width, height),
+                detaillist(width, height),
+                modifybutton(width, height),
+                home(width, height),
+              ],
+            ),
+          );
   }
 
   String fullname = '';
   bool mdshow = false;
   final TextEditingController _nameController = TextEditingController(text: "");
-  final TextEditingController _contactController = TextEditingController(text: "");
-  final TextEditingController _relationController = TextEditingController(text: "");
-  final TextEditingController _allergyController = TextEditingController(text: "");
+  final TextEditingController _contactController =
+      TextEditingController(text: "");
+  final TextEditingController _relationController =
+      TextEditingController(text: "");
+  final TextEditingController _allergyController =
+      TextEditingController(text: "");
 
   @override
   void initState() {
@@ -88,7 +97,8 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
   void start() async {
     String uid = getUID();
     Map<String, dynamic>? data = await readFromServer('patient/$uid');
-    Map<String, dynamic>? emergencydata = await readFromServer('patient/$uid/emergency');
+    Map<String, dynamic>? emergencydata =
+        await readFromServer('patient/$uid/emergency/emergency');
     print(emergencydata);
     if (emergencydata != null) {
       _nameController.text = emergencydata['emergency contact name'];
@@ -100,6 +110,7 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     setState(() {
       fullname = data?['first name'] + ' ' + data?['last name'];
       print(fullname);
+      startDone = true;
     });
   }
 
@@ -153,7 +164,7 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     var uid = getUID();
     print(uid);
     print("Writing to server");
-    writeToServer("patient/$uid/emergency", {
+    writeToServer("patient/$uid/emergency/emergency", {
       'emergency contact name': _nameController.text,
       'emergency contact phone number': _contactController.text,
       'emergency contact relation': _relationController.text,
@@ -162,444 +173,478 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
     setState(() {});
   }
 
-  Widget heading(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: Stack(
-    children: [
-      Container(
-        width: globalwidth,
-        height: globalheight*0.31,
-        color: const Color.fromARGB(255, 255, 255, 255),
-      ),
-      Container(
-        width: globalwidth,
-        height: globalheight*0.25,
-        color: const Color.fromARGB(255, 28, 107, 164),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+  Widget heading(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Stack(
           children: [
-            GestureDetector(
-              onTap: () => navigator(0),
+            Container(
+              width: globalwidth,
+              height: globalheight * 0.31,
+              color: const Color.fromARGB(255, 255, 255, 255),
+            ),
+            Container(
+              width: globalwidth,
+              height: globalheight * 0.25,
+              color: const Color.fromARGB(255, 28, 107, 164),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: () => navigator(0),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 15, top: 20),
+                        height: globalheight * 0.06,
+                        width: globalheight * 0.06,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: const Color.fromARGB(255, 255, 255, 255),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            child: const Icon(Icons.arrow_back_rounded),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Align(
+                    alignment: Alignment.center,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text('Personal Emergency Details',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              bottom: 0,
               child: FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Container(
-                  margin: const EdgeInsets.only(left: 15, top: 20),
-                  height: globalheight*0.06,
-                  width: globalheight*0.06,
+                  margin: const EdgeInsets.only(left: 15, top: 10),
+                  height: globalheight * 0.12,
+                  width: globalwidth * 0.9,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: const Color.fromARGB(255, 220, 237, 249),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                        blurRadius: 0.5,
+                        offset: Offset(0.5, 0.5),
+                      ),
+                    ],
                   ),
-                  child: FittedBox (
+                  child: Row(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 5),
+                        width: globalheight * 0.1,
+                        height: globalheight * 0.1,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const FittedBox(
+                          fit: BoxFit.cover,
+                          child: Icon(Icons.person,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                        ),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 10),
+                            child: FittedBox(
+                              alignment: Alignment.centerLeft,
+                              fit: BoxFit.scaleDown,
+                              child: Text('User Full Name: $fullname',
+                                  style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget detaillist(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
                     fit: BoxFit.scaleDown,
                     child: Container(
-                    margin: const EdgeInsets.all(5),
-                    child: const Icon(Icons.arrow_back_rounded),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            const Align(
-              alignment: Alignment.center,  
-              child: FittedBox (
-              fit: BoxFit.scaleDown,        
-              child: 
-              Text('Personal Emergency Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-              ),
-            ), 
-          ],
-        ),
-      ),
-      Positioned(
-        bottom: 0,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Container(
-            margin: const EdgeInsets.only(left: 15, top: 10),
-            height: globalheight*0.12,
-            width: globalwidth*0.9,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(255, 220, 237, 249),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  blurRadius: 0.5,
-                  offset: Offset(0.5, 0.5),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 5),
-                  width: globalheight*0.1,
-                  height: globalheight*0.1,
-                  decoration : BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const FittedBox(
-                    fit: BoxFit.cover,
-                    child: Icon(Icons.person,color: Color.fromARGB(255, 123, 141, 158)),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container (
-                      margin: const EdgeInsets.only(left: 10),
-                      child: FittedBox (
-                        alignment: Alignment.centerLeft,
+                      margin:
+                          const EdgeInsets.only(left: 12, top: 12, bottom: 5),
+                      height: globalheight * 0.05,
+                      width: globalwidth,
+                      child: const FittedBox(
                         fit: BoxFit.scaleDown,
-                        child: Text('User Full Name: $fullname', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        alignment: Alignment.centerLeft,
+                        child: Text('Emergency Details',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
                     ),
-                  ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 12, bottom: 12),
+                      width: globalwidth,
+                      height: globalheight * 0.15,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Emergency Contact Name:',
+                                style: TextStyle(fontSize: 16)),
+                            Text(_nameController.text,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            const Text('Emergency Contact Phone Number:',
+                                style: TextStyle(fontSize: 16)),
+                            Text(_contactController.text,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            const Text('Emergency Contact Relation:',
+                                style: TextStyle(fontSize: 16)),
+                            Text(_relationController.text,
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      margin:
+                          const EdgeInsets.only(left: 12, top: 12, bottom: 5),
+                      height: globalheight * 0.05,
+                      width: globalwidth,
+                      child: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerLeft,
+                        child: Text('Allergy Details',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                      margin: const EdgeInsets.only(left: 12, bottom: 12),
+                      width: globalwidth,
+                      height: globalheight * 0.15,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(_allergyController.text,
+                                style: const TextStyle(fontSize: 16)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
+            mdshow ? modifypage(globalwidth, globalheight) : Container(),
+          ],
+        ),
+      );
+
+  Widget modifybutton(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: GestureDetector(
+          onTap: () => setState(() {
+            if (mdshow) {
+              print('Make change');
+              updateEmergencyDetail();
+            }
+            mdshow = !mdshow;
+          }),
+          child: Align(
+            alignment: Alignment.center,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Container(
+                height: globalheight * 0.08,
+                width: globalwidth * 0.7,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color.fromARGB(255, 28, 107, 164),
+                  boxShadow: const [
+                    BoxShadow(
+                        color: Color.fromARGB(100, 28, 107, 164),
+                        spreadRadius: 2),
+                  ],
+                ),
+                child: mdshow
+                    ? const Text('~~Click here to save the details~~',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold))
+                    : const Text('~~Click here to modify the details~~',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            fontWeight: FontWeight.bold)),
+              ),
+            ),
           ),
         ),
-      ),
-    ],
-  ),
-);
+      );
 
-Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: Stack (
-    alignment: Alignment.center,
-    children: [
-      Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-                fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
-                height: globalheight*0.05,
-                width: globalwidth,
-                child: const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('Emergency Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 12, bottom: 12),
-                width: globalwidth,
-                height: globalheight*0.15,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Emergency Contact Name:', style: TextStyle(fontSize: 16)),
-                      Text(_nameController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      const Text('Emergency Contact Phone Number:', style: TextStyle(fontSize: 16)),
-                      Text(_contactController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      const Text('Emergency Contact Relation:', style: TextStyle(fontSize: 16)),
-                      Text(_relationController.text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const Divider(),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-                fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 12, top: 12, bottom: 5),
-                height: globalheight*0.05,
-                width: globalwidth,
-                child: const FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text('Allergy Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Container(
-                margin: const EdgeInsets.only(left: 12, bottom: 12),
-                width: globalwidth,
-                height: globalheight*0.15,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_allergyController.text, style: const TextStyle(fontSize: 16)),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-      mdshow ? modifypage(globalwidth, globalheight)
-          : Container(),
-    ],
-  ),
-);
-
-Widget modifybutton(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-  child: GestureDetector(
-    onTap: () => setState(() {
-      if(mdshow) {
-        print('Make change');
-        updateEmergencyDetail();
-      } 
-      mdshow = !mdshow; 
-      }),
-    child: Align(
-      alignment: Alignment.center,
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
+  Widget modifypage(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
         child: Container(
-          height: globalheight*0.08,
-          width: globalwidth*0.7,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color.fromARGB(255, 28, 107, 164),
-            boxShadow: const [
-              BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
+          height: globalheight * 0.44,
+          width: globalwidth * 0.96,
+          decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 255, 255, 255),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
+            boxShadow: [
+              BoxShadow(color: Colors.black, spreadRadius: 3),
             ],
           ),
-          child: mdshow ? 
-          const Text('~~Click here to save the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold))
-          : const Text('~~Click here to modify the details~~', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: globalheight * 0.1,
+                    width: globalwidth * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _nameController,
+                              decoration: InputDecoration(
+                                fillColor: Colors.red,
+                                hintText: 'Emergency Contact Name:',
+                                labelText: 'Emergency Contact Name:',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: globalheight * 0.1,
+                    width: globalwidth * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _contactController,
+                              decoration: InputDecoration(
+                                fillColor: Colors.red,
+                                hintText: 'Emergency Contact Phone Number:',
+                                labelText: 'Emergency Contact Phone Number:',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: globalheight * 0.1,
+                    width: globalwidth * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _relationController,
+                              decoration: InputDecoration(
+                                fillColor: Colors.red,
+                                hintText: 'Emergency Contact Relation:',
+                                labelText: 'Emergency Contact Relation:',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    height: globalheight * 0.1,
+                    width: globalwidth * 0.8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: const Color.fromARGB(255, 255, 255, 255),
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _allergyController,
+                              decoration: InputDecoration(
+                                fillColor: Colors.red,
+                                hintText: 'Allergy Record:',
+                                labelText: 'Allergy Record:',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-    ),
-  ),
-);
+      );
 
-Widget modifypage(double globalwidth, double globalheight) =>DefaultTextStyle.merge(
-  child: Container(
-    height: globalheight*0.44,
-    width: globalwidth*0.96,
-    decoration: const BoxDecoration(
-      color: Color.fromARGB(255, 255, 255, 255),
-      borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-        boxShadow: [
-          BoxShadow(color: Colors.black, spreadRadius: 3),
-          ],
-    ),
-    child: SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:Container(
-              alignment: Alignment.center,
-              height: globalheight*0.1,
-              width: globalwidth*0.8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        fillColor: Colors.red,
-                        hintText: 'Emergency Contact Name:',
-                        labelText: 'Emergency Contact Name:',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+  Widget home(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 3),
+          width: globalwidth,
+          height: globalheight * 0.07,
+          color: const Color.fromARGB(255, 217, 217, 217),
+          child: DefaultTextStyle(
+            style: const TextStyle(color: Color.fromARGB(255, 123, 141, 158)),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(1),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.home,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Home'),
+                        ],
                       ),
                     ),
-                  ]
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:Container(
-              alignment: Alignment.center,
-              height: globalheight*0.1,
-              width: globalwidth*0.8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _contactController,
-                      decoration: InputDecoration(
-                        fillColor: Colors.red,
-                        hintText: 'Emergency Contact Phone Number:',
-                        labelText: 'Emergency Contact Phone Number:',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(2),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.calendar_month,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Calendar'),
+                        ],
                       ),
                     ),
-                  ]
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:Container(
-              alignment: Alignment.center,
-              height: globalheight*0.1,
-              width: globalwidth*0.8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _relationController,
-                      decoration: InputDecoration(
-                        fillColor: Colors.red,
-                        hintText: 'Emergency Contact Relation:',
-                        labelText: 'Emergency Contact Relation:',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(3),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.message,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('Message'),
+                        ],
                       ),
                     ),
-                  ]
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:Container(
-              alignment: Alignment.center,
-              height: globalheight*0.1,
-              width: globalwidth*0.8,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: const Color.fromARGB(255, 255, 255, 255),
-              ),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    TextField(
-                      controller: _allergyController,
-                      decoration: InputDecoration(
-                        fillColor: Colors.red,
-                        hintText: 'Allergy Record:',
-                        labelText: 'Allergy Record:',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
+                  ),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: GestureDetector(
+                      onTap: () => navigator(4),
+                      child: Column(
+                        children: const [
+                          Icon(Icons.person,
+                              color: Color.fromARGB(255, 123, 141, 158)),
+                          Text('My Profile'),
+                        ],
                       ),
                     ),
-                  ]
-                ),
-              ),
-            ),
+                  ),
+                ]),
           ),
-        ],
-      ),
-    ),
-  ),
-);
-
-Widget home(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 3),
-      width: globalwidth,
-      height: globalheight*0.07,
-      color : const Color.fromARGB(255, 217, 217, 217),
-      child : DefaultTextStyle(
-        style : const TextStyle(color : Color.fromARGB(255, 123, 141, 158)),
-        child : Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [   
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(1),
-                child: Column(
-                  children: const [
-                    Icon(Icons.home,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Home'),
-                  ],
-                ),
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(2),
-                child: Column(
-                  children: const [
-                    Icon(Icons.calendar_month,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Calendar'),
-                  ],
-                ),
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(3),
-                child: Column(
-                  children: const [
-                    Icon(Icons.message,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('Message'),
-                  ],
-                ),
-              ),
-            ),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: GestureDetector(
-                onTap: () => navigator(4),
-                child: Column(
-                  children: const [
-                    Icon(Icons.person,color: Color.fromARGB(255, 123, 141, 158)),
-                    Text('My Profile'),
-                  ],
-                ),
-              ),
-            ),
-          ]
         ),
-      ),
-    ),
-  );
+      );
 }
