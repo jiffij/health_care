@@ -1,5 +1,6 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:livekit_client/livekit_client.dart';
 
 class ParticipantTrack {
@@ -29,23 +30,27 @@ class ParticipantInfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        color: Colors.black.withOpacity(0.3),
+    decoration: BoxDecoration(
+      color: Colors.black.withOpacity(0.5),
+      borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20)),
+    ),
         padding: const EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 10,
+          vertical: 8,
+          horizontal: 18,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             if (title != null)
-              Flexible(
+              Padding(
+                padding: EdgeInsets.only(left: 0),
                 child: Text(
-                  style: TextStyle(color: Colors.white),
+                  style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 11)),
                   title!,
                   overflow: TextOverflow.ellipsis,
-                ),
-              ),
+                )),
+              Spacer(flex: 6,),
             isScreenShare
                 ? const Padding(
                     padding: EdgeInsets.only(left: 5),

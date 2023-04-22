@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -26,15 +27,17 @@ class RoomPage extends StatefulWidget {
 
 class _RoomPageState extends State<RoomPage> {
   //
+  ParticipantTrack? selected;
   List<ParticipantTrack> participantTracks = [];
   EventsListener<RoomEvent> get _listener => widget.listener;
   bool get fastConnection => widget.room.engine.fastConnectOptions != null;
+
   @override
   void initState() {
     super.initState();
     widget.room.addListener(_onRoomDidUpdate);
     _setUpListeners();
-    _sortParticipants();
+    _onRoomDidUpdate();
     WidgetsBindingCompatible.instance?.addPostFrameCallback((_) {
       if (!fastConnection) {
         _askPublish();
@@ -93,108 +96,156 @@ class _RoomPageState extends State<RoomPage> {
   }
 
   void _sortParticipants() {
+
+    
+    
+
     List<ParticipantTrack> userMediaTracks = [];
     List<ParticipantTrack> screenTracks = [];
+    List<ParticipantTrack> otherTracks = [];
+    
     for (var participant in widget.room.participants.values) {
       for (var t in participant.videoTracks) {
-        if (t.isScreenShare) {
-          screenTracks.add(ParticipantTrack(
-            participant: participant,
-            videoTrack: t.track,
-            isScreenShare: true,
-          ));
-        } else {
           userMediaTracks.add(ParticipantTrack(
             participant: participant,
             videoTrack: t.track,
             isScreenShare: false,
           ));
-        }
       }
-    }
+      
+      
+    }   
     // sort speakers for the grid
-    userMediaTracks.sort((a, b) {
+    //userMediaTracks.sort((a, b) {
       // loudest speaker first
-      if (a.participant.isSpeaking && b.participant.isSpeaking) {
-        if (a.participant.audioLevel > b.participant.audioLevel) {
-          return -1;
-        } else {
-          return 1;
-        }
-      }
+      // if (a.participant.isSpeaking && b.participant.isSpeaking) {
+      //   if (a.participant.audioLevel > b.participant.audioLevel) {
+      //     return -1;
+      //   } else {
+      //     return 1;
+      //   }
+      // }
 
-      // last spoken at
-      final aSpokeAt = a.participant.lastSpokeAt?.millisecondsSinceEpoch ?? 0;
-      final bSpokeAt = b.participant.lastSpokeAt?.millisecondsSinceEpoch ?? 0;
+      // // last spoken at
+      // final aSpokeAt = a.participant.lastSpokeAt?.millisecondsSinceEpoch ?? 0;
+      // final bSpokeAt = b.participant.lastSpokeAt?.millisecondsSinceEpoch ?? 0;
 
-      if (aSpokeAt != bSpokeAt) {
-        return aSpokeAt > bSpokeAt ? -1 : 1;
-      }
+      // if (aSpokeAt != bSpokeAt) {
+      //   return aSpokeAt > bSpokeAt ? -1 : 1;
+      // }
 
-      // video on
-      if (a.participant.hasVideo != b.participant.hasVideo) {
-        return a.participant.hasVideo ? -1 : 1;
-      }
+      // // video on
+      // if (a.participant.hasVideo != b.participant.hasVideo) {
+      //   return a.participant.hasVideo ? -1 : 1;
+      // }
 
       // joinedAt
-      return a.participant.joinedAt.millisecondsSinceEpoch -
-          b.participant.joinedAt.millisecondsSinceEpoch;
-    });
+      // return a.participant.joinedAt.millisecondsSinceEpoch -
+      //     b.participant.joinedAt.millisecondsSinceEpoch;
+    //});
 
     final localParticipantTracks = widget.room.localParticipant?.videoTracks;
     if (localParticipantTracks != null) {
       for (var t in localParticipantTracks) {
-        if (t.isScreenShare) {
-          screenTracks.add(ParticipantTrack(
-            participant: widget.room.localParticipant!,
-            videoTrack: t.track,
-            isScreenShare: true,
-          ));
-        } else {
           userMediaTracks.add(ParticipantTrack(
             participant: widget.room.localParticipant!,
             videoTrack: t.track,
             isScreenShare: false,
           ));
-        }
       }
     }
-    setState(() {
-      participantTracks = [...screenTracks, ...userMediaTracks];
-    });
+
+    if(selected != null) {
+      if (userMediaTracks.any((element) => element.participant.sid == selected!.participant.sid) == false) selected = null;
+    }
+
+    if (selected != null) {
+      otherTracks.add(selected!);
+      userMediaTracks.removeWhere((element) => element.participant.sid == selected!.participant.sid);
+      otherTracks.addAll(userMediaTracks);
+      setState(() {
+        participantTracks = otherTracks;
+      });
+    }
+    else {
+      setState(() {
+        participantTracks = [...screenTracks, ...userMediaTracks];
+      });
+    }
+    
   }
 
   @override
   Widget build(BuildContext context) { 
     Size size = MediaQuery. of(context).size;
-    return Scaffold(
-        body: Column(
+    return SafeArea(child: Scaffold(
+      backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            Column(
           children: [
             Expanded(
                 child: participantTracks.isNotEmpty
-                    ? ParticipantWidget.widgetFor(participantTracks.first)
+                    ? Container(
+                      padding: EdgeInsets.only(top:size.width*0.03, bottom:size.width*0.03, left:size.width*0.02, right:size.width*0.02),
+                      child: ParticipantWidget.widgetFor(participantTracks.first, (){}))
                     : Container()),
-            SizedBox(
-              height: size.height * 0.35,
-              child: ListView.builder(
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: size.width*0, vertical: size.width*0.01),
+              //color: Colors.black.withOpacity(0.5),
+              height: participantTracks.length>1? participantTracks.length==2? size.height * 0.4:size.height * 0.25:0,
+              //width: participantTracks.length>1? size.width * 0.3:0,
+              child: participantTracks.length>1?
+                    participantTracks.length==2? 
+                        Center(child: Container(
+                          padding: EdgeInsets.only(left: size.width*0.02, right: size.width*0.02, bottom: size.width*0.03),
+                          width: size.width,
+                          height: size.height,
+                          child: ParticipantWidget.widgetFor(participantTracks[1], (){
+                            setState(() {
+                              ParticipantTrack current = participantTracks[1];
+                              participantTracks.removeAt(1);
+                              participantTracks.insert(0, current);
+                              selected = current;
+                            });
+                          }
+                        )
+                ))
+              : Center(child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 itemCount: math.max(0, participantTracks.length - 1),
-                itemBuilder: (BuildContext context, int index) => SizedBox(
-                  width: size.width / (participantTracks.length - 1),
+                itemBuilder: (BuildContext context, int index) => Container(
+                  padding: EdgeInsets.only(left: size.width*0.02, right: size.width*0.02, bottom: size.width*0.03),
+                  width: size.width *0.6,
                   height: size.height,
-                  child:
-                      ParticipantWidget.widgetFor(participantTracks[index + 1]),
+                  child: ParticipantWidget.widgetFor(participantTracks[index + 1], (){
+                            setState(() {
+                              ParticipantTrack current = participantTracks[index+1];
+                              participantTracks.removeAt(index+1);
+                              participantTracks.insert(0, current);
+                              selected = current;
+                            });
+                          }
+                        )
                 ),
-              ),
+              )):null,
             ),
             if (widget.room.localParticipant != null)
               SafeArea(
                 top: false,
                 child:
-                    ControlsWidget(widget.room, widget.room.localParticipant!),
+                    Container(
+                      width: size.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(20)),
+                        color: Color.fromARGB(255, 44, 43, 43),
+                      ),
+                      child: ControlsWidget(widget.room, widget.room.localParticipant!),)
               ),
           ],
         ),
-      );
+        ]
+        ,)
+      ));
   }
 }

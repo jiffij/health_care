@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -269,29 +270,47 @@ class _ControlsWidgetState extends State<ControlsWidget> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        vertical: 15,
+        vertical: 10,
         horizontal: 15,
       ),
       child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 5,
-        runSpacing: 5,
+        alignment: WrapAlignment.spaceEvenly,
+        //spacing: 0,
+        //runSpacing: 5,
         children: [
-          // IconButton(
-          //   onPressed: _unpublishAll,
-          //   icon: const Icon(EvaIcons.closeCircleOutline),
-          //   tooltip: 'Unpublish all',
-          // ),
+          IconButton(
+            icon: const Icon(Icons.cameraswitch),
+            onPressed: () => _toggleCamera(),
+            color: Colors.white,
+            tooltip: 'toggle camera',
+          ),
           if (participant.isMicrophoneEnabled())
-            IconButton(
-              onPressed: _disableAudio, 
-              icon: const Icon(Icons.mic),
+            Container(
+              child: TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor: MaterialStatePropertyAll(Colors.green),
+                  iconColor: MaterialStatePropertyAll(Colors.white)
+                ),
+                child: Icon(Icons.mic),
+                onPressed: _disableAudio,
+              ),
             )
           else
-            IconButton(
-              onPressed: _enableAudio,
-              icon: const Icon(Icons.mic_off),
-              tooltip: 'un-mute audio',
+              Container(
+              child: TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 159, 59, 52)),
+                  iconColor: MaterialStatePropertyAll(Colors.white)
+                ),
+                child: Icon(Icons.mic_off),
+                onPressed: _enableAudio,
+              ),
             ),
           // PopupMenuButton<MediaDevice>(
           //   icon: const Icon(Icons.volume_up),
@@ -331,21 +350,34 @@ class _ControlsWidgetState extends State<ControlsWidget> {
           //   },
           // ),
           if (participant.isCameraEnabled())
-            IconButton(
-              onPressed: _disableVideo, 
-              icon: const Icon(Icons.videocam),
+            Container(
+              child: TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor: MaterialStatePropertyAll(Colors.green),
+                  iconColor: MaterialStatePropertyAll(Colors.white)
+                ),
+                child: Icon(Icons.videocam),
+                onPressed: _disableVideo,
+              ),
             )
           else
-            IconButton(
-              onPressed: _enableVideo,
-              icon: const Icon(Icons.videocam_off),
-              tooltip: 'un-mute video',
+            Container(
+              child: TextButton(
+                style: ButtonStyle(
+                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+                  backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 159, 59, 52)),
+                  iconColor: MaterialStatePropertyAll(Colors.white)
+                ),
+                child: Icon(Icons.videocam_off),
+                onPressed: _enableVideo,
+              ),
             ),
-          IconButton(
-            icon: const Icon(Icons.cameraswitch),
-            onPressed: () => _toggleCamera(),
-            tooltip: 'toggle camera',
-          ),
+          
           // if (participant.isScreenShareEnabled())
           //   IconButton(
           //     icon: const Icon(EvaIcons.monitorOutline),
@@ -358,11 +390,27 @@ class _ControlsWidgetState extends State<ControlsWidget> {
           //     onPressed: () => _enableScreenShare(),
           //     tooltip: 'share screen (experimental)',
           //   ),
-          IconButton(
+          // IconButton(
+          //   onPressed: _onTapDisconnect,
+          //   icon: const Icon(Icons.call_end),
+          //   tooltip: 'disconnect',
+          //   color: Colors.white,
+          // ),
+
+          ElevatedButton.icon(
+            style: ButtonStyle(
+              shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  )),
+              padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 9.5, horizontal: 20)),
+              backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 159, 59, 52)),
+              iconSize: MaterialStatePropertyAll(22)
+            ),
             onPressed: _onTapDisconnect,
-            icon: const Icon(Icons.call_end),
-            tooltip: 'disconnect',
+            icon: Icon(Icons.highlight_off),
+            label: Text('Leave', style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 16)),)
           ),
+          
           // IconButton(
           //   onPressed: _onTapSendData,
           //   icon: const Icon(EvaIcons.paperPlane),
