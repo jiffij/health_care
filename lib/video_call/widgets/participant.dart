@@ -10,14 +10,16 @@ import 'participant_info.dart';
 
 abstract class ParticipantWidget extends StatefulWidget {
   // Convenience method to return relevant widget for participant
-  static ParticipantWidget widgetFor(ParticipantTrack participantTrack) {
+  static ParticipantWidget widgetFor(ParticipantTrack participantTrack, void Function()? tap) {
     if (participantTrack.participant is LocalParticipant) {
       return LocalParticipantWidget(
+          tap,
           participantTrack.participant as LocalParticipant,
           participantTrack.videoTrack,
           participantTrack.isScreenShare);
     } else if (participantTrack.participant is RemoteParticipant) {
       return RemoteParticipantWidget(
+        tap,
           participantTrack.participant as RemoteParticipant,
           participantTrack.videoTrack,
           participantTrack.isScreenShare);
@@ -30,6 +32,7 @@ abstract class ParticipantWidget extends StatefulWidget {
   abstract final VideoTrack? videoTrack;
   abstract final bool isScreenShare;
   final VideoQuality quality;
+  abstract final void Function()? tap;
 
   const ParticipantWidget({
     this.quality = VideoQuality.MEDIUM,
@@ -44,8 +47,11 @@ class LocalParticipantWidget extends ParticipantWidget {
   final VideoTrack? videoTrack;
   @override
   final bool isScreenShare;
+  @override
+  final void Function()? tap;
 
   const LocalParticipantWidget(
+    this.tap,
     this.participant,
     this.videoTrack,
     this.isScreenShare, {
@@ -63,8 +69,11 @@ class RemoteParticipantWidget extends ParticipantWidget {
   final VideoTrack? videoTrack;
   @override
   final bool isScreenShare;
+  @override
+  final void Function()? tap;
 
   const RemoteParticipantWidget(
+    this.tap,
     this.participant,
     this.videoTrack,
     this.isScreenShare, {
@@ -78,7 +87,7 @@ class RemoteParticipantWidget extends ParticipantWidget {
 abstract class _ParticipantWidgetState<T extends ParticipantWidget>
     extends State<T> {
   //
-  bool _visible = true;
+  bool _visible = false;
   VideoTrack? get activeVideoTrack;
   TrackPublication? get videoPublication;
   TrackPublication? get firstAudioPublication;
@@ -114,28 +123,40 @@ abstract class _ParticipantWidgetState<T extends ParticipantWidget>
   @override
   Widget build(BuildContext ctx) => Container(
         foregroundDecoration: BoxDecoration(
+          color: Colors.transparent,
           border: widget.participant.isSpeaking && !widget.isScreenShare
               ? Border.all(
-                  width: 5,
-                  color: Colors.blue,
+                  width: 2,
+                  color: Colors.green,
                 )
               : null,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         decoration: BoxDecoration(
-          color: Theme.of(ctx).cardColor,
+          color: Colors.transparent,
+          borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Stack(
           children: [
             // Video
             InkWell(
-              onTap: () => setState(() => _visible = !_visible),
-              child: activeVideoTrack != null && !activeVideoTrack!.muted
-                  ? VideoTrackRenderer(
-                      activeVideoTrack!,
-                      fit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
-                    )
-                  : const NoVideoWidget(),
-            ),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                splashFactory: InkRipple.splashFactory,
+                onTap: widget.tap,
+                child: Ink(
+                  padding: EdgeInsets.symmetric(horizontal: 0),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 44, 43, 43),
+                      borderRadius: BorderRadius.all(Radius.circular(20))
+                    ), 
+                  child: activeVideoTrack != null && !activeVideoTrack!.muted
+                        ? VideoTrackRenderer(
+                            activeVideoTrack!,
+                            fit: RTCVideoViewObjectFit.RTCVideoViewObjectFitContain,
+                          )
+                        : const NoVideoWidget()
+                      ),
+                ),
 
             // Bottom bar
             Align(
@@ -144,7 +165,7 @@ abstract class _ParticipantWidgetState<T extends ParticipantWidget>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ...extraWidgets(widget.isScreenShare),
+                  //...extraWidgets(widget.isScreenShare),
                   ParticipantInfoWidget(
                     title: widget.participant.name.isNotEmpty
                         ? '${widget.participant.name} (${widget.participant.identity})'

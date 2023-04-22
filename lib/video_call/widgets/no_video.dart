@@ -14,7 +14,7 @@ class NoVideoWidget extends StatelessWidget {
         child: LayoutBuilder(
           builder: (ctx, constraints) => Icon(
             Icons.videocam_off_outlined,
-            color: Colors.black,
+            color: Colors.white.withOpacity(0.5),
             size: math.min(constraints.maxHeight, constraints.maxWidth) * 0.3,
           ),
         ),

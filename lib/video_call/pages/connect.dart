@@ -52,7 +52,7 @@ class _ConnectPageState extends State<ConnectPage> {
         //server link
         "wss://dr-ust.livekit.cloud",
         //temp token
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODIzMDYyNDMsImlzcyI6IkFQSThyak1pVFZZV3RTSCIsIm5iZiI6MTY4MTMwNjI0NCwic3ViIjoieWFubmllIiwidmlkZW8iOnsiY2FuUHVibGlzaCI6dHJ1ZSwiY2FuUHVibGlzaERhdGEiOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZSwicm9vbSI6InRlc3QiLCJyb29tSm9pbiI6dHJ1ZX19.CPZitK69-o_NSsw9gQT-D7GVqubW2k7DaQDdMi9La9w",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODMwNTc2NjYsImlzcyI6IkFQSThyak1pVFZZV3RTSCIsIm5iZiI6MTY4MjA1NzY2Nywic3ViIjoieWFubmllIiwidmlkZW8iOnsiY2FuUHVibGlzaCI6dHJ1ZSwiY2FuUHVibGlzaERhdGEiOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZSwicm9vbSI6InRlc3QiLCJyb29tSm9pbiI6dHJ1ZX19.Sts2RqfvsL7_s7aiI3x7WYS0UygingZ8latbCFFUymw",
       );
       await Navigator.push<void>(
         ctx,
