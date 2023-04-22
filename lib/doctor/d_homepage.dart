@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:flutter_user_interface_model/p_doctor_list.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
+import 'package:simple_login/helper/loading_screen.dart';
 import 'package:swipe_widget/swipe_widget.dart';
 
 // Other files
@@ -37,10 +38,13 @@ class _HomePageState extends State<d_HomePage> {
 
   String fullname = '';
   late List<Article> articles;
+  bool startDone = false;
   // int index = 0;
-  List<String> newsUrl = ['https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'];
+  List<String> newsUrl = [
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +56,8 @@ class _HomePageState extends State<d_HomePage> {
     // than having to individually change instances of widgets.
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
+    return !startDone? LoadingScreen() :
+    Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -84,13 +89,12 @@ class _HomePageState extends State<d_HomePage> {
 
     setState(() {
       for (int i = 0; i < 3; i++) {
-        if(articles[i].urlToImage != ""){
+        if (articles[i].urlToImage != "") {
           newsUrl[i] = articles[i].urlToImage;
         }
-
       }
+      startDone = true;
     });
-
   }
 
   // All navigate direction calling method

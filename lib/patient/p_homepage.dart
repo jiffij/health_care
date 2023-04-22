@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/helper/loading_screen.dart';
 import 'package:simple_login/patient/p_diagnostic_survey.dart';
 import 'package:simple_login/patient/p_medical_allergy.dart';
 import 'package:swipe_widget/swipe_widget.dart';
@@ -49,28 +50,33 @@ class _HomePageState extends State<p_HomePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          heading(width, height, context),
-          services(width, height),
-          meetadoctor(width, height),
-          upcomingappointmentlist(width, height),
-          home(width, height),
-        ],
-      ),
-    );
+    return !startDone
+        ? LoadingScreen()
+        : Scaffold(
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                heading(width, height, context),
+                services(width, height),
+                meetadoctor(width, height),
+                upcomingappointmentlist(width, height),
+                home(width, height),
+              ],
+            ),
+          );
   }
 
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
   late List<Article> articles;
+  bool startDone = false;
   // int index = 0;
-  List<String> newsUrl = ['https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-   'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'];
+  List<String> newsUrl = [
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'
+  ];
 
   @override
   void initState() {
@@ -86,7 +92,8 @@ class _HomePageState extends State<p_HomePage> {
     Map<String, dynamic>? existtimemap;
     if (existdatelist.isNotEmpty) {
       for (var existdate in existdatelist) {
-        existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+        existtimemap =
+            await readFromServer('patient/$uid/appointment/$existdate');
         List timeList = existtimemap!.keys.toList();
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
@@ -112,10 +119,11 @@ class _HomePageState extends State<p_HomePage> {
 
     setState(() {
       for (int i = 0; i < 3; i++) {
-        if(articles[i].urlToImage != ""){
+        if (articles[i].urlToImage != "") {
           newsUrl[i] = articles[i].urlToImage;
         }
       }
+      startDone = true;
     });
   }
 
@@ -134,7 +142,9 @@ class _HomePageState extends State<p_HomePage> {
         break;
       case 3:
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => DiagnosticSurvey('hi', '20230414', '13:30')),
+          MaterialPageRoute(
+              builder: (context) =>
+                  DiagnosticSurvey('hi', '20230414', '13:30')),
         );
         break;
       case 4:
@@ -484,101 +494,112 @@ class _HomePageState extends State<p_HomePage> {
         ),
       );
 
-  Widget upcomingappointmentlist(double globalwidth, double globalheight) => DefaultTextStyle.merge(
-    child: Column(
-      children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Container(
-              margin: const EdgeInsets.only(left: 12),
-              height: globalheight * 0.03,
-              width: globalwidth,
-              child: const FittedBox(
+  Widget upcomingappointmentlist(double globalwidth, double globalheight) =>
+      DefaultTextStyle.merge(
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FittedBox(
                 fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text('Upcoming Appointments:',
-                  style: TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.bold)),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: globalheight * 0.2,
-          child: ListView.separated(
-            physics: const AlwaysScrollableScrollPhysics(),
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(12),
-            // The number of itemCount depends on the number of appointment
-            // 5 is the number of appointment for testing only
-            itemCount: appointments.length,
-            separatorBuilder: (context, index) {
-              return const SizedBox(width: 20);
-            },
-            itemBuilder: (context, index) {
-              return upcomingappointment(index, globalwidth, globalheight);
-            },
-          ),
-        ),
-      ],
-    ),
-  );
-
-Widget upcomingappointment(int index, double globalwidth, double globalheight) => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        height: globalheight * 0.13,
-        width: globalwidth*0.7,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(80, 224, 159, 31),
-        ),
-        child: GestureDetector(
-          //onTap: () => navigator(5, appointments[index][1]),
-          child: Row(
-            children: [
-              Container(
-                width: globalheight*0.15,
-                height: globalheight*0.13,
-                padding: const EdgeInsets.all(10),
-                margin: const EdgeInsets.only(right: 10),
-                decoration : BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color.fromARGB(255, 220, 237, 249),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Date: ${appointments[index][0]}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: globalwidth * 0.3,
-                height: globalheight * 0.15,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Time: ${appointments[index][1]}', style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),),
-                      Text('Doctor: ${appointments[index][2]}', style: const TextStyle(fontSize: 20)),
-                    ],
+                child: Container(
+                  margin: const EdgeInsets.only(left: 12),
+                  height: globalheight * 0.03,
+                  width: globalwidth,
+                  child: const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text('Upcoming Appointments:',
+                        style: TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            SizedBox(
+              height: globalheight * 0.2,
+              child: ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.all(12),
+                // The number of itemCount depends on the number of appointment
+                // 5 is the number of appointment for testing only
+                itemCount: appointments.length,
+                separatorBuilder: (context, index) {
+                  return const SizedBox(width: 20);
+                },
+                itemBuilder: (context, index) {
+                  return upcomingappointment(index, globalwidth, globalheight);
+                },
+              ),
+            ),
+          ],
         ),
-      ),
-    ],
-  );
+      );
+
+  Widget upcomingappointment(
+          int index, double globalwidth, double globalheight) =>
+      Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: globalheight * 0.13,
+            width: globalwidth * 0.7,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color.fromARGB(80, 224, 159, 31),
+            ),
+            child: GestureDetector(
+              //onTap: () => navigator(5, appointments[index][1]),
+              child: Row(
+                children: [
+                  Container(
+                    width: globalheight * 0.15,
+                    height: globalheight * 0.13,
+                    padding: const EdgeInsets.all(10),
+                    margin: const EdgeInsets.only(right: 10),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: const Color.fromARGB(255, 220, 237, 249),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Date: ${appointments[index][0]}',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: globalwidth * 0.3,
+                    height: globalheight * 0.15,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Time: ${appointments[index][1]}',
+                            style: const TextStyle(
+                                fontSize: 36, fontWeight: FontWeight.bold),
+                          ),
+                          Text('Doctor: ${appointments[index][2]}',
+                              style: const TextStyle(fontSize: 20)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
 
   Widget home(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(

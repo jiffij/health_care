@@ -121,6 +121,7 @@ class _welcomeState extends State<welcome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: GestureDetector(
         onTap: () {FocusScope.of(context).requestFocus(FocusNode());},
         child: Container(
@@ -130,6 +131,7 @@ class _welcomeState extends State<welcome> {
                 child: SafeArea(
                   child: Center(
                     child: SingleChildScrollView(
+                      
                       scrollDirection: Axis.vertical,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -141,7 +143,7 @@ class _welcomeState extends State<welcome> {
                             padding: const EdgeInsets.all(35),
                             child: Image.asset(
                             'assets/yoga.png',
-                            height: 120,
+                            height: 110,
                             width: 130,
                           ),),
                           
@@ -164,7 +166,7 @@ class _welcomeState extends State<welcome> {
 
                           //container for login form
                           Container(
-                            height: 450,
+                            height: 463,
                             width: MediaQuery.of(context).size.width / 1.1,
                             decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.5),
