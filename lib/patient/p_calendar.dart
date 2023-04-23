@@ -95,14 +95,18 @@ class _CalendarPageState extends State<p_CalendarPage> {
   }
 
   void start() async {
+    print('start');
     String uid = getUID();
     Map<String, dynamic>? data = await readFromServer('patient/$uid');
     fullname = data?['first name'] + ' ' + data?['last name'];
     List<String> existdatelist = await getColId('patient/$uid/appointment');
     Map<String, dynamic>? existtimemap;
+    print('Check 1');
     if (existdatelist.isNotEmpty) {
       for (var existdate in existdatelist) {
         existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+        print(existtimemap);
+        print('Check 2');
         List timeList = existtimemap!.keys.toList();
         print('timeList');
         List timeListint = [];
@@ -116,7 +120,16 @@ class _CalendarPageState extends State<p_CalendarPage> {
         timeList.clear();
         for (var time in timeListint) {
           String temp = time.toString();
-          if (temp.length == 3) {
+          // Case 00:00
+          if (temp.length == 1) {
+            temp = '00:0${temp[0]}';
+          }
+          // Case 00:x0
+          else if (temp.length == 2) {
+            temp = '00:$temp';
+          }
+          // Case 0x:xx
+          else if (temp.length == 3) {
             temp = '0${temp[0]}:${temp[1]}${temp[2]}';
           }
           else {
@@ -125,7 +138,9 @@ class _CalendarPageState extends State<p_CalendarPage> {
           timeList.add(temp);
         }
         List<List> dailyAppointmentList = [];
+        print(timeList);
         for (var time in timeList) {
+          print(time);
           var id = existtimemap[time]['doctorID'];
           //print(id);
           Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
