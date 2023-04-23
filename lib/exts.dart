@@ -4,20 +4,74 @@ import 'package:google_fonts/google_fonts.dart';
 extension LKExampleExt on BuildContext {
   //
   Future<bool?> showPublishDialog() => showDialog<bool>(
+        barrierDismissible: false,
+        barrierColor: Colors.white.withOpacity(0.2),
         context: this,
         builder: (ctx) => AlertDialog(
-          title: const Text('Publish'),
-          content: const Text('Would you like to publish your Camera & Mic ?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('NO'),
+          title: const Text('Would you like to enable your Camera & Microphone?'),
+          titlePadding: const EdgeInsets.only(left: 35, right: 35, bottom: 15),
+          icon: const Icon(Icons.help_outline, size: 50,),
+          iconPadding: const EdgeInsets.symmetric(vertical: 20),
+          iconColor: Color.fromARGB(255, 136, 202, 98),
+          titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black, fontSize: 15), height: 1.5),
+          shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                  ),
+          content: Container(
+              //width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //crossAxisAlignment: CrossAxisAlignment.sp,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, false);
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                        splashColor: Color.fromARGB(255, 27, 89, 161).withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 40.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                            border: Border.all(color: Color.fromARGB(255, 27, 89, 161))
+                          ),
+                          child: Text(
+                            "No",
+                            style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 27, 89, 161))),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, true);
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                        splashColor: Colors.white.withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 27.0),
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 27, 89, 161),
+                            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                          ),
+                          child: Text(
+                            "Enable",
+                            style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white)),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ]
+                  )
+                ]
+              )
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('YES'),
-            ),
-          ],
         ),
       );
 
@@ -55,11 +109,13 @@ extension LKExampleExt on BuildContext {
       );
 
   Future<bool?> showDisconnectDialog() => showDialog<bool>(
+        barrierDismissible: false,
+        barrierColor: Colors.white.withOpacity(0.2),
         context: this,
         builder: (ctx) => AlertDialog(
           //title: const Text('Disconnect'),
-          title: const Text('Are you sure to disconnect?'),
-          titlePadding: const EdgeInsets.only(left: 35, right: 35, bottom: 30),
+          title: const Text('Are you sure to leave?'),
+          titlePadding: const EdgeInsets.only(left: 35, right: 35, bottom: 15),
           icon: const Icon(Icons.error_outline, size: 50,),
           iconPadding: const EdgeInsets.symmetric(vertical: 20),
           iconColor: const Color.fromARGB(255, 235, 120, 112),
@@ -67,27 +123,61 @@ extension LKExampleExt on BuildContext {
           shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(30)),
                   ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-              TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              style: ButtonStyle(
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(30)))),
-                backgroundColor: MaterialStatePropertyAll(Color.fromARGB(255, 47, 106, 173)),
-                //padding: MaterialStatePropertyAll(EdgeInsets.symmetric(horizontal: 140, vertical: 17)),
-                //minimumSize: MaterialStatePropertyAll(Size.fromHeight(20)),
-              ),
-              child: Text('Cancel', style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white)),),
+          content: Container(
+              //width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //crossAxisAlignment: CrossAxisAlignment.sp,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, false);
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                        splashColor: Color.fromARGB(255, 27, 89, 161).withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 20.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                            border: Border.all(color: Color.fromARGB(255, 27, 89, 161))
+                          ),
+                          child: Text(
+                            "Cancel",
+                            style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 27, 89, 161))),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, true);
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                        splashColor: Colors.white.withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.symmetric(vertical: 20, horizontal: 27.0),
+                          decoration: BoxDecoration(
+                            color: Color.fromARGB(255, 27, 89, 161),
+                            borderRadius: BorderRadius.all(Radius.circular(32.0)),
+                          ),
+                          child: Text(
+                            "Leave",
+                            style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white)),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ]
+                  )
+                ]
+              )
             ),
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Disconnect'),
-            ),
-          ])
-          ],
         ),
       );
 
