@@ -7,6 +7,8 @@ import 'p_homepage.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
 
+import '../helper/firebase_helper.dart';
+import '../doctor/d_diagnosis_form.dart';
 
 class p_MedicalReportListPage extends StatefulWidget {
   const p_MedicalReportListPage({super.key});
@@ -43,12 +45,53 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
-            //currentdoctorlist(width, height),
             medicalreportlist(width, height),
             home(width, height),           
           ],
         ),
     );
+  }
+
+  List<List> reportlist = [];
+  List<List> reportlistsort = [];
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    String uid = getUID();
+    List<String> existdatelist = await getColId('patient/$uid/history');
+    print(existdatelist);
+    for (var date in existdatelist)
+    {
+      Map<String, dynamic>? data = await readFromServer('patient/$uid/history/$date');
+      print(data);
+      var dname = data?['doctor'];
+      var year = '${date[0]}${date[1]}${date[2]}${date[3]}';
+      var month = '${date[4]}${date[5]}';
+      var day = '${date[6]}${date[7]}';
+      setState(() {
+        reportlist.insert(0, [dname, year, month, day]);
+      });
+    }
+    reportlistsort = reportlist;
+  }
+
+  // Todo
+  List<List> reportSort(String input) {
+    List<List> temp = [];
+    for (var report in reportlist)
+    {
+      var data = '${report[0]}';
+      if ((data).toLowerCase().trim().contains(input.toLowerCase().trim()))
+      {
+        temp.insert(0, report);
+      }
+    }
+    return temp;
   }
 
   // All navigate direction calling method
@@ -75,6 +118,11 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
       case 4:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const p_MyProfilePage()),
+        );
+        break;
+      case 5:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => DiagnosticForm('', '', '')),
         );
         break;
       default:
@@ -155,7 +203,7 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
                 ],
               ),
             ),
-          ),             
+          ),
         ],
     ),
     ),
@@ -187,7 +235,7 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
             padding: const EdgeInsets.all(12),
             // The number of itemCount depends on the number of appointment
             // 5 is the number of appointment for testing only
-            itemCount : 5,
+            itemCount : reportlistsort.length,
             separatorBuilder:  (context, index) {
               return const SizedBox(height: 15);
             },
@@ -233,7 +281,7 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
                     children: const [
                       Text('Click here',
                         style: TextStyle(fontSize: 30)),
-                      Text('to download',
+                      Text('for details of',
                         style: TextStyle(fontSize: 30)),
                       Text('the report!',
                         style: TextStyle(fontSize: 30)),
@@ -252,14 +300,11 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Medical Report Number: 12345678 $index',
-                        style: const TextStyle(
-                            fontSize: 30, fontWeight: FontWeight.bold),
+                        'Issued by: ${reportlistsort[index][0]}',
+                        style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                       ),
-                      const Text('Issued by: Doctor\'s Name',
-                          style: TextStyle(fontSize: 30)),
-                      const Text('Issued on: Date',
-                          style: TextStyle(fontSize: 30)),
+                      Text('Issued on: ${reportlistsort[index][1]}-${reportlistsort[index][2]}-${reportlistsort[index][3]}',
+                          style: const TextStyle(fontSize: 30)),
                     ],
                   ),
                 ),
