@@ -31,43 +31,49 @@ class _HomeState extends State<Home> {
       backgroundColor: bgColor,
       body: 
                         SafeArea(
-                          child: SingleChildScrollView(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
+                            children: [
                               Header(size: size),
-                              TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
-                              const Services(),
-                              TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: true,),
-                              //const Upcoming(),
-                              Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding/1.2), child: SizedBox(
-                                height: 140,
-                                //width: size.width*0.9,
-                                child: PageView.builder(
-                                  controller: _pageController,
-                                  padEnds: true,
-                                  itemCount: 3,
-                                  physics: const BouncingScrollPhysics(),
-                                  itemBuilder: (_, __) {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 0),
-                                      child: AppointmentCard(press: (){},),
-                                    );
-                                  },
+                              Flexible(child: SingleChildScrollView(
+                                //physics: AlwaysScrollableScrollPhysics(),
+                                child: Column(
+                                  children: [
+                                    TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
+                                    Services(),
+                                    TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: true,),
+                                    Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding/1.2), child: SizedBox(
+                                      height: size.height*0.18,
+                                      //width: size.width*0.9,
+                                      child: PageView.builder(
+                                        controller: _pageController,
+                                        padEnds: true,
+                                        itemCount: 3,
+                                        physics: const BouncingScrollPhysics(),
+                                        itemBuilder: (_, __) {
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                                            child: AppointmentCard(press: (){},),
+                                          );
+                                        },
+                                      ),
+                                    )),
+                                     Padding(
+                                      padding: EdgeInsets.only(bottom: defaultVerPadding),
+                                      child: Center(child: SmoothPageIndicator(
+                                      controller: _pageController,
+                                      count: 3,
+                                      effect: ExpandingDotsEffect(
+                                        dotHeight: 6,
+                                        dotWidth: 6,
+                                        dotColor: themeColor.withOpacity(0.4),
+                                        activeDotColor: themeColor),
+                                    ))),
+                                  ],
                                 ),
-                              )),
-                              Center(child: SmoothPageIndicator(
-                                controller: _pageController,
-                                count: 3,
-                                effect: ExpandingDotsEffect(
-                                  dotHeight: 6,
-                                  dotWidth: 6,
-                                  dotColor: themeColor.withOpacity(0.4),
-                                  activeDotColor: themeColor),
-                              )),
-                            ],
-                          ),
-                        ))
+                              ))
+                            ]
+                          )
+                        )
     );
   }
 }

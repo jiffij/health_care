@@ -6,6 +6,7 @@ import 'doctor.dart';
 
 import 'color.dart';
 import 'doctor_info.dart';
+import 'doctor_info.dart';
 
 class DoctorCard extends StatelessWidget {
   const DoctorCard({
