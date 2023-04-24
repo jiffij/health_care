@@ -199,7 +199,7 @@ class _HomePageState extends State<p_HomePage> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
               builder: (context) =>
-                  DiagnosticSurvey('hi', '20230414', '13:30')),
+                  DiagnosticSurvey('DnLy1aqV1WRg66qqmz9HGg8zotF2', '20230426', '00:00')),
         );
         break;
       case 4:

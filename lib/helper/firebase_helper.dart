@@ -438,3 +438,36 @@ String calRating(
   if (count == 0) return '0';
   return sum.toStringAsFixed(2);
 }
+
+Future<String> getVideoToken(String roomName) async {
+  http.Response res;
+
+  var server_key = await getServerPublicKey();
+  var body = {
+    "name": auth.currentUser!.displayName!,
+    "roomName": roomName,
+    "client_key": await getMyPublicKey(),
+  };
+  print(body);
+  var new_body = await rsaEncrypt(jsonEncode(body), server_key);
+  print(new_body);
+
+  res = await http.post(
+    Uri.parse('$URL/videocall'),
+    headers: <String, String>{
+      'Content-Type': 'text/plain', // 'application/json; charset=UTF-8',
+      "name": auth.currentUser!.displayName!,
+      "roomName": roomName,
+    },
+    body: await getMyPublicKey(),
+  );
+
+  // var token = jsonDecode(await rsaDecrypt(res.body));
+  var token = res.body;
+  print(token);
+  token = await rsaDecrypt(token);
+  print(token);
+  // count++;
+  // } while (!(await checkDocExist(docID)) && count < MAX_TRIES);
+  return token;
+}
