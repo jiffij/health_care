@@ -239,11 +239,11 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
                         };
                         print(data);
                         // Handle submit button press
-                        // var res1 = await writeToServer(
-                        //     'doctor/$uid/$appointTime/$now', data);
+                        var res1 = await writeToServer(
+                            'doctor/$docId/appointment/$appointDate/survey/$appointTime', data);
                         var res2 = await writeToServer(
-                            'patient/$uid/survey/$appointDate', data);
-                        if (res2.statusCode != 200) {
+                            'patient/$uid/appointment/$appointDate/survey/$appointTime', data);
+                        if (res2.statusCode != 200 || res2.statusCode != 200) {
                           print('history upload error');
                         }
                       },

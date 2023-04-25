@@ -102,24 +102,20 @@ class _RegisterState extends State<Register> {
       'HKID': _idController.text.trim(),
       if (pos == 'doctor') 'profilePic': url,
       if (pos == 'doctor') 'title': _titleController.text.trim(),
-      if (pos == 'doctor') 'exp': _currentSliderValue.round().toString() + " years",
       if (pos == 'doctor')
-      '1': '0',
-      if (pos == 'doctor')
-      '2': '0',
-      if (pos == 'doctor')
-      '3': '0',
-      if (pos == 'doctor')
-      '4': '0',
-      if (pos == 'doctor')
-      '5': '0',
-        // 'rating': {
-        //   '1': '0',
-        //   '2': '0',
-        //   '3': '0',
-        //   '4': '0',
-        //   '5': '0',
-        // },
+        'exp': _currentSliderValue.round().toString() + " years",
+      if (pos == 'doctor') '1': '0',
+      if (pos == 'doctor') '2': '0',
+      if (pos == 'doctor') '3': '0',
+      if (pos == 'doctor') '4': '0',
+      if (pos == 'doctor') '5': '0',
+      // 'rating': {
+      //   '1': '0',
+      //   '2': '0',
+      //   '3': '0',
+      //   '4': '0',
+      //   '5': '0',
+      // },
     });
     updateAuthInfo(_nameController.text);
     var result = await Navigator.of(context).push(
@@ -160,6 +156,11 @@ class _RegisterState extends State<Register> {
     print(data['first name']);
     print(data['last name']);
     print(data['rating']);
+  }
+
+  void gettoken() async {
+    var token = await getVideoToken('1234');
+    print(token);
   }
 
   Future<void> getImg(String type) async {
@@ -327,21 +328,23 @@ class _RegisterState extends State<Register> {
               //     ),
               //   ),
               if (pos == 'doctor')
-              SizedBox(height: 10,),
+                SizedBox(
+                  height: 10,
+                ),
               if (pos == 'doctor')
-              Text("Experience", style: TextStyle(fontSize: 16)),
+                Text("Experience", style: TextStyle(fontSize: 16)),
               if (pos == 'doctor')
-              Slider(
-                value: _currentSliderValue,
-                max: 80,
-                divisions: 80,
-                label: _currentSliderValue.round().toString() + " years",
-                onChanged: (double value) {
-                  setState(() {
-                    _currentSliderValue = value;
-                  });
-                },
-              ),
+                Slider(
+                  value: _currentSliderValue,
+                  max: 80,
+                  divisions: 80,
+                  label: _currentSliderValue.round().toString() + " years",
+                  onChanged: (double value) {
+                    setState(() {
+                      _currentSliderValue = value;
+                    });
+                  },
+                ),
               if (pos == 'doctor')
                 SizedBox(
                   height: 20.0,
@@ -398,7 +401,7 @@ class _RegisterState extends State<Register> {
                     backgroundColor:
                         MaterialStateProperty.all(Colors.amber[900]),
                   ),
-                  onPressed: checkExist,
+                  onPressed: gettoken,
                 ),
               ),
             ],

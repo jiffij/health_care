@@ -162,11 +162,16 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                           'extra_notes': notes,
                           'signature_url': signId,
                         };
+                        print(data);
+                        print(now);
                         // Handle submit button press
                         var res1 = await writeToServer(
                             'doctor/$uid/$patientUid/$now', data);
                         var res2 = await writeToServer(
                             'patient/$patientUid/history/$now', data);
+                        // var res2 =
+                        //     await writeToServer('medical_history/$now', data);
+
                         if (res1.statusCode != 200 || res2.statusCode != 200) {
                           print('history upload error');
                         }
