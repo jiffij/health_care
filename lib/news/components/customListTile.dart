@@ -1,3 +1,7 @@
+import 'package:google_fonts/google_fonts.dart';
+import 'package:path/path.dart';
+import 'package:simple_login/yannie_version/color.dart';
+
 import '../model/article_model.dart';
 import '../pages/articles_details_page.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +14,15 @@ Widget customListTile(Article article, BuildContext context) {
     onTap: () {
       Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => MyWebView(url: article.url)),
+              _createRoute(MyWebView(url: article.url)),
             );
     },
     child: Container(
       margin: EdgeInsets.all(12.0),
-      padding: EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(defaultHorPadding/1.5),
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: BorderRadius.circular(20.0),
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
@@ -37,11 +41,11 @@ Widget customListTile(Article article, BuildContext context) {
 
               image: DecorationImage(
                   image: NetworkImage(article.urlToImage), fit: BoxFit.cover),
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(20.0),
             ),
           ),
           SizedBox(
-            height: 8.0,
+            height: 15.0,
           ),
           Container(
             padding: EdgeInsets.all(6.0),
@@ -57,14 +61,13 @@ Widget customListTile(Article article, BuildContext context) {
             ),
           ),
           SizedBox(
-            height: 8.0,
+            height: 15.0,
           ),
           Text(
             article.title,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.comfortaa(textStyle: TextStyle(
               fontSize: 16.0,
-            ),
+            )),
           ),
           // GestureDetector(
           //   child: Text(
@@ -85,5 +88,23 @@ Widget customListTile(Article article, BuildContext context) {
         ],
       ),
     ),
+  );
+}
+
+Route _createRoute(Widget destinition) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => destinition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
   );
 }

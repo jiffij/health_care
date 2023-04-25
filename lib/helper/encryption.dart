@@ -8,6 +8,8 @@ import 'package:fast_rsa/fast_rsa.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 // import 'dart:io';
 
+const maxPlaintextLen = 200;
+
 // final storage = new FlutterSecureStorage();
 const _storage = FlutterSecureStorage();
 
@@ -60,15 +62,40 @@ Future<String> getMyPrivateKey() async {
   return await _storage.read(key: "PRIVATE_KEY") ?? '';
 }
 
-Future<String> rsaEncrypt(String text, String publicKey) async {
+Future<String> rsaEncryptChunk(String text, String publicKey) async {
   return await RSA.encryptPKCS1v15(text, publicKey);
 }
 
-Future<String> rsaDecrypt(String text) async {
+Future<String> rsaDecryptChunk(String text) async {
   var privateKey = await getMyPrivateKey();
   return await RSA.decryptPKCS1v15(text, privateKey);
 }
 
 Future<Uint8List> rsaEncryptByte(Uint8List text, String publicKey) async {
   return await RSA.encryptPKCS1v15Bytes(text, publicKey);
+}
+
+Future<String> rsaDecrypt(String text) async {
+  List<String> substrings = text.split(" ").where((s) => s.isNotEmpty).toList();
+  String mergedtext = '';
+  for (String str in substrings) {
+    mergedtext = mergedtext + await rsaDecryptChunk(str);
+  }
+  return mergedtext;
+}
+
+Future<String> rsaEncrypt(String text, String publicKey) async {
+  List<String> chunks = [
+    for (int i = 0; i < text.length; i += maxPlaintextLen)
+      text.substring(i,
+          i + maxPlaintextLen < text.length ? i + maxPlaintextLen : text.length)
+  ];
+  String mergedtext = '';
+  for (int i = 0; i < chunks.length; i++) {
+    mergedtext = mergedtext + await rsaEncryptChunk(chunks[i], publicKey);
+    if (i != chunks.length - 1) {
+      mergedtext += " ";
+    }
+  }
+  return mergedtext;
 }
