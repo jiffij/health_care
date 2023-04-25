@@ -131,7 +131,7 @@ class _MyProfilePageState extends State<p_MyProfilePage> {
                     height: globalheight*0.1,
                     child: const FittedBox (
                       fit: BoxFit.scaleDown,        
-                      child: Text('My Profile', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                      child: Text('My Profile', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255),)),
                     ),
                   ),
                   const Spacer(),

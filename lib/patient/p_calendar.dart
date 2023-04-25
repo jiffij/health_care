@@ -224,9 +224,8 @@ class _CalendarPageState extends State<p_CalendarPage> {
                 child: const Align(
                   alignment: Alignment.center,
                   child: FittedBox (
-                  fit: BoxFit.scaleDown,        
-                  child: 
-                  Text('Calendar', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                    fit: BoxFit.scaleDown,        
+                    child: Text('Calendar', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
                   ),
                 ), 
               ),

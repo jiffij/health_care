@@ -188,7 +188,7 @@ class _DoctorListPageState extends State<p_DoctorListPage> {
             child: FittedBox (
             fit: BoxFit.scaleDown,        
             child: 
-            Text('Doctor List', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+            Text('Doctor List', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
             ),
           ),
           Row(

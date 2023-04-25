@@ -425,11 +425,9 @@ class _MakeAppointmentPageState extends State<p_MakeAppointmentPage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text('Make Appointment',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
                             Text('Doctor: $fullname',
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
+                                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
                           ],
                         ),
                       ),

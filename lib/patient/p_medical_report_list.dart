@@ -69,12 +69,16 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
     {
       Map<String, dynamic>? data = await readFromServer('patient/$uid/history/$date');
       print(data);
-      var dname = data?['doctor'];
+      var doctorid = data?['doctor'];
+      data = await readFromServer('doctor/$doctorid');
+      var firstname = data?['first name'];
+      var lastname = data?['last name'];
+      var fullname = '$firstname $lastname';
       var year = '${date[0]}${date[1]}${date[2]}${date[3]}';
       var month = '${date[4]}${date[5]}';
       var day = '${date[6]}${date[7]}';
       setState(() {
-        reportlist.insert(0, [dname, year, month, day]);
+        reportlist.insert(0, [fullname, year, month, day]);
       });
     }
     reportlistsort = reportlist;
@@ -167,7 +171,7 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
             child: FittedBox (
             fit: BoxFit.scaleDown,        
             child: 
-            Text('My Medical Report', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+            Text('My Medical Report', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
             ),
           ),
           FittedBox(
@@ -279,12 +283,13 @@ class _MedicalReportListPageState extends State<p_MedicalReportListPage> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: const [
+                      Icon(Icons.edit_document,color: Color.fromARGB(255, 123, 141, 158), size: 40,),
                       Text('Click here',
-                        style: TextStyle(fontSize: 30)),
+                        style: TextStyle(fontSize: 14)),
                       Text('for details of',
-                        style: TextStyle(fontSize: 30)),
+                        style: TextStyle(fontSize: 14)),
                       Text('the report!',
-                        style: TextStyle(fontSize: 30)),
+                        style: TextStyle(fontSize: 14)),
                     ],
                   ),
                 ),

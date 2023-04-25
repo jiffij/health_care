@@ -183,7 +183,7 @@ class _DoctorDetailPageState extends State<p_DoctorDetailPage> {
               child: FittedBox (
               fit: BoxFit.scaleDown,        
               child: 
-              Text('Doctor Details', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+              Text('Doctor Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
               ),
             ), 
           ],

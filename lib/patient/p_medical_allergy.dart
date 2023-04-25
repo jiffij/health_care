@@ -217,8 +217,7 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text('Personal Emergency Details',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
                     ),
                   ),
                 ],
