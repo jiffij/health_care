@@ -1,10 +1,15 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'd_calendar.dart';
 import 'd_homepage.dart';
 import 'd_message.dart';
+import 'd_myprofile.dart';
 
+import '../helper/firebase_helper.dart';
+//import 'p_make_appointment.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,11 +22,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Doctor my Profile page',
+      title: 'Doctor My Profile Page',
       theme: ThemeData(
         // This is the theme of the application.
       ),
-      home: const d_MyProfilePage(),
+      //home: const p_DoctorDetailPage('Default'),
     );
   }
 }
@@ -39,12 +44,11 @@ class d_MyProfilePage extends StatefulWidget {
   // always marked "final".
 
   @override
-
   State<d_MyProfilePage> createState() => _MyProfilePageState();
 }
 
 class _MyProfilePageState extends State<d_MyProfilePage> {
-  
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -56,21 +60,53 @@ class _MyProfilePageState extends State<d_MyProfilePage> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
-
+      resizeToAvoidBottomInset: false,
       body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             heading(width, height),
             detaillist(width, height),
+            //booknow(width, height),
             home(width, height),           
           ],
         ),
     );
   }
 
+  String fullname = '';
+  String exp = '';
+  String profilePic = '';
+  String title = '';
+  String fRating = '0';
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  void start() async {
+    var uid = getUID();
+    Map<String, dynamic>? data = await readFromServer('doctor/$uid');
+    var firstname = data?['first name'];
+    var lastname = data?['last name'];
+    fullname = '$firstname $lastname';
+    exp = data?['exp'];
+    var puid = data?['profilePic'];
+    profilePic = await loadStorageUrl(puid);
+    title = data?['title'];
+    fRating = calRating(data?['1'], data?['2'], data?['3'], data?['4'], data?['5']);
+    setState(() {
+      print(data);
+    });
+  }
+
   // All navigate direction calling method
   void navigator(int index) {
     switch (index) {
+      case 0:
+        Navigator.of(context).pop(context);
+        break;
       case 1:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => const d_HomePage()),
@@ -108,34 +144,41 @@ class _MyProfilePageState extends State<d_MyProfilePage> {
         width: globalwidth,
         height: globalheight*0.25,
         color: const Color.fromARGB(255, 28, 107, 164),
-        child: Container(
-          margin: const EdgeInsets.only(top: 10, left: 12),
-          child: Align(
-            alignment: Alignment.topLeft ,
-            child: Row(
-              children: [
-                const FittedBox (
-                  fit: BoxFit.scaleDown,        
-                  child: Text('My Profile', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                ),
-                const Spacer(),
-                FittedBox(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GestureDetector(
+              onTap: () => navigator(0),
+              child: FittedBox(
                 fit: BoxFit.scaleDown,
-                  child: SizedBox(
-                    height: globalheight*0.1,
-                    width: globalheight*0.1,
-                    child: const FittedBox (
-                      fit: BoxFit.scaleDown,
-                      child: Icon(Icons.settings),
+                child: Container(
+                  margin: const EdgeInsets.only(left: 15, top: 20),
+                  height: globalheight*0.06,
+                  width: globalheight*0.06,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                  ),
+                  child: FittedBox (
+                    fit: BoxFit.scaleDown,
+                    child: Container(
+                    margin: const EdgeInsets.all(5),
+                    child: const Icon(Icons.arrow_back_rounded),
                     ),
                   ),
                 ),
-                SizedBox(
-                  width: globalwidth*0.05,
-                ),
-              ],
+              ),
             ),
-          ),
+            const Align(
+              alignment: Alignment.center,  
+              child: FittedBox (
+              fit: BoxFit.scaleDown,        
+              child: 
+              Text('Doctor Details', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255))),
+              ),
+            ), 
+          ],
         ),
       ),
       Positioned(
@@ -165,8 +208,8 @@ class _MyProfilePageState extends State<d_MyProfilePage> {
                   height: globalheight*0.1,
                   decoration : BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://cdn.imgbin.com/16/14/21/imgbin-physician-hospital-medicine-doctor-dentist-doctor-MvjeZ7XWhJkkxsq5WJJQFWNcK.jpg'),
+                    image: DecorationImage(
+                      image: NetworkImage(profilePic),
                       fit: BoxFit.cover,
                     ),
                   ),    
@@ -177,18 +220,18 @@ class _MyProfilePageState extends State<d_MyProfilePage> {
                   children: [
                     Container (
                       margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
-                        alignment: Alignment.centerLeft,
+                      child: FittedBox (
+                        //alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
-                        child: Text('Doctor Name', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        child: Text('Doctor Name: $fullname', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     Container (
                       margin: const EdgeInsets.only(left: 10),
-                      child: const FittedBox (
+                      child: FittedBox (
                         alignment: Alignment.centerLeft,
                         fit: BoxFit.scaleDown,
-                        child: Text('Doctor Title', style: TextStyle(fontSize: 12)),
+                        child: Text('Title: $title', style: const TextStyle(fontSize: 12)),
                       ),
                     ),
                   ],
@@ -240,9 +283,9 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
               child: FittedBox(
                 fit: BoxFit.scaleDown,        
                 child: Column(
-                  children: const [
-                    Text('Exp.', style: TextStyle(fontSize: 12)),
-                    Text('Year', style: TextStyle(fontSize: 10)),
+                  children: [
+                    const Text('Exp.', style: TextStyle(fontSize: 12)),
+                    Text('$exp', style: TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -271,7 +314,7 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
                         const Text('Rating', style: TextStyle(fontSize: 12)),
                       ],
                     ),
-                    const Text('rate/5.0', style: TextStyle(fontSize: 12)),
+                    Text('$fRating/5.0', style: const TextStyle(fontSize: 12)),
                   ],
                 ),
               ),
@@ -385,6 +428,31 @@ Widget detaillist(double globalwidth, double globalheight) => DefaultTextStyle.m
         ),
       ),
     ],
+  ),
+);
+
+Widget booknow(double globalwidth, double globalheight) => DefaultTextStyle.merge(
+  child: GestureDetector(
+    onTap: () => navigator(5),
+    child: Align(
+      alignment: Alignment.center,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Container(
+          height: globalheight*0.08,
+          width: globalwidth*0.7,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: const Color.fromARGB(255, 28, 107, 164),
+            boxShadow: const [
+              BoxShadow(color: Color.fromARGB(100, 28, 107, 164), spreadRadius: 2),
+            ],
+          ),
+          child: const Text('Book Now', style: TextStyle(fontSize: 12, color: Color.fromARGB(255, 255, 255, 255), fontWeight: FontWeight.bold)),
+        ),
+      ),
+    ),
   ),
 );
 
