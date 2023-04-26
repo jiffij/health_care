@@ -180,7 +180,7 @@ class _HomePageState extends State<p_HomePage> {
       }
       startDone = true;
     });
-  }
+  } 
 
   // All navigate direction calling method
   void navigator(int index) {

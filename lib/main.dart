@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/video_call/pages/connect.dart';
 import 'package:simple_login/welcome.dart';
+import 'package:simple_login/yannie_version/pages/yannie_welcome.dart';
 import 'login_screen.dart';
 // import 'home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const welcome(),  //new login page
+      home: const welcome2(),  //new login page
             //const loginScreen(), old login page
     );
   }
