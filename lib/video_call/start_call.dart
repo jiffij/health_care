@@ -3,83 +3,61 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:simple_login/helper/firebase_helper.dart';
 import 'package:simple_login/video_call/pages/connect.dart';
 import 'package:livekit_client/livekit_client.dart';
-import '../helper/firebase_helper.dart';
 import 'exts.dart';
 import 'pages/room.dart';
 
-class JoinCallWaiting extends StatefulWidget {
-  String DocId;
+class StartCall extends StatefulWidget {
+  String PatientId;
   String time;
 
-  JoinCallWaiting(this.DocId, this.time, {Key? key}) : super(key: key);
+  StartCall(this.PatientId, this.time, {Key? key}) : super(key: key);
 
   @override
-  _JoinCallWaitingState createState() =>
-      _JoinCallWaitingState(this.DocId, this.time);
+  _StartCallState createState() => _StartCallState(this.PatientId, this.time);
 }
 
-class _JoinCallWaitingState extends State<JoinCallWaiting> {
-  String DocId;
+class _StartCallState extends State<StartCall> {
+  String PatientId;
   String time;
   late DatabaseReference databaseReference;
   String _displayText = '';
   bool ready = false;
-  StreamSubscription<DatabaseEvent>? listener;
+  String? token;
+  // StreamSubscription<DatabaseEvent>? listener;
 
-  _JoinCallWaitingState(this.DocId, this.time) {
-    final instance = FirebaseDatabase.instanceFor(
-        app: Firebase.app(),
-        databaseURL:
-            'https://hola-85371-default-rtdb.asia-southeast1.firebasedatabase.app/');
-    var ref = instance.ref(DocId);
-    databaseReference = ref.child(time);
-    start();
+  _StartCallState(this.PatientId, this.time) {
+    // start();
+    _displayText = 'Start my meeting at time $time';
   }
 
   @override
   void dispose() {
-    //implement dispose
-    if (listener != null) {
-      listener!.cancel();
-      listener = null;
-    }
     super.dispose();
   }
 
-  void start() async {
-    //   databaseReference.set({
-    //   'ready': 'true'
-    // });
-    var snapshot = await databaseReference.child('ready').get();
-    setState(() {
-      ready = snapshot.value == null
-          ? false
-          : (snapshot.value == "true" ? true : false);
-    });
-    databaseReference.keepSynced(true);
-    listener =
-        databaseReference.child('ready').onValue.listen((DatabaseEvent event) {
-      // Handle the data change event here.
-      setState(() {
-        ready = event.snapshot.value == null
-            ? false
-            : (event.snapshot.value == "true" ? true : false);
-        _displayText =
-            'Your meeting at $time is ' + (ready ? 'ready' : 'not ready');
-      });
-      print(ready);
-    });
-    _displayText =
-        'Your meeting at $time is ' + (ready ? 'ready' : 'not ready');
+  void start(context) async {
+    String roomid = getUID() + this.PatientId;
+    token = await getVideoToken(roomid);
+    final instance = FirebaseDatabase.instanceFor(
+        app: Firebase.app(),
+        databaseURL:
+            'https://hola-85371-default-rtdb.asia-southeast1.firebasedatabase.app/');
+    var ref = instance.ref(getUID());
+    databaseReference = ref.child(time);
+    databaseReference.set({'ready': 'true'});
     print(ready);
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(
+    //                 builder: (context) => ConnectPage(token!)),
+    // );
+    _connect(context);
   }
 
   Future<void> _connect(BuildContext ctx) async {
-    if (!ready) return;
-    String roomid = this.DocId + getUID();
-    final token = await getVideoToken(roomid);
+    //
     try {
       //create new room
       final room = Room();
@@ -93,7 +71,7 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
         //server link
         "wss://dr-ust.livekit.cloud",
         //temp token
-        token,
+        token!,
       );
       await Navigator.push<void>(
         ctx,
@@ -116,7 +94,7 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _connect(context);
+          start(context);
         },
         child: Icon(Icons.add),
       ),

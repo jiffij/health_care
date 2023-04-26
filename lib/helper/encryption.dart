@@ -98,8 +98,4 @@ Future<String> rsaEncrypt(String text, String publicKey) async {
     }
   }
   return mergedtext;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 8ba2e0a3e310e09bf321ec1ef89ce7ec9c523824
