@@ -11,6 +11,7 @@ import '../news/pages/articles_details_page.dart';
 import '../news/services/api_service.dart';
 import '../news/web_view.dart';
 import '../video_call/join_call_waiting.dart';
+import '../video_call/start_call.dart';
 import 'd_calendar.dart';
 import 'd_myprofile.dart';
 import 'd_myprofile.dart';
@@ -103,7 +104,7 @@ class _HomePageState extends State<d_HomePage> {
   void navigator(int index) {
     if (index == 1) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => Register()),
+        MaterialPageRoute(builder: (context) => StartCall("L6S9xfMD3wWnLFGpRaJWDH8ulmt2", "00:00")),
       );
     } else if (index == 2) {
       Navigator.of(context).push(

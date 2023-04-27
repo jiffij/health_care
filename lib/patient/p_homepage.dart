@@ -10,6 +10,7 @@ import '../news/components/customHorizontalListTile.dart';
 import '../news/pages/articles_details_page.dart';
 import '../news/web_view.dart';
 import '../register.dart';
+import '../video_call/join_call_waiting.dart';
 import 'p_calendar.dart';
 import 'p_message.dart';
 import 'p_myprofile.dart';
@@ -117,7 +118,8 @@ class _HomePageState extends State<p_HomePage> {
 // =======
         // Check if the appointment has passed alreadly or not
         if (int.parse(existdate) >= int.parse(date)) {
-          existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
+          existtimemap =
+              await readFromServer('patient/$uid/appointment/$existdate');
           List timeList = existtimemap!.keys.toList();
           // print('timeList');
           List timeListint = [];
@@ -142,8 +144,7 @@ class _HomePageState extends State<p_HomePage> {
             // Case 0x:xx
             else if (temp.length == 3) {
               temp = '0${temp[0]}:${temp[1]}${temp[2]}';
-            }
-            else {
+            } else {
               temp = '${temp[0]}${temp[1]}:${temp[2]}${temp[3]}';
             }
             timeList.add(temp);
@@ -156,7 +157,7 @@ class _HomePageState extends State<p_HomePage> {
             var dFirstname = doctor?['first name'];
             var dLastname = doctor?['last name'];
             var dFullname = '$dFirstname $dLastname';
-            dailyAppointmentList.insert(0, [existdate, time, dFullname]);
+            dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
           }
           //print(dailyAppointmentList);
           dailyAppointmentList = dailyAppointmentList.reversed.toList();
@@ -180,7 +181,7 @@ class _HomePageState extends State<p_HomePage> {
       }
       startDone = true;
     });
-  } 
+  }
 
   // All navigate direction calling method
   void navigator(int index) {
@@ -198,8 +199,8 @@ class _HomePageState extends State<p_HomePage> {
       case 3:
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-              builder: (context) =>
-                  DiagnosticSurvey('DnLy1aqV1WRg66qqmz9HGg8zotF2', '20230426', '00:00')),
+              builder: (context) => DiagnosticSurvey(
+                  'DnLy1aqV1WRg66qqmz9HGg8zotF2', '20230426', '00:00')),
         );
         break;
       case 4:
@@ -385,7 +386,9 @@ class _HomePageState extends State<p_HomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => MyWebView(url: articles[index].url)),
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                MyWebView(url: articles[index].url)),
                       );
                     },
                     child: Image.network(
@@ -608,7 +611,10 @@ class _HomePageState extends State<p_HomePage> {
               color: const Color.fromARGB(80, 224, 159, 31),
             ),
             child: GestureDetector(
-              //onTap: () => navigator(5, appointments[index][1]),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                    builder: (context) => JoinCallWaiting(appointments[index][3], appointments[index][1])),
+              ),
               child: Row(
                 children: [
                   Container(

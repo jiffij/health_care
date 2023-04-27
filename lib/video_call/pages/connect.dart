@@ -5,20 +5,21 @@ import '../exts.dart';
 import 'room.dart';
 
 class ConnectPage extends StatefulWidget {
-  //
-  const ConnectPage({
+  String token;
+
+  ConnectPage(
+    this.token, {
     Key? key,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _ConnectPageState();
+  State<StatefulWidget> createState() => _ConnectPageState(this.token);
 }
 
 class _ConnectPageState extends State<ConnectPage> {
-  
-
-
   bool _busy = false;
+  String token;
+  _ConnectPageState(this.token);
 
   @override
   void initState() {
@@ -31,14 +32,12 @@ class _ConnectPageState extends State<ConnectPage> {
     super.dispose();
   }
 
-
   Future<void> _connect(BuildContext ctx) async {
     //
     try {
       setState(() {
         _busy = true;
       });
-
 
       //create new room
       final room = Room();
@@ -52,7 +51,7 @@ class _ConnectPageState extends State<ConnectPage> {
         //server link
         "wss://dr-ust.livekit.cloud",
         //temp token
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODMwNTc2NjYsImlzcyI6IkFQSThyak1pVFZZV3RTSCIsIm5iZiI6MTY4MjA1NzY2Nywic3ViIjoieWFubmllIiwidmlkZW8iOnsiY2FuUHVibGlzaCI6dHJ1ZSwiY2FuUHVibGlzaERhdGEiOnRydWUsImNhblN1YnNjcmliZSI6dHJ1ZSwicm9vbSI6InRlc3QiLCJyb29tSm9pbiI6dHJ1ZX19.Sts2RqfvsL7_s7aiI3x7WYS0UygingZ8latbCFFUymw",
+        token,
       );
       await Navigator.push<void>(
         ctx,
@@ -67,7 +66,6 @@ class _ConnectPageState extends State<ConnectPage> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) => Scaffold(
