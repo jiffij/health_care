@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
+import 'package:simple_login/helper/alert.dart';
+import 'package:simple_login/yannie_version/pages/yannie_home.dart';
+import 'package:simple_login/yannie_version/widget/navigator.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../helper/firebase_helper.dart';
+import '../../modify_timeslot_package/time_slot_from_list.dart';
 import '../color.dart';
 import '../widget/event_for_calendar.dart';
 
@@ -16,15 +20,6 @@ class MakeAppointment extends StatefulWidget {
 
   const MakeAppointment(this.doctor, {super.key});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   @override
   State<MakeAppointment> createState() =>
       _MakeAppointmentState();
@@ -35,6 +30,8 @@ class _MakeAppointmentState extends State<MakeAppointment> {
 
   
   String selected_timeslot = '';
+  DateTime selectTime = DateTime.now();
+ 
 
 
   late final ValueNotifier<List<Event>> _selectedEvents;
@@ -42,26 +39,19 @@ class _MakeAppointmentState extends State<MakeAppointment> {
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime.now();
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+
+  
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
     return kEvents[day] ?? [];
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
-    final days = daysInRange(start, end);
-
-    return [
-      for (final d in days) ..._getEventsForDay(d),
-    ];
-  }
-
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
+    //if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
@@ -70,8 +60,88 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      _selectedEvents.value = _getEventsForDay(selectedDay);
-    }
+      //_selectedEvents.value = _getEventsForDay(selectedDay);
+    //}
+    showModalBottomSheet(
+      context: context,
+      enableDrag: true,
+      showDragHandle: true,
+      backgroundColor: bgColor,
+      useSafeArea: true,
+      isScrollControlled: true,
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height*0.7, minHeight: MediaQuery.of(context).size.height*0.7),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(topLeft: Radius.circular(50), topRight: Radius.circular(50))),
+      builder:  (_) => StatefulBuilder(
+        builder: (context, setState) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+          Container(
+            height: MediaQuery.of(context).size.height*0.1,
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.white, width: 3))
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+              Text("Please select a timeslot on" , style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 15)),
+              Text(DateFormat("d MMMM y, EEEE").format(selectedDay), style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
+            ]),
+            ),
+          Expanded(child: Scrollbar(child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+          padding: EdgeInsets.only(left: defaultHorPadding, right: defaultHorPadding, bottom: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TimesSlotGridViewFromList(
+                locale: Localizations.localeOf(context).toString(),
+                initTime: selectTime,
+                //crossAxisCount: 4,
+                selectedColor: lighttheme,
+                onChange: (value) {
+                  setState(() {
+                    selectTime = value;
+                  });
+                },
+                listDates: [
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 10, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 11, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 12, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 13, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 14, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 15, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 16, 30),
+                  DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 20, 30)
+                ],
+              ),
+            ]
+          ),
+        ))),
+        Container(
+          height: 100,
+          color: Colors.transparent,
+          padding: EdgeInsets.symmetric(vertical: defaultVerPadding, horizontal: defaultHorPadding/2),
+        child: ElevatedButton(
+          onPressed: () async {
+            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(selectTime);
+            final result = await showConfirmDialog(context, message);
+            if (result == true) 
+            {makeAppointment();
+            await showSuccessDialog(context, "Booking Success");
+            Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const BottomNav()),);}
+          }, 
+          style: ButtonStyle(
+            backgroundColor: MaterialStatePropertyAll(lighttheme),
+            shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))))
+          ),
+          child: Text("Book Now", style: GoogleFonts.comfortaa(fontSize: 18),),),
+        )
+        ])
+      )
+    );
   }
 
 
@@ -121,7 +191,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
               padding: EdgeInsets.symmetric(horizontal: defaultHorPadding*1.5, vertical: defaultVerPadding/2),
               margin: EdgeInsets.symmetric(vertical: defaultVerPadding/1.5, horizontal: defaultHorPadding/1.5),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 boxShadow: [BoxShadow(
                               offset: const Offset(0, 8),
@@ -161,7 +231,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
             //the calendar
             Container(
               margin: EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5, vertical: defaultVerPadding/2),
-              padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/3, vertical: defaultVerPadding),
+              padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/3, vertical: defaultVerPadding/1.5),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(30)),
@@ -172,6 +242,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                             ),]
               ),
               child: TableCalendar<Event>(
+                availableCalendarFormats: {CalendarFormat.month : 'Month'},
                 firstDay: kFirstDay,
                 lastDay: kLastDay,
                 focusedDay: _focusedDay,
@@ -184,7 +255,8 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                 weekendDays: [DateTime.sunday],
                 //startingDayOfWeek: StartingDayOfWeek.monday,
                 headerStyle: HeaderStyle(
-                  titleTextStyle: GoogleFonts.comfortaa(fontSize: 16),
+                  titleCentered: true,
+                  titleTextStyle: GoogleFonts.comfortaa(fontSize: 18),
                   leftChevronIcon: Icon(Icons.chevron_left, color: lighttheme,),
                   rightChevronIcon: Icon(Icons.chevron_right, color: lighttheme,),
                   formatButtonShowsNext: false,
@@ -209,7 +281,6 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                   outsideDaysVisible: false,
                 ),
                 onDaySelected: _onDaySelected,
-                //onRangeSelected: _onRangeSelected,
                 onFormatChanged: (format) {
                   if (_calendarFormat != format) {
                     setState(() {
@@ -233,7 +304,6 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     );
   }
   
-  String fullname = '';
   // Todo: Decide hard code access data one by one
   bool tlshow = false;
   List<List> timeslotslist = [
@@ -478,7 +548,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
   void makeAppointment() {
     var uid = getUID();
     var date = dateToServer(_selectedDay!);
-    var time = selected_timeslot;
+    var time = DateFormat("HH:mm").format(selectTime);
     writeToServer('patient/$uid/appointment/$date', {
       time: {
         'doctorID': widget.doctor[1],
@@ -491,70 +561,9 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         'description': '',
       }
     });
-    successful_message();
+    //successful_message();
   }
 
-  Widget heading(double globalwidth, double globalheight) =>
-      DefaultTextStyle.merge(
-        child: Stack(
-          children: [
-            Container(
-              width: globalwidth,
-              height: globalheight * 0.25,
-              color: const Color.fromARGB(255, 28, 107, 164),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GestureDetector(
-                    onTap: () {},
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 15, top: 20),
-                        height: globalheight * 0.06,
-                        width: globalheight * 0.06,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: const Color.fromARGB(255, 255, 255, 255),
-                        ),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Container(
-                            margin: const EdgeInsets.all(5),
-                            child: const Icon(Icons.arrow_back_rounded),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Text('Make Appointment',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                            Text('Doctor: $fullname',
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
 
   Widget calendar(double globalwidth, double globalheight) => Card(
         child: Expanded(
@@ -880,7 +889,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                   padding: EdgeInsets.all(globalheight * 0.02),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(20),
                     color: list[1] == true
                         ? list[0] == selected_timeslot
                             ? const Color.fromARGB(255, 224, 159, 31)

@@ -10,9 +10,11 @@ class DoctorCard extends StatelessWidget {
   const DoctorCard({
     Key? key,
     required List this.doctor,
+    required BuildContext this.ctx,
   }) : super(key: key);
 
   final List doctor;
+  final BuildContext ctx;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,10 @@ class DoctorCard extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
         onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(ctx);
+          if (!currentFocus.hasPrimaryFocus) {
+            currentFocus.unfocus();
+          }
           Navigator.of(context).push(_createRoute(DoctorDetailScreen(doctor: doctor)));
         },
         borderRadius: BorderRadius.circular(20),
