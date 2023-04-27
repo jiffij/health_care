@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/helper/alert.dart';
 import 'package:simple_login/patient/p_make_appointment.dart';
+import 'package:simple_login/yannie_version/pages/yannie_makeAppointment.dart';
 
 import '../color.dart';
 import '../doctor.dart';
@@ -343,8 +345,10 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                   ),
                                 ),
                                 ElevatedButton(
-                                  onPressed: (){
-                                    Navigator.of(context).push(_createRoute(p_MakeAppointmentPage(widget.doctor[1])));
+                                  onPressed: () async {
+                                    final result = await showConfirmDialog(context, "Are you sure to make appointment?");
+                                    if (result==true)
+                                    Navigator.of(context).push(_createRoute(MakeAppointment(widget.doctor)));
                                   }, 
                                   style: ButtonStyle(
                                     shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20)))),

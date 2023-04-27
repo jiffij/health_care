@@ -232,6 +232,7 @@ class _welcome2State extends State<welcome2> {
                                             padding: MaterialStatePropertyAll(const EdgeInsets.symmetric(vertical: 18))
                                             ),
                                         onPressed: () async {
+                                          FocusScope.of(context).requestFocus(FocusNode());
                                           if (_usernameController.text != "" && _passwordController.text != "") {
                                             Loading().show(context: context, text: "Loading...");
                                             var msg = await _firestoreLogin();

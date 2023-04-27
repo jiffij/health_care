@@ -1,34 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:simple_login/yannie_version/pages/yannie_myBooking.dart';
 
 import '../color.dart';
 
 
-class Upcoming extends StatelessWidget {
-  const Upcoming({
-    Key? key,
-  }) : super(key: key);
+class UpcomingAppointmentCard extends StatefulWidget {
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.only(
-          top: defaultVerPadding,
-          //bottom: defaultVerPadding/2,
-          left: defaultHorPadding/3,
-          right: defaultHorPadding/3
-        ),
-    );
-  }
-}
+  State<UpcomingAppointmentCard> createState() => _UpcomingAppointmentCardState();
 
-class AppointmentCard extends StatefulWidget {
-
-  @override
-  State<AppointmentCard> createState() => _AppointmentCardState();
-
-  const AppointmentCard({
+  const UpcomingAppointmentCard({
     Key? key,
     required this.appointment,
   }) : super(key: key);
@@ -36,7 +18,7 @@ class AppointmentCard extends StatefulWidget {
 
 }
 
-class _AppointmentCardState extends State<AppointmentCard> {
+class _UpcomingAppointmentCardState extends State<UpcomingAppointmentCard> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -182,4 +164,22 @@ String dateFormatter(String date) {
       break;
   }
   return day + "\n" + month;
+}
+
+Route _createRoute(Widget destinition) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => destinition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }

@@ -144,7 +144,7 @@ abstract class _ParticipantWidgetState<T extends ParticipantWidget>
                 splashFactory: InkRipple.splashFactory,
                 onTap: widget.tap,
                 child: Ink(
-                  padding: EdgeInsets.symmetric(horizontal: 0),
+                  padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 44, 43, 43),
                       borderRadius: BorderRadius.all(Radius.circular(20))
