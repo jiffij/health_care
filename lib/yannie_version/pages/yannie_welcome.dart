@@ -286,7 +286,7 @@ class _welcome2State extends State<welcome2> {
                                               await showAlertDialog(context, "You have tried too many times.\nPlease try again later.");
                                             }
                                             else {
-                                                await showSuccessDialog(context, "Login Success").then((_) async {
+                                                await showSuccessDialog(context, "Login Success");
                                                   if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
                                                     case ID.DOCTOR:
@@ -312,8 +312,7 @@ class _welcome2State extends State<welcome2> {
                                                               builder: (context) => const Register()));
                                                       break;
                                                   }
-                                                }
-                                              }); 
+                                                }; 
                                             }
                                           }
                                           else { showAlertDialog(context, "Please enter Email and Password"); }

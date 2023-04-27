@@ -177,7 +177,13 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                         labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
                                         hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
                                         suffixIcon: !searchNull? IconButton(
-                                                        onPressed: () {_doctorNameController.clear();},
+                                                        onPressed: () {
+                                                          _doctorNameController.clear();
+                                                          FocusScopeNode currentFocus = FocusScope.of(context);
+                                                          if (!currentFocus.hasPrimaryFocus) {
+                                                            currentFocus.unfocus();
+                                                          }
+                                                        },
                                                         icon: Icon(Icons.dangerous_outlined), color: Color.fromARGB(255, 148, 148, 148),iconSize: 25,):null,
                                       ),
                                     ),
@@ -211,7 +217,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                   shrinkWrap: true,
                   primary: true,
                   itemCount: searchNull?ratingSort(defaultDoctorList).length : filteredDoctorList.length,
-                  itemBuilder: (context, index) => DoctorCard(doctor: searchNull?ratingSort(defaultDoctorList)[index]:filteredDoctorList[index]),
+                  itemBuilder: (context, index) => DoctorCard(doctor: searchNull?ratingSort(defaultDoctorList)[index]:filteredDoctorList[index], ctx: context,),
                 ),
               ),
             )),

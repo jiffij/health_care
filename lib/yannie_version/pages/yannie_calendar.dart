@@ -92,14 +92,34 @@ class _CalendarPageState extends State<CalendarPage> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        title: Text('My Calendar'),
-        elevation: 0,
-        backgroundColor: Colors.white,
-        titleTextStyle: appbar_title,
-        centerTitle: true,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(36), bottomRight: Radius.circular(36))),
-      ),
+       appBar: AppBar(
+                  //title: Text('Search For Doctor'),
+                  elevation: 0,
+                  toolbarHeight: 80,
+                  backgroundColor: lighttheme,
+                  titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w500)),
+                  centerTitle: true,
+                  title: Text('My Calendar'),
+                  //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
+                  leading: Padding(
+                    padding: EdgeInsets.symmetric(vertical: defaultVerPadding/2, horizontal: defaultHorPadding/1.5),
+                    child: ElevatedButton(
+                    style: ButtonStyle(
+                      //minimumSize: MaterialStatePropertyAll(Size(60, 60)),
+                      elevation: MaterialStatePropertyAll(1),
+                      shadowColor: MaterialStatePropertyAll(themeColor),
+                      side: MaterialStatePropertyAll(BorderSide(
+                          width: 1,
+                          color: themeColor,
+                        )),
+                      backgroundColor: MaterialStatePropertyAll(Colors.white),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))))
+                    ),
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: Icon(Icons.arrow_back, size: 23,color: themeColor,)
+                    )),
+                  leadingWidth: 95,
+                ),
       body: //SafeArea(
         //child: 
         Column(
