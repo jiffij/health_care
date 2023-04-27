@@ -208,7 +208,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Dr. ${widget.doctor[0]}', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),),
-                      Text('Speciality', style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
+                      Text('Family Medicine', style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
                     ],
                   ),
                   Container(

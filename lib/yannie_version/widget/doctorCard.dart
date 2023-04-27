@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -15,9 +17,24 @@ class DoctorCard extends StatelessWidget {
 
   final List doctor;
   final BuildContext ctx;
+  
 
   @override
   Widget build(BuildContext context) {
+    final List<String> spec = ["Allergy and Immunology",
+                              "Anesthesiology",
+                              "Dermatology",
+                              "Diagnostic radiology",
+                              "Emergency medicine",
+                              "Family medicine",
+                              "Internal medicine",
+                              "Medical genetics"
+                            ];
+    Random rnd;
+    int min = 0;
+    int max = 7;
+    rnd = new Random();
+    int r = min + rnd.nextInt(max - min);
     Size size = MediaQuery.of(context).size;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: defaultVerPadding/4, horizontal: 0),
@@ -100,7 +117,7 @@ class DoctorCard extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    'doctor.doctorSpecialty',
+                    "Family Medicine",
                     style: GoogleFonts.comfortaa(textStyle: TextStyle(
                         fontSize: 14,
                         color: themeColor)),

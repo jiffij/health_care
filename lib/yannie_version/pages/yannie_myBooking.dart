@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -39,7 +41,7 @@ class _HomeState extends State<myBooking> {
   int? _toggleValue = 0;
   List upcoming = [];
   List completed = [];
-  List canceled = [["20230522", "20:00", "Yannie IP"]];
+  List canceled = [["20230522", "20:00", "Mike Jackson"]];
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +134,20 @@ class _AppointmentCardState extends State<AppointmentCard> {
   
   @override
   Widget build(BuildContext context) {
+    final List<String> spec = ["Allergy and Immunology",
+                              "Anesthesiology",
+                              "Dermatology",
+                              "Diagnostic radiology",
+                              "Emergency medicine",
+                              "Family medicine",
+                              "Internal medicine",
+                              "Medical genetics"
+                            ];
+                            Random rnd;
+    int min = 0;
+    int max = 7;
+    rnd = new Random();
+    int r = min + rnd.nextInt(max - min);
     Size size = MediaQuery.of(context).size;
     String time = timeFormatter(widget.appointment[1]);
     String date = dateFormatter2(widget.appointment[0]);
@@ -178,7 +194,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
           ),
           
           SizedBox(height: 5),
-          Text('Speciality', style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 16),),
+          Text(spec[r], style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 16),),
           SizedBox(height: 5),
           Divider(color: lighttheme,),
           SizedBox(height: 5),
