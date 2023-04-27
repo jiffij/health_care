@@ -142,7 +142,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text('Patient', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 14),),
-                                            Text('4k', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 20)),
+                                            Text('4k', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
                                           ],
                                         ),
                                       ),
@@ -160,7 +160,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text('Exp', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 14),),
-                                            Text('19 yrs', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 20)),
+                                            Text('7 yrs', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
                                           ],
                                         ),
                                       ),
@@ -178,7 +178,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text('Rating', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 14),),
-                                            Text('${widget.doctor[4]}', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 20)),
+                                            Text('⭐ 4.1', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
                                           ],
                                         ),
                                       ),
@@ -193,7 +193,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                       ),
                                       SizedBox(width: size.width*0.2,),
                                       Text(
-                                        'doctorGender',
+                                        'Female',
                                         style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color(0xff91919F), fontSize: 15)),
                                       )
                                     ]
@@ -216,7 +216,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                       ),
                                       SizedBox(width: size.width*0.16,),
                                       Text(
-                                        'doctorSpecialty',
+                                        'Family Medicine',
                                         style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color(0xff91919F), fontSize: 15)),
                                       )
                                     ]
@@ -260,7 +260,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                       ),
                                       SizedBox(width: size.width*0.135,),
                                       Text(
-                                        '+852 ',
+                                        '+852 6545 8795',
                                         style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color(0xff91919F), fontSize: 15)),
                                       )
                                     ]
@@ -282,7 +282,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                       ),
                                       SizedBox(width: size.width*0.27,),
                                       Text(
-                                        'doctorPrice',
+                                        '\$201 - \$300',
                                         style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color(0xff91919F), fontSize: 15)),
                                       )
                                     ]
@@ -303,7 +303,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                     style: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, fontSize: 15)),
                                   )]),
                                   Padding(padding: EdgeInsets.only(top: defaultVerPadding/1.5), child: Text(
-                                    'description',
+                                    'Dr. Johnson is one of the best doctors in the Columbia Asia Hospital. He has saved more than 900 patients in the past 4 years. He has also received many awards from domestic and abroad as the best doctors. He is available on a private or schedule.',
                                     textAlign: TextAlign.justify,
                                     overflow: TextOverflow.visible,
                                     maxLines: 5,

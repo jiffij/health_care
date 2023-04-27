@@ -40,7 +40,7 @@ class _HomeState extends State<Home> {
   int numOfAppointment = 0;
   List<List> appointments = [];
   List<List> serverData = [];
-  late List<Article> articles;
+  List<Article>? articles;
   ApiService client = ApiService();
   bool startDone = false;
   // int index = 0;
@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
                                 child: Column(
                                   children: [
                                     TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
-                                    Services(serverData: appointments, article: articles[picIndex%articles.length]),
+                                    Services(serverData: appointments, article: articles![picIndex%articles!.length]),
                                     TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: false,),
                                     Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
                                     child: SizedBox(
@@ -172,14 +172,15 @@ class _HomeState extends State<Home> {
       }
       appointments = appointments.reversed.toList();
     }
-    setState(() {startDone = true;});
+    //setState(() {startDone = true;});
     articles = await client.getArticle();
+    setState(() {startDone = true;});
     
 
     setState(() {
       for (int i = 0; i < 3; i++) {
-        if (articles[i].urlToImage != "") {
-          newsUrl[i] = articles[i].urlToImage;
+        if (articles![i].urlToImage != "") {
+          newsUrl[i] = articles![i].urlToImage;
         }
         else newsUrl[i] = "https://srinivasgroup.com/img/MedicalDepartment/_home/slider/slide02.jpg";
       }
