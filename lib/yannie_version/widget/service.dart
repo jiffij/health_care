@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_login/news/news.dart';
 import 'package:simple_login/patient/p_doctor_list.dart';
 import 'package:simple_login/yannie_version/pages/yannie_myBooking.dart';
 
+import '../../news/model/article_model.dart';
 import '../../patient/p_medical_report_list.dart';
 import '../color.dart';
 import '../pages/yannie_doctor_search.dart';
 
 class Services extends StatelessWidget {
-  const Services({
+  const  Services({
     Key? key,
-    required this.serverData
+    required this.serverData,
+    required this.article,
   }) : super(key: key);
 
   final List serverData;
+  final Article article;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +69,25 @@ class Services extends StatelessWidget {
                               color: goodColor.withOpacity(0.13),
                             ),
                           ],
+                    image: DecorationImage(image: NetworkImage(article.urlToImage), fit: BoxFit.cover)
                   ),
+                  child: Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: defaultHorPadding),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                            BoxShadow(
+                              offset: const Offset(0, 10),
+                              blurRadius: 20,
+                              color: goodColor.withOpacity(0.13),
+                            ),
+                          ],
+
+                    ),
+                    child: Text(article.title, style: GoogleFonts.comfortaa(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),textAlign: TextAlign.center,),
+                  )
                 ),
               ))
             ],

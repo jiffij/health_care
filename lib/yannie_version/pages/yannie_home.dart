@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,6 +22,8 @@ class Home extends StatefulWidget {
   const Home({
     Key? key
   }) : super(key: key);
+  
+  
 
   @override
   State<Home> createState() => _HomeState();
@@ -27,6 +31,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
+  int picIndex = 0;
+  late Timer _timer;
+  
   final PageController _pageController = PageController(viewportFraction: 0.9);
   var now = DateTime.now();
   String fullname = '';
@@ -38,15 +45,32 @@ class _HomeState extends State<Home> {
   bool startDone = false;
   // int index = 0;
   List<String> newsUrl = [
-    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
-    'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'
+    // 'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    // 'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c',
+    // 'https://firebasestorage.googleapis.com/v0/b/hola-85371.appspot.com/o/newsloading.jpg?alt=media&token=ce51c4d2-2fbc-40dd-8d21-7db58dabf79c'
   ];
+  // List<String> photos = [
+  //   "https://thumbs.dreamstime.com/b/medicine-doctor-holding-red-heart-shape-hand-medical-icon-network-connection-modern-virtual-screen-interface-service-mind-99681240.jpg",
+  //   "https://www.state.gov/wp-content/uploads/2019/04/shutterstock_669184549.jpg",
+  //   "https://srinivasgroup.com/img/MedicalDepartment/_home/slider/slide02.jpg",
+  //   "https://bogota.gov.co/sites/default/files/styles/1050px/public/2020-05/coronavirus-mitos-verdades-rumores-oms.jpg",
+  //   "https://cdn.who.int/media/images/default-source/publications/brochure/exercise-f2-30032016-ph-73-batch2.tmb-479v.jpg?sfvrsn=a22afefa_12%20479w"
+  // ];
 
   @override
   void initState() {
+    _timer = Timer.periodic(new Duration(seconds: 4), (_) {
+      setState(() {
+        picIndex = (picIndex + 1);
+      });
+    });
     super.initState();
     start();
+  }
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -65,7 +89,7 @@ class _HomeState extends State<Home> {
                                 child: Column(
                                   children: [
                                     TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
-                                    Services(serverData: appointments,),
+                                    Services(serverData: appointments, article: articles[picIndex%articles.length]),
                                     TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: false,),
                                     Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
                                     child: SizedBox(
@@ -127,14 +151,12 @@ class _HomeState extends State<Home> {
     if (existdatelist.isNotEmpty) {
       var date = dateToServer(now);
       for (var existdate in existdatelist) {
-// <<<<<<< HEAD
         existtimemap =
             await readFromServer('patient/$uid/appointment/$existdate');
         List timeList = existtimemap!.keys.toList();
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
           var id = existtimemap[time]['doctorID'];
-          //print(id);
           Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
           var dFirstname = doctor?['first name'];
           var dLastname = doctor?['last name'];
@@ -146,53 +168,11 @@ class _HomeState extends State<Home> {
         print(dailyAppointmentList);
         for (var list in dailyAppointmentList) {
           appointments.insert(0, list);
-// =======
-//         // Check if the appointment has passed alreadly or not
-//         if (int.parse(existdate) >= int.parse(date)) {
-//           existtimemap = await readFromServer('patient/$uid/appointment/$existdate');
-//           List timeList = existtimemap!.keys.toList();
-//           // print('timeList');
-//           List timeListint = [];
-//           for (var time in timeList) {
-//             var temp = time[0] + time[1] + time[3] + time[4];
-//             temp = int.parse(temp);
-//             // Todo Check if the funciton is work
-//             timeListint.add(temp);
-//           }
-//           timeListint.sort();
-//           timeList.clear();
-//           for (var time in timeListint) {
-//             String temp = time.toString();
-//             if (temp.length == 3) {
-//               temp = '0${temp[0]}:${temp[1]}${temp[2]}';
-//             }
-//             else {
-//               temp = '${temp[0]}${temp[1]}:${temp[2]}${temp[3]}';
-//             }
-//             timeList.add(temp);
-//           }
-//           List<List> dailyAppointmentList = [];
-//           for (var time in timeList) {
-//             var id = existtimemap[time]['doctorID'];
-//             //print(id);
-//             Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
-//             var dFirstname = doctor?['first name'];
-//             var dLastname = doctor?['last name'];
-//             var dFullname = '$dFirstname $dLastname';
-//             dailyAppointmentList.insert(0, [existdate, time, dFullname]);
-//           }
-//           //print(dailyAppointmentList);
-//           dailyAppointmentList = dailyAppointmentList.reversed.toList();
-//           print(dailyAppointmentList);
-//           for (var list in dailyAppointmentList) {
-//             appointments.insert(0, list);
-//           }
-// >>>>>>> leon_dev1
         }
       }
       appointments = appointments.reversed.toList();
     }
-    setState(() {});
+    setState(() {startDone = true;});
     articles = await client.getArticle();
     
 
@@ -201,6 +181,7 @@ class _HomeState extends State<Home> {
         if (articles[i].urlToImage != "") {
           newsUrl[i] = articles[i].urlToImage;
         }
+        else newsUrl[i] = "https://srinivasgroup.com/img/MedicalDepartment/_home/slider/slide02.jpg";
       }
       startDone = true;
     });
