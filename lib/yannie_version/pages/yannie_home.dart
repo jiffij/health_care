@@ -32,6 +32,7 @@ class _HomeState extends State<Home> {
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
+  List<List> serverData = [];
   late List<Article> articles;
   ApiService client = ApiService();
   bool startDone = false;
@@ -64,7 +65,7 @@ class _HomeState extends State<Home> {
                                 child: Column(
                                   children: [
                                     TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
-                                    Services(),
+                                    Services(serverData: appointments,),
                                     TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: false,),
                                     Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
                                     child: SizedBox(
@@ -89,7 +90,7 @@ class _HomeState extends State<Home> {
                                         itemBuilder: (context, index) {
                                           return Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 0),
-                                            child: AppointmentCard(appointment: appointments[index]),
+                                            child: UpcomingAppointmentCard(appointment: appointments[index]),
                                           );
                                         },
                                       ),

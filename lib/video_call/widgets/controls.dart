@@ -216,18 +216,6 @@ class _ControlsWidgetState extends State<ControlsWidget> {
     if (result == true) await widget.room.disconnect();
   }
 
-  // void _onTapReconnect() async {
-  //   final result = await context.showReconnectDialog();
-  //   if (result == true) {
-  //     try {
-  //       await widget.room.reconnect();
-  //       await context.showReconnectSuccessDialog();
-  //     } catch (error) {
-  //       await context.showErrorDialog(error);
-  //     }
-  //   }
-  // }
-
   void _onTapUpdateSubscribePermission() async {
     final result = await context.showSubscribePermissionDialog();
     if (result != null) {
@@ -275,8 +263,6 @@ class _ControlsWidgetState extends State<ControlsWidget> {
       ),
       child: Wrap(
         alignment: WrapAlignment.spaceEvenly,
-        //spacing: 0,
-        //runSpacing: 5,
         children: [
           IconButton(
             icon: const Icon(Icons.cameraswitch),
@@ -312,43 +298,6 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                 onPressed: _enableAudio,
               ),
             ),
-          // PopupMenuButton<MediaDevice>(
-          //   icon: const Icon(Icons.volume_up),
-          //   itemBuilder: (BuildContext context) {
-          //     return [
-          //       const PopupMenuItem<MediaDevice>(
-          //         value: null,
-          //         child: ListTile(
-          //           leading: Icon(
-          //             EvaIcons.speaker,
-          //             color: Colors.white,
-          //           ),
-          //           title: Text('Select Audio Output'),
-          //         ),
-          //       ),
-          //       if (_audioOutputs != null)
-          //         ..._audioOutputs!.map((device) {
-          //           return PopupMenuItem<MediaDevice>(
-          //             value: device,
-          //             child: ListTile(
-          //               leading: (device.deviceId ==
-          //                       Hardware.instance.selectedAudioOutput?.deviceId)
-          //                   ? const Icon(
-          //                       EvaIcons.checkmarkSquare,
-          //                       color: Colors.white,
-          //                     )
-          //                   : const Icon(
-          //                       EvaIcons.square,
-          //                       color: Colors.white,
-          //                     ),
-          //               title: Text(device.label),
-          //             ),
-          //             onTap: () => _selectAudioOutput(device),
-          //           );
-          //         }).toList()
-          //     ];
-          //   },
-          // ),
           if (participant.isCameraEnabled())
             Container(
               child: TextButton(
@@ -377,25 +326,6 @@ class _ControlsWidgetState extends State<ControlsWidget> {
                 onPressed: _enableVideo,
               ),
             ),
-          
-          // if (participant.isScreenShareEnabled())
-          //   IconButton(
-          //     icon: const Icon(EvaIcons.monitorOutline),
-          //     onPressed: () => _disableScreenShare(),
-          //     tooltip: 'unshare screen (experimental)',
-          //   )
-          // else
-          //   IconButton(
-          //     icon: const Icon(EvaIcons.monitor),
-          //     onPressed: () => _enableScreenShare(),
-          //     tooltip: 'share screen (experimental)',
-          //   ),
-          // IconButton(
-          //   onPressed: _onTapDisconnect,
-          //   icon: const Icon(Icons.call_end),
-          //   tooltip: 'disconnect',
-          //   color: Colors.white,
-          // ),
 
           ElevatedButton.icon(
             style: ButtonStyle(
@@ -410,27 +340,6 @@ class _ControlsWidgetState extends State<ControlsWidget> {
             icon: Icon(Icons.highlight_off),
             label: Text('Leave', style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 16)),)
           ),
-          
-          // IconButton(
-          //   onPressed: _onTapSendData,
-          //   icon: const Icon(EvaIcons.paperPlane),
-          //   tooltip: 'send demo data',
-          // ),
-          // IconButton(
-          //   onPressed: _onTapReconnect,
-          //   icon: const Icon(EvaIcons.refresh),
-          //   tooltip: 're-connect',
-          // ),
-          // IconButton(
-          //   onPressed: _onTapUpdateSubscribePermission,
-          //   icon: const Icon(EvaIcons.settings2),
-          //   tooltip: 'Subscribe permission',
-          // ),
-          // IconButton(
-          //   onPressed: _onTapSimulateScenario,
-          //   icon: const Icon(EvaIcons.alertTriangle),
-          //   tooltip: 'Simulate scenario',
-          // ),
         ],
       ),
     );

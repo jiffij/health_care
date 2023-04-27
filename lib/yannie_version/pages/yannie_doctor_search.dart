@@ -1,10 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/loading/loading_popup.dart';
 import 'package:simple_login/helper/loading_screen.dart';
+import 'package:simple_login/yannie_version/widget/title_with_more_btn.dart';
 
 import '../../helper/firebase_helper.dart';
 import '../color.dart';
@@ -29,14 +31,16 @@ class _DoctorSearchState extends State<DoctorSearch> {
   String selectedGender = "None";
   final TextEditingController _doctorNameController = TextEditingController(text: "");
   bool nameError = false;
-  List<List> doctorlist = [];
-  List<List> doctorlistsort = [];
+  List<List> defaultDoctorList = [];
+  List<List> filteredDoctorList = [];
+  List<List> sortedDoctorList = [];
   bool ready = false;
+  bool searchNull = true;
 
   @override
   initState() {
     super.initState();
-    temp();
+    prepare();
   }
 
   double getRating() {
@@ -45,7 +49,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
     return temp;
   }
 
-  Future<void> temp() async {
+  Future<void> prepare() async {
     await start();
     setState(() {ready = true;});
   }
@@ -64,43 +68,38 @@ class _DoctorSearchState extends State<DoctorSearch> {
       var title = doctor?['title'];
       var exp = doctor?['exp'];
       var fRating = calRating(doctor?['1'], doctor?['2'], doctor?['3'], doctor?['4'], doctor?['5']);
-      //print(doctor);
-      //setState(() {
-        doctorlist.insert(0, [fullname, id, profilePic, title, fRating, exp]);
-        //doctorlistsort.insert(0, [fullname, uid, profilePic, title, fRating]);
-      //});
-      doctorlistsort = ratingSort();
+      defaultDoctorList.insert(0, [fullname, id, profilePic, title, fRating, exp]);
+      
     }
-    // print(doctorlist);
-    // print(doctorlistsort);
+    filteredDoctorList = ratingSort(defaultDoctorList);
   }
 
   //sorting of doctors
 
-  List<List> ratingSort() {
+  List<List> ratingSort(List<List<dynamic>> mylist) {
     int comparisonIndex = 4;
-    List<List<dynamic>> templist = doctorlist..sort((x, y) => 
+    List<List<dynamic>> templist = mylist..sort((x, y) => 
     (x[comparisonIndex] as dynamic).compareTo((y[comparisonIndex] as dynamic)));
+    templist = List.from(templist.reversed);
     return templist;
   }
 
-  List<List> doctorSort(String input) {
-    List<List> temp = [];
-    for (var doctor in doctorlist)
+  void doctorFilter(String input) {
+    filteredDoctorList.clear();
+    for (var doctor in defaultDoctorList)
     {
-      var data = '${doctor[0]} ${doctor[3]}';
-      if ((data).toLowerCase().trim().contains(input.toLowerCase().trim()))
+      var fullname = '${doctor[0]}}';
+      if ((fullname).toLowerCase().trim().contains(input.toLowerCase().trim()))
       {
-        temp.insert(0, doctor);
+        filteredDoctorList.insert(0, doctor);
       }
     }
-    return temp;
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return GestureDetector(
+    return  GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
         if (!currentFocus.hasPrimaryFocus) {
@@ -139,512 +138,55 @@ class _DoctorSearchState extends State<DoctorSearch> {
         body: SafeArea(
             //child: Padding(
               //padding: EdgeInsets.only(left: defaultHorPadding/2, right: defaultHorPadding/2, top: defaultVerPadding),
-               child: Column(
-                children: [ Padding(
-                  padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5, vertical: defaultVerPadding*1.5),
-                  child: TextFormField(
-                    controller: _doctorNameController,
-              style: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black)),
-              cursorColor: themeColor,
-              cursorWidth: 1,
-              enableSuggestions: true,
-              textAlign: TextAlign.start,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 25, horizontal: defaultHorPadding),
-                  filled: true,
-                  alignLabelWithHint: true,
-                  fillColor: Colors.white,
-                  hintStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Color.fromARGB(255, 148, 148, 148), fontSize: 15)),
-                  // prefixIcon: Padding(
-                  //   padding: const EdgeInsets.symmetric(horizontal: defaultHorPadding/1.5),
-                  //   child: Icon(Icons.search, color: themeColor,size: 30,),
-                  // ),
-                  suffixIcon: GestureDetector(
-                    onTap: () {
-                      showModalBottomSheet(
-                          context: context,
-                          backgroundColor: Colors.white,
-                          enableDrag: true,
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(30),
-                                  topRight: Radius.circular(30))),
-                          builder: (_) => StatefulBuilder(
-                                builder: (context, setState) =>
-                                    SingleChildScrollView(
-                                  padding: EdgeInsets.symmetric(horizontal: defaultHorPadding, vertical: defaultVerPadding),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Center(
-                                        child: Text(
-                                          "Filters",
-                                          style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                              fontSize: 17,
-                                              color: themeColor,
-                                              fontWeight: FontWeight.bold)),
-                                        ),
-                                      ),
-                                      Divider(
-                                        indent: 0,
-                                        endIndent: 0,
-                                        height: 30,
-                                        thickness: 1,
-                                        color: lighttheme.withOpacity(0.3),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Specialty",
-                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                fontSize: 16,
-                                                color: greenDark,
-                                                fontWeight: FontWeight.w500)),
-                                          ),
-                                         ],
-                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        child: Wrap(
-                                          spacing: 10,
-                                          runSpacing: 15,
-                                          runAlignment: WrapAlignment.start,
-                                          alignment: WrapAlignment.start,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.start,
-                                          children: List.generate(
-                                              specialtyRange.length,
-                                              (index) => IntrinsicWidth(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(
-                                                          () {
-                                                            selectedSpecialty =
-                                                                index;
-                                                          },
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                        height: 30,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal: 16),
-                                                        decoration: BoxDecoration(
-                                                            color: index ==
-                                                                    selectedSpecialty
-                                                                ? themeColor
-                                                                : bgColor,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          specialtyRange[index],
-                                                          style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                              color: index ==
-                                                                      selectedSpecialty
-                                                                  ? Colors.white
-                                                                  : themeColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  )),
-                                        ),
-                                      ),
+               child: ready? Column(
+                children: [ 
+                  Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: defaultHorPadding, vertical: defaultVerPadding),
+                                  child: Form(
+                                    onChanged: () {
                                       
-                                      const Padding(
-                                        padding: EdgeInsets.only(bottom: 15),
-                                        child: Divider(
-                                          color: Color.fromARGB(255, 206, 211, 211),
-                                          indent: 0,
-                                          endIndent: 0,
-                                          height: 1,
-                                        ),
-                                      ),
-
-
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Price",
-                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                fontSize: 16,
-                                                color: greenDark,
-                                                fontWeight: FontWeight.w500)),
-                                          ),
-                                         ],
-                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        child: Wrap(
-                                          spacing: 10,
-                                          runSpacing: 15,
-                                          runAlignment: WrapAlignment.start,
-                                          alignment: WrapAlignment.start,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.start,
-                                          children: List.generate(
-                                              priceRange.length,
-                                              (index) => IntrinsicWidth(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(
-                                                          () {
-                                                            selectedPrice =
-                                                                index;
-                                                          },
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                        height: 30,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                    .symmetric(
-                                                                horizontal: 16),
-                                                        decoration: BoxDecoration(
-                                                            color: index ==
-                                                                    selectedPrice
-                                                                ? themeColor
-                                                                : bgColor,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15)),
-                                                        alignment:
-                                                            Alignment.center,
-                                                        child: Text(
-                                                          priceRange[index],
-                                                          style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                              color: index ==
-                                                                      selectedPrice
-                                                                  ? Colors.white
-                                                                  : themeColor,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500)),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  )),
-                                        ),
-                                      ),
-                                      
-                                      const Padding(
-                                        padding: EdgeInsets.only(bottom: 15),
-                                        child: Divider(
-                                          color: Color.fromARGB(255, 206, 211, 211),
-                                          indent: 0,
-                                          endIndent: 0,
-                                          height: 1,
-                                        ),
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            "Experience",
-                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                fontSize: 16,
-                                                color: greenDark,
-                                                fontWeight: FontWeight.w500)),
-                                          ),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        child: Wrap(
-                                          spacing: 6,
-                                          runSpacing: 12,
-                                          runAlignment: WrapAlignment.start,
-                                          alignment: WrapAlignment.start,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.start,
-                                          children: List.generate(
-                                              expRange.length,
-                                              (index) => IntrinsicWidth(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        setState(
-                                                          () {
-                                                            selectedExp = index;
-                                                          },
-                                                        );
-                                                      },
-                                                      child: Container(
-                                                          height: 30,
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  horizontal:
-                                                                      16),
-                                                          decoration: BoxDecoration(
-                                                              color: index ==
-                                                                      selectedExp
-                                                                  ? themeColor
-                                                                  : bgColor,
-                                                              borderRadius:
-                                                                  BorderRadius
-                                                                      .circular(
-                                                                          15)),
-                                                          alignment:
-                                                              Alignment.center,
-                                                          child: Text(
-                                                            expRange[index],
-                                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                                color: index ==
-                                                                        selectedExp
-                                                                    ? Colors
-                                                                        .white
-                                                                    : themeColor,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500)),
-                                                          )),
-                                                    ),
-                                                  )),
-                                        ),
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.only(bottom: 15),
-                                        child: Divider(
-                                          color: Color.fromARGB(255, 206, 211, 211),
-                                          indent: 0,
-                                          endIndent: 0,
-                                          height: 1,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Gender",
-                                        style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                            fontSize: 16,
-                                            color: greenDark,
-                                            fontWeight: FontWeight.w500)),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 16),
-                                        child: Wrap(
-                                          spacing: 6,
-                                          runSpacing: 12,
-                                          runAlignment: WrapAlignment.start,
-                                          alignment: WrapAlignment.start,
-                                          crossAxisAlignment:
-                                              WrapCrossAlignment.start,
-                                          children: [
-                                            IntrinsicWidth(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      selectedGender = "None";
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                    height: 30,
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 16),
-                                                    decoration: BoxDecoration(
-                                                        color: "None" ==
-                                                                selectedGender
-                                                            ? themeColor
-                                                            : bgColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15)),
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "None",
-                                                      style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                          color: "None" ==
-                                                                  selectedGender
-                                                              ? Colors.white
-                                                              : themeColor,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                    )),
-                                              ),
-                                            ),
-                                            IntrinsicWidth(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      selectedGender = "Male";
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                    height: 30,
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 20),
-                                                    decoration: BoxDecoration(
-                                                        color: "Male" ==
-                                                                selectedGender
-                                                            ? themeColor
-                                                            : bgColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15)),
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "Male",
-                                                      style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                          color: "Male" ==
-                                                                  selectedGender
-                                                              ? Colors.white
-                                                              : themeColor,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                    )),
-                                              ),
-                                            ),
-                                            IntrinsicWidth(
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  setState(
-                                                    () {
-                                                      selectedGender = "Female";
-                                                    },
-                                                  );
-                                                },
-                                                child: Container(
-                                                    height: 30,
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        horizontal: 20),
-                                                    decoration: BoxDecoration(
-                                                        color: "Female" ==
-                                                                selectedGender
-                                                            ? themeColor
-                                                            : bgColor,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(15)),
-                                                    alignment: Alignment.center,
-                                                    child: Text(
-                                                      "Female",
-                                                      style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                          color: "Female" ==
-                                                                  selectedGender
-                                                              ? Colors.white
-                                                              : themeColor,
-                                                          fontWeight:
-                                                              FontWeight.w500)),
-                                                    )),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        height: 50,
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 7),
-                                        child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text(
-                                            "Apply Filter",
-                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 17)),
-                                          ),
-                                          style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      themeColor),
-                                              shape: MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
-                                              ))),
-                                        ),
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        height: 50,
-                                        margin: const EdgeInsets.symmetric(
-                                            vertical: 7),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              selectedPrice = 0;
-                                              selectedExp = 0;
-                                              selectedSpecialty = 0;
-                                              selectedGender = "None";
-                                            });
-                                          },
-                                          child: Text(
-                                            "Clear All",
-                                            style: GoogleFonts.comfortaa(textStyle: TextStyle(
-                                                color: themeColor,
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: 17)),
-                                          ),
-                                          style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      Colors.white),
-                                              overlayColor:
-                                                  MaterialStateProperty.all(
-                                                      themeColor.withOpacity(
-                                                          0.1)),
-                                              shape: MaterialStateProperty.all(
-                                                  RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              15.0),
-                                                      side: BorderSide(
-                                                          color: themeColor)))),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ));
-                    },
-                    child: Padding(padding: EdgeInsets.only(right: defaultHorPadding), child: Icon(Icons.tune, color: themeColor, size: 25,)),
-                  ),
-                  hintText: "Enter doctor's name",
-                  //prefixIconConstraints:
-                      //const BoxConstraints(maxHeight: 17, maxWidth: 50),
-                  isDense: true,
-                  prefixStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor)),
-                  enabledBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(color: themeColor),
+                                      setState(() {
+                                        
+                                        if (_doctorNameController.text.isEmpty) searchNull = true;
+                                        else {
+                                          searchNull = false;
+                                          doctorFilter(_doctorNameController.text);
+                                          filteredDoctorList = ratingSort(filteredDoctorList);
+                                        }
+                                      });
+                                    },
+                                    child: TextFormField(
+                                      controller: _doctorNameController,
+                                      style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black)),
+                                      decoration: InputDecoration(
+                                        focusedBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide.none,
                                             borderRadius:
                                                 BorderRadius.all(Radius.circular(20))),
-                  focusedBorder: const OutlineInputBorder(
-                                            borderSide: BorderSide(color: themeColor),
+                                        enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide.none,
                                             borderRadius:
-                                                BorderRadius.all(Radius.circular(20))),),
-            )),
-            //SizedBox(height: 20,),
-            !ready? Center(
-              heightFactor: 10,
-        child: LoadingAnimationWidget.threeRotatingDots(color: lighttheme, size: 30),)
-            : Expanded(
+                                                BorderRadius.all(Radius.circular(20))),
+                                        prefixIcon: Icon(
+                                          Icons.search,
+                                          color: Color.fromARGB(255, 47, 106, 173),
+                                        ),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: "Enter Doctor's Name",
+                                        labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
+                                        hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
+                                        suffixIcon: !searchNull? IconButton(
+                                                        onPressed: () {_doctorNameController.clear();},
+                                                        icon: Icon(Icons.dangerous_outlined), color: Color.fromARGB(255, 148, 148, 148),iconSize: 25,):null,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+            TitleWithMoreBtn(title: _doctorNameController.text.isEmpty? "Recommended": "Search for \"" + _doctorNameController.text + "\":", press: (){}, withBtn: false),
+            SizedBox(height: 20,),
+            
+            Expanded(
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: defaultHorPadding/2),
               child: ShaderMask(
@@ -668,14 +210,16 @@ class _DoctorSearchState extends State<DoctorSearch> {
                   physics: const BouncingScrollPhysics(),
                   shrinkWrap: true,
                   primary: true,
-                  itemCount: doctorlist.length,
-                  itemBuilder: (context, index) => DoctorCard(doctor: doctorlist[index]),
+                  itemCount: searchNull?ratingSort(defaultDoctorList).length : filteredDoctorList.length,
+                  itemBuilder: (context, index) => DoctorCard(doctor: searchNull?ratingSort(defaultDoctorList)[index]:filteredDoctorList[index]),
                 ),
               ),
             )),
           ),
                         
                 ],
+              ) : Center(
+                child: LoadingAnimationWidget.threeRotatingDots(color: lighttheme, size: 50)
               )
           //)
         )

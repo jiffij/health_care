@@ -10,8 +10,10 @@ import '../pages/yannie_doctor_search.dart';
 class Services extends StatelessWidget {
   const Services({
     Key? key,
-    //required List serverData
+    required this.serverData
   }) : super(key: key);
+
+  final List serverData;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,7 @@ class Services extends StatelessWidget {
                 Navigator.of(context).push(_createRoute(p_MedicalReportListPage()));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.event_available,size: 35, color: themeColor), tap: (){
-                Navigator.of(context).push(_createRoute(myBooking()));
+                Navigator.of(context).push(_createRoute(myBooking(serverData: serverData,)));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Booking', style: label,))]),
           ]),
           Row(
