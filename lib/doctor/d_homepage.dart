@@ -114,7 +114,7 @@ class _HomePageState extends State<d_HomePage> {
       Navigator.of(context).push(
         MaterialPageRoute(
             builder: (context) => DiagnosticForm(
-                'John', '2020/03/12', 'L6S9xfMD3wWnLFGpRaJWDH8ulmt2')),
+                'John', '202304260000', 'L6S9xfMD3wWnLFGpRaJWDH8ulmt2')),
       );
     } else if (index == 4) {
       Navigator.of(context).push(

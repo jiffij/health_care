@@ -65,7 +65,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     showModalBottomSheet(
       context: context,
       enableDrag: true,
-      showDragHandle: true,
+      // showDragHandle: true,
       backgroundColor: bgColor,
       useSafeArea: true,
       isScrollControlled: true,

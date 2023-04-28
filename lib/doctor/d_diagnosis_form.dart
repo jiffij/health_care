@@ -6,21 +6,21 @@ import '../helper/firebase_helper.dart';
 
 class DiagnosticForm extends StatefulWidget {
   String patientName;
-  String patientBirth;
+  String appointmentDateTime;
   String patientUid;
 
-  DiagnosticForm(this.patientName, this.patientBirth, this.patientUid,
+  DiagnosticForm(this.patientName, this.appointmentDateTime, this.patientUid,
       {super.key});
   @override
   _DiagnosticFormState createState() => _DiagnosticFormState(
-      this.patientName, this.patientBirth, this.patientUid);
+      this.patientName, this.appointmentDateTime, this.patientUid);
 }
 
 class _DiagnosticFormState extends State<DiagnosticForm> {
   String patientName;
-  String patientBirth;
+  String appointmentDateTime;
   String patientUid;
-  _DiagnosticFormState(this.patientName, this.patientBirth, this.patientUid);
+  _DiagnosticFormState(this.patientName, this.appointmentDateTime, this.patientUid);
 
   final _diagnosisController = TextEditingController();
   final _MedController = TextEditingController();
@@ -81,7 +81,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                     )),
                     Expanded(
                         child: Text(
-                      patientBirth,
+                      appointmentDateTime,
                       style: TextStyle(fontSize: 16),
                     )),
                   ],
@@ -166,9 +166,9 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                         print(now);
                         // Handle submit button press
                         var res1 = await writeToServer(
-                            'doctor/$uid/$patientUid/$now', data);
+                            'doctor/$uid/$patientUid/$appointmentDateTime', data);
                         var res2 = await writeToServer(
-                            'patient/$patientUid/history/$now', data);
+                            'patient/$patientUid/history/$appointmentDateTime', data);
                         // var res2 =
                         //     await writeToServer('medical_history/$now', data);
 

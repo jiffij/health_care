@@ -161,7 +161,7 @@ class _HomeState extends State<Home> {
           var dFirstname = doctor?['first name'];
           var dLastname = doctor?['last name'];
           var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [existdate, time, dFullname]);
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
         }
         //print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();

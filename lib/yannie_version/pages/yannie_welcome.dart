@@ -390,7 +390,7 @@ class _welcome2State extends State<welcome2> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const p_HomePage()));
+                                                                  const BottomNav()));
                                                       break;
                                                     case ID.ADMIN:
                                                       break;
@@ -420,7 +420,7 @@ class _welcome2State extends State<welcome2> {
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.of(context).push(_createRoute(Register()));
+                                              Navigator.of(context).push(_createRoute(Signup()));
                                             },
                                             child: Text(
                                               'Sign Up',
