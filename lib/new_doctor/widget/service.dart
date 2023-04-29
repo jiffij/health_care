@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_login/news/news.dart';
+import '../pages/cancer_prediction.dart';
 import '../pages/yannie_myBooking.dart';
 
 import '../../news/model/article_model.dart';
@@ -35,7 +36,7 @@ class Services extends StatelessWidget {
                 icon: Icon(Icons.person_search,size: 35, color: themeColor,), 
                 tap: (){Navigator.of(context).push(_createRoute(const DoctorSearch()));}
             ),Container(margin: EdgeInsets.only(top: 15),child: Text('Search', style: label,))]),
-              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.heart_broken,size: 35, color: themeColor), tap: (){}),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
+              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.heart_broken,size: 35, color: themeColor), tap: (){Navigator.of(context).push(_createRoute(const CancerPredict()));}),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.description,size: 35, color: themeColor), tap: (){
                 Navigator.of(context).push(_createRoute(p_MedicalReportListPage()));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),

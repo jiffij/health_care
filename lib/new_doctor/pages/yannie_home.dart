@@ -75,7 +75,7 @@ class _DoctorHomeState extends State<DoctorHome> {
 
   @override
   Widget build(BuildContext context) {
-    // var cubit = NavbarCubit.get(context);
+    // var cubit = NavbarCubit.get(context);//TODO need fix
     Size size = MediaQuery.of(context).size;
     return !startDone? LoadingScreen(): Scaffold(
       backgroundColor: bgColor,
