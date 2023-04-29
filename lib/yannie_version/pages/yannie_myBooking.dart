@@ -9,6 +9,7 @@ import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../helper/firebase_helper.dart';
+import '../../video_call/join_call_waiting.dart';
 
 class myBooking extends StatefulWidget {
   const myBooking({Key? key, required this.serverData}) : super(key: key);
@@ -171,7 +172,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     DateTime bookingTime =
     toDateTime(widget.appointment[0], widget.appointment[1]);
-    bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);
+    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//TODO demo purpose
+    bool disable = false;
 
     return Container(
       width: size.width,
@@ -285,7 +287,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
             ),
             widget.type == 0
                 ? ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
+                },
                 style: ButtonStyle(
                     overlayColor: disable
                         ? MaterialStatePropertyAll(Colors.transparent)
@@ -416,4 +420,23 @@ DateTime toDateTime(String date, String time) {
   int hour = int.parse(time.substring(0, 2));
   int min = int.parse(time.substring(3, 5));
   return DateTime(year, month, day, hour, min);
+}
+
+
+Route _createRoute(Widget destinition) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => destinition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
 }

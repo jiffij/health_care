@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
+import 'package:simple_login/video_call/start_call.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -173,7 +174,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     DateTime bookingTime =
     toDateTime(widget.appointment[0], widget.appointment[1]);
-    bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);
+    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//TODO demo purpose
+    bool disable = false;
 
     return Container(
       width: size.width,
@@ -287,7 +289,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
             ),
             widget.type == 0
                 ? ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).push(_createRoute(StartCall(widget.appointment[3], widget.appointment[1])));
+                },
                 style: ButtonStyle(
                     overlayColor: disable
                         ? MaterialStatePropertyAll(Colors.transparent)
