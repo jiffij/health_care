@@ -17,6 +17,7 @@ import '../../helper/alert.dart';
 import '../../main.dart';
 import '../../new_doctor/pages/yannie_home.dart';
 import '../widget/navigator.dart';
+import '../../new_doctor/widget/navigator.dart' as DoctorNav;
 
 class welcome2 extends StatefulWidget {
   const welcome2({Key? key}) : super(key: key);
@@ -293,7 +294,7 @@ class _welcome2State extends State<welcome2> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const DoctorHome()));
+                                                                  const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
                                                       Navigator.push(
@@ -382,7 +383,7 @@ class _welcome2State extends State<welcome2> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const DoctorHome()));
+                                                                  const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
                                                       Navigator.push(

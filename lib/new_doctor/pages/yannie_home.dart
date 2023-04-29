@@ -13,7 +13,6 @@ import '../../news/model/article_model.dart';
 import '../../news/services/api_service.dart';
 import '../color.dart';
 import '../widget/header.dart';
-import '../widget/nav_bar/navbar_cubit.dart';
 import '../widget/service.dart';
 import '../widget/title_with_more_btn.dart';
 import '../widget/upcoming_appointment.dart';
@@ -33,6 +32,12 @@ class _DoctorHomeState extends State<DoctorHome> {
 
   int picIndex = 0;
   late Timer _timer;
+  // final List<Widget> _pages = [
+  //   const DoctorHome(),
+  //   const CalendarPage(),
+  //   Container(),
+  //   Container(),
+  // ];
   
   final PageController _pageController = PageController(viewportFraction: 0.9);
   var now = DateTime.now();
@@ -75,7 +80,6 @@ class _DoctorHomeState extends State<DoctorHome> {
 
   @override
   Widget build(BuildContext context) {
-    // var cubit = NavbarCubit.get(context);//TODO need fix
     Size size = MediaQuery.of(context).size;
     return !startDone? LoadingScreen(): Scaffold(
       backgroundColor: bgColor,
