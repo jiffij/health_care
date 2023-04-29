@@ -9,6 +9,7 @@ import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../helper/firebase_helper.dart';
+import '../../new_doctor/pages/d_diagnosis_form.dart';
 
 class myBooking extends StatefulWidget {
   const myBooking({Key? key, required this.serverData}) : super(key: key);
@@ -144,6 +145,7 @@ class AppointmentCard extends StatefulWidget {
       : super(key: key);
   final List appointment;
   final int type;
+// final BuildContext bookContext;
 }
 
 class _AppointmentCardState extends State<AppointmentCard> {
@@ -196,7 +198,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Dr. ${widget.appointment[2]}',
+                  '${widget.appointment[2]}',
                   style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),
                 ),
                 Container(
@@ -310,10 +312,13 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       color: disable ? Colors.white : lighttheme,
                       fontSize: 18),
                 ))
-                : widget.type == 1 //TODO PDF
+                : widget.type == 1
                 ? ElevatedButton(
-                onPressed: () async {
-                  pdfGen(widget.appointment);
+                onPressed: () async {//TODO
+                  print(widget.appointment);
+                  var time = timeRemoveColon(widget.appointment[1]);
+                  var dateTime = widget.appointment[0] + time;
+                  Navigator.of(context).push(_createRoute(DiagnosticForm(widget.appointment[2], dateTime, widget.appointment[3] )));
                 },
                 style: ButtonStyle(
                     backgroundColor:
@@ -325,7 +330,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     side: MaterialStatePropertyAll(BorderSide(color: themeColor)),
                     padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 15))),
                 child: Text(
-                  "View Report",
+                  "Publish Report",
                   style: GoogleFonts.comfortaa(
                       color: lighttheme, fontSize: 18),
                 ))
@@ -416,4 +421,26 @@ DateTime toDateTime(String date, String time) {
   int hour = int.parse(time.substring(0, 2));
   int min = int.parse(time.substring(3, 5));
   return DateTime(year, month, day, hour, min);
+}
+
+Route _createRoute(Widget destinition) {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => destinition,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      const begin = Offset(1.0, 0.0);
+      const end = Offset.zero;
+      const curve = Curves.easeIn;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
+}
+
+String timeRemoveColon(String time) {
+  return time.substring(0, 2) + time.substring(3, 5);
 }
