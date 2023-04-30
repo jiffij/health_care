@@ -174,7 +174,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     DateTime bookingTime =
     toDateTime(widget.appointment[0], widget.appointment[1]);
-    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//TODO demo purpose
+    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//HACK demo purpose
     bool disable = false;
 
     return Container(
@@ -318,7 +318,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 ))
                 : widget.type == 1
                 ? ElevatedButton(
-                onPressed: () async {//TODO
+                onPressed: () async {
                   print(widget.appointment);
                   var time = timeRemoveColon(widget.appointment[1]);
                   var dateTime = widget.appointment[0] + time;

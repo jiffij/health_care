@@ -7,6 +7,7 @@ import 'package:simple_login/yannie_version/pages/yannie_myBooking.dart';
 import '../../news/model/article_model.dart';
 import '../../patient/p_medical_report_list.dart';
 import '../color.dart';
+import '../pages/p_medical_allergy.dart';
 import '../pages/yannie_doctor_search.dart';
 
 class Services extends StatelessWidget {
@@ -36,7 +37,9 @@ class Services extends StatelessWidget {
                 icon: Icon(Icons.person_search,size: 35, color: themeColor,), 
                 tap: (){Navigator.of(context).push(_createRoute(const DoctorSearch()));}
             ),Container(margin: EdgeInsets.only(top: 15),child: Text('Search', style: label,))]),
-              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.heart_broken,size: 35, color: themeColor), tap: (){}),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
+              Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.heart_broken,size: 35, color: themeColor), tap: (){
+                Navigator.of(context).push(_createRoute(const p_MedicalAllergyPage()));
+              }),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.description,size: 35, color: themeColor), tap: (){
                 Navigator.of(context).push(_createRoute(p_MedicalReportListPage()));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
