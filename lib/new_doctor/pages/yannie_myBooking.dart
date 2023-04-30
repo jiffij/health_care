@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
+import 'package:simple_login/new_doctor/pages/dViewSurvey.dart';
 import 'package:simple_login/video_call/start_call.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
@@ -346,7 +347,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 if(widget.type == 0)
                   ElevatedButton(
                     onPressed: () {//TODO
-
+                      Navigator.of(context).push(
+                          _createRoute(viewSurvey(widget.appointment[0], widget.appointment[1], widget.appointment[2], widget.appointment[3]))
+                      );
                     },
                     style: ButtonStyle(
                         overlayColor: disable
