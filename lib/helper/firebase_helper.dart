@@ -17,8 +17,8 @@ import 'dart:math';
 enum ID { PATIENT, DOCTOR, ADMIN, NOBODY }
 
 final int MAX_TRIES = 20;
-// const URL = 'http://143.89.130.155:8080';
-const URL = 'http://192.168.0.178:5000';
+const URL = 'http://143.89.130.155:8080';
+// const URL = 'http://192.168.0.178:5000';
 
 // FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseStorage storage = FirebaseStorage.instance;

@@ -179,7 +179,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? 225 : 150,
+      height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.all(defaultHorPadding / 1.5),
       decoration: BoxDecoration(
@@ -338,7 +338,40 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   style: GoogleFonts.comfortaa(
                       color: lighttheme, fontSize: 18),
                 ))
-                : Container()
+                : Container(),
+                if(widget.type == 0)
+                  SizedBox(
+                    height: 20,
+                  ),
+                if(widget.type == 0)
+                  ElevatedButton(
+                    onPressed: () {//TODO
+
+                    },
+                    style: ButtonStyle(
+                        overlayColor: disable
+                            ? MaterialStatePropertyAll(Colors.transparent)
+                            : MaterialStatePropertyAll(
+                            lighttheme.withOpacity(0.1)),
+                        minimumSize:
+                        MaterialStatePropertyAll(Size.fromHeight(20)),
+                        backgroundColor: disable
+                            ? MaterialStatePropertyAll(
+                            Color.fromARGB(255, 194, 194, 194))
+                            : MaterialStatePropertyAll(Colors.white),
+                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(10)))),
+                        side: MaterialStatePropertyAll(BorderSide(
+                            color: disable ? Colors.transparent : themeColor)),
+                        padding: MaterialStatePropertyAll(
+                            EdgeInsets.symmetric(vertical: 15))),
+                    child: Text(
+                      "View Survey",
+                      style: GoogleFonts.comfortaa(
+                          color: disable ? Colors.white : lighttheme,
+                          fontSize: 18),
+                ))
           ]),
     );
   }
