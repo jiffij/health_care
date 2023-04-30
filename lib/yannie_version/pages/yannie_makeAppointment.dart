@@ -11,12 +11,13 @@ import '../../helper/firebase_helper.dart';
 import '../../modify_timeslot_package/time_slot_from_list.dart';
 import '../color.dart';
 import '../widget/event_for_calendar.dart';
+import 'p_diagnostic_survey.dart';
 
 // Other files
 
 
 class MakeAppointment extends StatefulWidget {
-  final List doctor;
+  final List doctor; //[fullname, id, profilePic, title, fRating, exp]
 
   const MakeAppointment(this.doctor, {super.key});
 
@@ -128,10 +129,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
             String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(selectTime);
             final result = await showConfirmDialog(context, message);
             if (result == true) 
-            {makeAppointment();
-            await showSuccessDialog(context, "Booking Success");
-            Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const BottomNav()),);}
+            {makeAppointment(context);}
           }, 
           style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll(lighttheme),
@@ -377,7 +375,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
             style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: <Widget>[
           TextButton(
-            onPressed: () => makeAppointment(),
+            onPressed: () => makeAppointment(context),
             child: const Text('Confirm'),
           ),
           TextButton(
@@ -545,7 +543,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     return hour.toString();
   }
 
-  void makeAppointment() {
+  void makeAppointment(BuildContext context) async {
     var uid = getUID();
     var date = dateToServer(_selectedDay!);
     var time = DateFormat("HH:mm").format(selectTime);
@@ -561,7 +559,10 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         'description': '',
       }
     });
-    //successful_message();
+    await showSuccessDialog(context, "Booking Success");
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => DiagnosticSurvey(widget.doctor[1],date, time)),//BottomNav()
+    );
   }
 
 
