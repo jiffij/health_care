@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_login/video_call/pages/connect.dart';
 import 'package:simple_login/welcome.dart';
 import 'package:simple_login/yannie_version/pages/yannie_welcome.dart';
+import 'package:simple_login/yannie_version/widget/navigator.dart';
 import 'login_screen.dart';
 // import 'home_screen.dart';
 import 'package:firebase_core/firebase_core.dart';

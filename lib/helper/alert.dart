@@ -136,3 +136,77 @@ Future<bool?> showConfirmDialog(BuildContext context, String message) => showDia
             ),
         ),
       );
+
+      Future<String?> showOptionDialog(BuildContext context) => showDialog<String>(
+        barrierDismissible: true,
+        barrierColor: Colors.white.withOpacity(0.2),
+        context: context,
+        builder: (ctx) => AlertDialog(
+          //title: const Text('Please Select:'),
+          //title: Text(message),
+          //titlePadding: const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
+          //icon: const Icon(Icons.error_outline, size: 50,),
+          //iconPadding: const EdgeInsets.symmetric(vertical: 20),
+          //iconColor: const Color.fromARGB(255, 235, 120, 112),
+          titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.black, fontSize: 15), height: 1.5),
+          shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(30)),
+                  ),
+          content: Container(
+              //width: double.infinity,
+              child: 
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //crossAxisAlignment: CrossAxisAlignment.sp,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, "camera");
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        splashColor: Color.fromARGB(255, 27, 89, 161).withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            border: Border.all(color: Color.fromARGB(255, 27, 89, 161)),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(0, 8),
+                                blurRadius: 5,
+                                color: goodColor.withOpacity(0.13),
+                              ),
+                            ],
+                          ),
+                          child: Icon(Icons.photo_camera, color: lighttheme,),
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pop(ctx, "gallery");
+                        },
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        splashColor: Colors.white.withOpacity(0.2),
+                        child: Ink(
+                          padding: EdgeInsets.all(20.0),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            border: Border.all(color: Color.fromARGB(255, 27, 89, 161)),
+                            boxShadow: [
+                              BoxShadow(
+                                offset: const Offset(0, 8),
+                                blurRadius: 5,
+                                color: goodColor.withOpacity(0.13),
+                              ),
+                            ],
+                          ),
+                          child: Icon(Icons.photo_album, color: lighttheme,),
+                        ),
+                      ),
+                    ]
+                  )
+            ),
+        ),
+      );

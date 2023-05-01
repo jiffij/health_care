@@ -10,6 +10,7 @@ import 'package:simple_login/login_screen.dart';
 import 'package:simple_login/patient/p_homepage.dart';
 import 'package:simple_login/register.dart';
 import 'package:simple_login/yannie_version/pages/yannie_home.dart';
+import 'package:simple_login/yannie_version/pages/yannie_signup.dart';
 import '../../doctor/d_homepage.dart';
 import '../../forget_password.dart';
 import '../../helper/firebase_helper.dart';
@@ -39,6 +40,7 @@ class _welcome2State extends State<welcome2> {
   void dispose() {
     _usernameController.clear();
     _passwordController.clear();
+    if (auth.currentUser!=null) auth.signOut();
     super.dispose();
   }
 
@@ -58,8 +60,10 @@ class _welcome2State extends State<welcome2> {
       }
     }
     if (credential?.user?.emailVerified == false) {
-      await auth.currentUser?.sendEmailVerification();
-      if (auth.currentUser?.emailVerified == true) return true;
+      try {
+        await auth.currentUser?.sendEmailVerification();
+        auth.signOut();
+      } catch (e) {return 6;}
       return 3;
     }
     return 4;
@@ -111,16 +115,6 @@ class _welcome2State extends State<welcome2> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-
-                          // logo image
-                          // Container(
-                          //   padding: const EdgeInsets.all(35),
-                          //   child: Image.asset(
-                          //   'assets/yoga.png',
-                          //   height: 130,
-                          //   width: 130,
-                          // ),),
-                          
                           //App Name
                           Text(
                             'Dr. UST',
@@ -239,65 +233,36 @@ class _welcome2State extends State<welcome2> {
                                             Loading().hide();
                                             if (msg == 1) {
                                                 await showAlertDialog(context, "Account Not Found").then((_){
-                                                  Navigator.push(context, _createRoute(const Register()));
+                                                  Navigator.push(context, _createRoute(SignUp2()));
                                                 });
                                                 
                                                 
                                             } else if (msg == 2) {
                                                 showAlertDialog(context, "Invalid Password");
                                             } else if (msg == 3) {
-                                                await showAlertDialog(context, "Your Email is not verified").then((_){
-                                                  auth
-                                                      .checkActionCode(auth.currentUser!.email!)
-                                                      .then((ActionCodeInfo info) async {
-                                                    if (info.operation ==
-                                                        ActionCodeInfoOperation.verifyEmail) {
-                                                      // The email verification link is still valid
-                                                      // Apply the action by calling the applyActionCode method
-                                                      auth
-                                                          .applyActionCode(auth.currentUser!.email!)
-                                                          .then((value) {
-                                                        // Email verified successfully
-                                                      }).catchError((error) {
-                                                        // Handle any errors that occur during the applyActionCode call
-                                                      });
-                                                    } else {
-                                                      // The link has expired or is invalid
-                                                      // Display an error message or take appropriate action
-                                                      await auth.currentUser!.sendEmailVerification();
-                                                    }
-                                                  }).catchError((error) {
-                                                    // Handle any errors that occur during the checkActionCode call
-                                                  });
-                                                  showAlertDialog(context, 'Please authenticate your email.\nIf you could not find it, please check junk mail.');
-                                                  // Navigator.push(
-                                                  //     context,
-                                                  //     MaterialPageRoute(
-                                                  //         builder: (context) => MessagePage(
-                                                  //             duration: 5,
-                                                  //             color: Colors.blue,
-                                                  //             message:
-                                                  //                 'Please authenticate your email.\nIf you could not find it, please check junk mail.')));
-                                                  return;
+                                                await showAlertDialog(context, "Your Email is not verified.\nA new verification is sent, please check yoir junk mail if not found.").then((_){
                                                 });
 
                                             } 
                                             else if (msg == 5) {
                                               await showAlertDialog(context, "You have tried too many times.\nPlease try again later.");
                                             }
+                                            else if (msg == 6) {
+                                              await showAlertDialog(context, "Please try again later.");
+                                            }
                                             else {
                                                 await showSuccessDialog(context, "Login Success");
                                                   if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
                                                     case ID.DOCTOR:
-                                                      Navigator.push(
+                                                      Navigator.pushReplacement(
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   const d_HomePage()));
                                                       break;
                                                     case ID.PATIENT:
-                                                      Navigator.push(
+                                                      Navigator.pushReplacement(
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
@@ -309,7 +274,7 @@ class _welcome2State extends State<welcome2> {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder: (context) => const Register()));
+                                                              builder: (context) => const SignUp2()));
                                                       break;
                                                   }
                                                 }; 
@@ -368,25 +333,27 @@ class _welcome2State extends State<welcome2> {
                                             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10))
                                             ),
                                         onPressed: () {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                  content: Text('Logging in with Google')),
-                                            );
+                                            // ScaffoldMessenger.of(context).showSnackBar(
+                                            //   const SnackBar(
+                                            //       content: Text('Logging in with Google')),
+                                            // );
+                                            Loading().show(context: context, text: "Logging in with Google");
 
                                             signInWithGoogle().then((value) async {
                                                 // print(FirebaseAuth.instance.authStateChanges());
+                                                Loading().hide();
                                                 print(FirebaseAuth.instance.currentUser.toString());
                                                 if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
                                                     case ID.DOCTOR:
-                                                      Navigator.push(
+                                                      Navigator.pushReplacement(
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
                                                                   const d_HomePage()));
                                                       break;
                                                     case ID.PATIENT:
-                                                      Navigator.push(
+                                                      Navigator.pushReplacement(
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
@@ -398,7 +365,7 @@ class _welcome2State extends State<welcome2> {
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
-                                                              builder: (context) => const Register()));
+                                                              builder: (context) => const SignUp2()));
                                                       break;
                                                   }
                                                 }
@@ -420,7 +387,7 @@ class _welcome2State extends State<welcome2> {
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.of(context).push(_createRoute(Signup()));
+                                              Navigator.of(context).push(_createRoute(SignUp2()));
                                             },
                                             child: Text(
                                               'Sign Up',

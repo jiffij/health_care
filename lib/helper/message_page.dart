@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class MessagePage extends StatefulWidget {
   final String message;
@@ -28,9 +29,10 @@ class _MessagePageState extends State<MessagePage> {
       body: Center(
         child: Text(
           widget.message,
-          style: TextStyle(
+          textAlign: TextAlign.center,
+          style: GoogleFonts.comfortaa(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 15,
             fontWeight: FontWeight.bold,
           ),
         ),

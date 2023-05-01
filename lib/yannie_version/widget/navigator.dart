@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_login/helper/loading_screen.dart';
+import 'package:simple_login/yannie_version/pages/profile.dart';
 
 
 
@@ -20,7 +21,7 @@ class _BottomNavState extends State<BottomNav> {
     const Home(),
     const CalendarPage(),
     Container(),
-    Container(),
+    const Profile(),
   ];
 
   @override

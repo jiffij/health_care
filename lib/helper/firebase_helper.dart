@@ -102,8 +102,10 @@ Example
 */
 Future<bool> checkDocExist(String docID) async {
   if (await readFromServer(docID) == null) {
+    print("nooooooooooo");
     return false;
   } else {
+    print("Yesssssssssssss");
     return true;
   }
 }

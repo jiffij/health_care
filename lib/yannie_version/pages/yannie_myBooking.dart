@@ -97,7 +97,7 @@ class _HomeState extends State<myBooking> {
               labels: ['Upcoming', 'Completed', 'Canceled'],
               radiusStyle: true,
               cornerRadius: 10,
-              customTextStyles: [],
+              customTextStyles: [GoogleFonts.comfortaa(color: _toggleValue==0?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==1?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==2?Colors.white:Colors.black)],
               activeBgColor: [lighttheme, lighttheme, lighttheme],
               activeFgColor: Colors.white,
               inactiveBgColor: Colors.white,
@@ -122,12 +122,12 @@ class _HomeState extends State<myBooking> {
                         ? completed.length
                         : canceled.length,
                 itemBuilder: (context, index) => _toggleValue == 0
-                    ? AppointmentCard(appointment: upcoming[index], type: 0)
+                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!)
                     : _toggleValue == 1
                         ? AppointmentCard(
-                            appointment: completed[index], type: 1)
+                            appointment: completed[index], type: _toggleValue!)
                         : AppointmentCard(
-                            appointment: canceled[index], type: 2),
+                            appointment: canceled[index], type: _toggleValue!),
               ),
             )
           ])),
@@ -149,6 +149,8 @@ class AppointmentCard extends StatefulWidget {
 class _AppointmentCardState extends State<AppointmentCard> {
   @override
   Widget build(BuildContext context) {
+
+    //for hardcode data only//
     final List<String> spec = [
       "Allergy and Immunology",
       "Anesthesiology",
@@ -164,6 +166,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
     int max = 7;
     rnd = new Random();
     int r = min + rnd.nextInt(max - min);
+
+
     Size size = MediaQuery.of(context).size;
     String time = timeFormatter(widget.appointment[1]);
     String date = dateFormatter2(widget.appointment[0]);

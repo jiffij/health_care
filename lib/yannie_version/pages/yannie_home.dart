@@ -103,7 +103,7 @@ class _HomeState extends State<Home> {
                                             color: Colors.white.withOpacity(0.7),
                                             borderRadius: BorderRadius.all(Radius.circular(30))
                                           ),
-                                          child: Center(child: Text("No appointment today.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15),)),
+                                          child: Center(child: Text("No upcoming appointment.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15),)),
                                         ),
                                       )
                                     : PageView.builder(
@@ -144,24 +144,25 @@ class _HomeState extends State<Home> {
 
   void start() async {
     String uid = getUID();
-    Map<String, dynamic>? user = await readFromServer('patient/$uid');
+    Map<String, dynamic>? user = await readFromServer('patient/$uid');    
     fullname = user?['first name'] + ' ' + user?['last name'];
-    List<String> existdatelist = await getColId('patient/$uid/appointment');
-    Map<String, dynamic>? existtimemap;
-    if (existdatelist.isNotEmpty) {
+    
+    List<String> appointmentDays = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? anAppointment;
+    if (appointmentDays.isNotEmpty) {
       var date = dateToServer(now);
-      for (var existdate in existdatelist) {
-        existtimemap =
-            await readFromServer('patient/$uid/appointment/$existdate');
-        List timeList = existtimemap!.keys.toList();
+      for (var day in appointmentDays) {
+        anAppointment =
+            await readFromServer('patient/$uid/appointment/$day');
+        List timeList = anAppointment!.keys.toList();
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
-          var id = existtimemap[time]['doctorID'];
+          var id = anAppointment[time]['doctorID'];
           Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
           var dFirstname = doctor?['first name'];
           var dLastname = doctor?['last name'];
           var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+          dailyAppointmentList.insert(0, [day, time, dFullname, id]);
         }
         //print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();
