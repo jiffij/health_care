@@ -13,26 +13,31 @@ import '../../news/model/article_model.dart';
 import '../../news/services/api_service.dart';
 import '../color.dart';
 import '../widget/header.dart';
-import '../widget/nav_bar/navbar_cubit.dart';
 import '../widget/service.dart';
 import '../widget/title_with_more_btn.dart';
 import '../widget/upcoming_appointment.dart';
 
-class Home extends StatefulWidget {
-  const Home({
+class DoctorHome extends StatefulWidget {
+  const DoctorHome({
     Key? key
   }) : super(key: key);
-  
-  
+
+
 
   @override
-  State<Home> createState() => _HomeState();
+  State<DoctorHome> createState() => _DoctorHomeState();
 }
 
-class _HomeState extends State<Home> {
+class _DoctorHomeState extends State<DoctorHome> {
 
   int picIndex = 0;
   late Timer _timer;
+  // final List<Widget> _pages = [
+  //   const DoctorHome(),
+  //   const CalendarPage(),
+  //   Container(),
+  //   Container(),
+  // ];
   
   final PageController _pageController = PageController(viewportFraction: 0.9);
   var now = DateTime.now();
@@ -75,7 +80,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    var cubit = NavbarCubit.get(context);
     Size size = MediaQuery.of(context).size;
     return !startDone? LoadingScreen(): Scaffold(
       backgroundColor: bgColor,
@@ -95,7 +99,7 @@ class _HomeState extends State<Home> {
                     child: SizedBox(
                       height: size.height*0.18,
                       //width: size.width*0.9,
-                      child: appointments.isEmpty? 
+                      child: appointments.isEmpty?
                       Center(
                         child: Container(
                           width: size.width*0.85,
@@ -119,7 +123,7 @@ class _HomeState extends State<Home> {
                         },
                       ),
                     )),
-                      Padding(
+                     Padding(
                       padding: EdgeInsets.only(bottom: defaultVerPadding,),
                       child: appointments.isEmpty? null : Center(child: SmoothPageIndicator(
                       controller: _pageController,
@@ -144,22 +148,22 @@ class _HomeState extends State<Home> {
 
   void start() async {
     String uid = getUID();
-    Map<String, dynamic>? user = await readFromServer('patient/$uid');
+    Map<String, dynamic>? user = await readFromServer('doctor/$uid');
     fullname = user?['first name'] + ' ' + user?['last name'];
-    List<String> existdatelist = await getColId('patient/$uid/appointment');
+    List<String> existdatelist = await getColId('doctor/$uid/appointment');
     Map<String, dynamic>? existtimemap;
     if (existdatelist.isNotEmpty) {
       var date = dateToServer(now);
       for (var existdate in existdatelist) {
         existtimemap =
-            await readFromServer('patient/$uid/appointment/$existdate');
+            await readFromServer('doctor/$uid/appointment/$existdate');
         List timeList = existtimemap!.keys.toList();
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
-          var id = existtimemap[time]['doctorID'];
-          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
-          var dFirstname = doctor?['first name'];
-          var dLastname = doctor?['last name'];
+          var id = existtimemap[time]['patientID'];
+          Map<String, dynamic>? patient = await readFromServer('patient/$id');
+          var dFirstname = patient?['first name'];
+          var dLastname = patient?['last name'];
           var dFullname = '$dFirstname $dLastname';
           dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
         }

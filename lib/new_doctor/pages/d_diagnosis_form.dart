@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:signature/signature.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
-import '../helper/firebase_helper.dart';
 
 class DiagnosticForm extends StatefulWidget {
   String patientName;
@@ -20,7 +19,10 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
   String patientName;
   String appointmentDateTime;
   String patientUid;
-  _DiagnosticFormState(this.patientName, this.appointmentDateTime, this.patientUid);
+  String? displayDateTime;
+  _DiagnosticFormState(this.patientName, this.appointmentDateTime, this.patientUid){
+    this.displayDateTime = parseDateTime(this.appointmentDateTime);
+  }
 
   final _diagnosisController = TextEditingController();
   final _MedController = TextEditingController();
@@ -67,7 +69,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                     )),
                     Expanded(
                         child: Text(
-                      'Date of Birth:',
+                      'Appointment date time:',
                       style: TextStyle(fontSize: 18),
                     )),
                   ],
@@ -81,7 +83,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                     )),
                     Expanded(
                         child: Text(
-                      appointmentDateTime,
+                      displayDateTime ?? "",
                       style: TextStyle(fontSize: 16),
                     )),
                   ],
@@ -175,6 +177,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                         if (res1.statusCode != 200 || res2.statusCode != 200) {
                           print('history upload error');
                         }
+                        Navigator.of(context).pop();
                       },
                       child: Text('Publish'),
                     ),
@@ -187,4 +190,19 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
       ),
     );
   }
+}
+
+String pdfDateFormat(String date) {
+  String year = date.substring(0, 4);
+  String month = date.substring(4, 6);
+  String day = date.substring(6);
+  return year + "-" + month + "-" + day;
+}
+
+String parseDateTime(String dateTime){
+  String date = dateTime.substring(0,8);
+  String time = dateTime.substring(8,12);
+  date = pdfDateFormat(date);
+  time = time.substring(0,2) + ':' + time.substring(2,4);
+  return "$date $time";
 }
