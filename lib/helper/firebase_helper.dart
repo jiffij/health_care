@@ -231,21 +231,21 @@ Future<Map<String, dynamic>?> cancerPredict(File img) async {
   return jsonDecode(respStr);
 }
 
-Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
-  //TODO
-  var encode = img.readAsBytesSync();
-  var server_key = await getServerPublicKey();
-  encode = await rsaEncryptByte(encode, server_key);
-  var response = await http.post(
-    Uri.parse('$URL/predictEncrypt'),
-    headers: <String, String>{
-      'Content-Type':
-          'application/octet-stream', // 'application/json; charset=UTF-8',
-    },
-    body: encode,
-  );
-  // return jsonDecode(await rsaDecrypt(response.body));
-}
+// Future<Map<String, dynamic>?> cancerPredictEncrypted(File img) async {
+//
+//   var encode = img.readAsBytesSync();
+//   var server_key = await getServerPublicKey();
+//   encode = await rsaEncryptByte(encode, server_key);
+//   var response = await http.post(
+//     Uri.parse('$URL/predictEncrypt'),
+//     headers: <String, String>{
+//       'Content-Type':
+//           'application/octet-stream', // 'application/json; charset=UTF-8',
+//     },
+//     body: encode,
+//   );
+//   // return jsonDecode(await rsaDecrypt(response.body));
+// }
 
 /// if inputSource == 'camera', it will open camera and take picture\
 /// if inputSource == 'gallery', it will open gallery\

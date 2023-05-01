@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
+import 'package:simple_login/new_doctor/pages/dViewSurvey.dart';
+import 'package:simple_login/video_call/start_call.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../helper/firebase_helper.dart';
-import '../../video_call/join_call_waiting.dart';
+import '../../new_doctor/pages/d_diagnosis_form.dart';
 
 class myBooking extends StatefulWidget {
   const myBooking({Key? key, required this.serverData}) : super(key: key);
@@ -88,50 +90,50 @@ class _myBookingState extends State<myBooking> {
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-            SizedBox(
-              height: 30,
-            ),
-            ToggleSwitch(
-              totalSwitches: 3,
-              initialLabelIndex: _toggleValue,
-              minWidth: MediaQuery.of(context).size.width * 0.8,
-              labels: ['Upcoming', 'Completed', 'Canceled'],
-              radiusStyle: true,
-              cornerRadius: 10,
-              customTextStyles: [GoogleFonts.comfortaa(color: _toggleValue==0?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==1?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==2?Colors.white:Colors.black)],
-              activeBgColor: [lighttheme, lighttheme, lighttheme],
-              activeFgColor: Colors.white,
-              inactiveBgColor: Colors.white,
-              onToggle: (index) {
-                setState(() {
-                  _toggleValue = index;
-                });
-              },
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(
-                    vertical: defaultVerPadding,
-                    horizontal: defaultHorPadding / 2),
-                scrollDirection: Axis.vertical,
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
-                primary: true,
-                itemCount: _toggleValue == 0
-                    ? upcoming.length
-                    : _toggleValue == 1
+                SizedBox(
+                  height: 30,
+                ),
+                ToggleSwitch(
+                  totalSwitches: 3,
+                  initialLabelIndex: _toggleValue,
+                  minWidth: MediaQuery.of(context).size.width * 0.8,
+                  labels: ['Upcoming', 'Completed', 'Canceled'],
+                  radiusStyle: true,
+                  cornerRadius: 10,
+                  customTextStyles: [],
+                  activeBgColor: [lighttheme, lighttheme, lighttheme],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.white,
+                  onToggle: (index) {
+                    setState(() {
+                      _toggleValue = index;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                        vertical: defaultVerPadding,
+                        horizontal: defaultHorPadding / 2),
+                    scrollDirection: Axis.vertical,
+                    physics: const BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    primary: true,
+                    itemCount: _toggleValue == 0
+                        ? upcoming.length
+                        : _toggleValue == 1
                         ? completed.length
                         : canceled.length,
-                itemBuilder: (context, index) => _toggleValue == 0
-                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!)
-                    : _toggleValue == 1
+                    itemBuilder: (context, index) => _toggleValue == 0
+                        ? AppointmentCard(appointment: upcoming[index], type: 0)
+                        : _toggleValue == 1
                         ? AppointmentCard(
-                            appointment: completed[index], type: _toggleValue!)
+                        appointment: completed[index], type: 1)
                         : AppointmentCard(
-                            appointment: canceled[index], type: _toggleValue!),
-              ),
-            )
-          ])),
+                        appointment: canceled[index], type: 2),
+                  ),
+                )
+              ])),
     );
   }
 }
@@ -145,13 +147,12 @@ class AppointmentCard extends StatefulWidget {
       : super(key: key);
   final List appointment;
   final int type;
+// final BuildContext bookContext;
 }
 
 class _AppointmentCardState extends State<AppointmentCard> {
   @override
   Widget build(BuildContext context) {
-
-    //for hardcode data only//
     final List<String> spec = [
       "Allergy and Immunology",
       "Anesthesiology",
@@ -167,8 +168,6 @@ class _AppointmentCardState extends State<AppointmentCard> {
     int max = 7;
     rnd = new Random();
     int r = min + rnd.nextInt(max - min);
-
-
     Size size = MediaQuery.of(context).size;
     String time = timeFormatter(widget.appointment[1]);
     String date = dateFormatter2(widget.appointment[0]);
@@ -176,12 +175,12 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     DateTime bookingTime =
     toDateTime(widget.appointment[0], widget.appointment[1]);
-    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//TODO demo purpose
+    // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//HACK demo purpose
     bool disable = false;
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? 225 : 150,
+      height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.all(defaultHorPadding / 1.5),
       decoration: BoxDecoration(
@@ -202,7 +201,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Dr. ${widget.appointment[2]}',
+                  '${widget.appointment[2]}',
                   style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),
                 ),
                 Container(
@@ -292,7 +291,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
+                  Navigator.of(context).push(_createRoute(StartCall(widget.appointment[3], widget.appointment[1])));
                 },
                 style: ButtonStyle(
                     overlayColor: disable
@@ -318,10 +317,13 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       color: disable ? Colors.white : lighttheme,
                       fontSize: 18),
                 ))
-                : widget.type == 1 //TODO PDF
+                : widget.type == 1
                 ? ElevatedButton(
                 onPressed: () async {
-                  pdfGen(widget.appointment);
+                  print(widget.appointment);
+                  var time = timeRemoveColon(widget.appointment[1]);
+                  var dateTime = widget.appointment[0] + time;
+                  Navigator.of(context).push(_createRoute(DiagnosticForm(widget.appointment[2], dateTime, widget.appointment[3] )));
                 },
                 style: ButtonStyle(
                     backgroundColor:
@@ -333,11 +335,46 @@ class _AppointmentCardState extends State<AppointmentCard> {
                     side: MaterialStatePropertyAll(BorderSide(color: themeColor)),
                     padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 15))),
                 child: Text(
-                  "View Report",
+                  "Publish Report",
                   style: GoogleFonts.comfortaa(
                       color: lighttheme, fontSize: 18),
                 ))
-                : Container()
+                : Container(),
+                if(widget.type == 0)
+                  SizedBox(
+                    height: 20,
+                  ),
+                if(widget.type == 0)
+                  ElevatedButton(
+                    onPressed: () {//TODO
+                      Navigator.of(context).push(
+                          _createRoute(viewSurvey(widget.appointment[0], widget.appointment[1], widget.appointment[2], widget.appointment[3]))
+                      );
+                    },
+                    style: ButtonStyle(
+                        overlayColor: disable
+                            ? MaterialStatePropertyAll(Colors.transparent)
+                            : MaterialStatePropertyAll(
+                            lighttheme.withOpacity(0.1)),
+                        minimumSize:
+                        MaterialStatePropertyAll(Size.fromHeight(20)),
+                        backgroundColor: disable
+                            ? MaterialStatePropertyAll(
+                            Color.fromARGB(255, 194, 194, 194))
+                            : MaterialStatePropertyAll(Colors.white),
+                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(10)))),
+                        side: MaterialStatePropertyAll(BorderSide(
+                            color: disable ? Colors.transparent : themeColor)),
+                        padding: MaterialStatePropertyAll(
+                            EdgeInsets.symmetric(vertical: 15))),
+                    child: Text(
+                      "View Survey",
+                      style: GoogleFonts.comfortaa(
+                          color: disable ? Colors.white : lighttheme,
+                          fontSize: 18),
+                ))
           ]),
     );
   }
@@ -426,7 +463,6 @@ DateTime toDateTime(String date, String time) {
   return DateTime(year, month, day, hour, min);
 }
 
-
 Route _createRoute(Widget destinition) {
   return PageRouteBuilder(
     pageBuilder: (context, animation, secondaryAnimation) => destinition,
@@ -443,4 +479,8 @@ Route _createRoute(Widget destinition) {
       );
     },
   );
+}
+
+String timeRemoveColon(String time) {
+  return time.substring(0, 2) + time.substring(3, 5);
 }
