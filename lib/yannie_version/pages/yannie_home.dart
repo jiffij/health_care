@@ -80,62 +80,62 @@ class _HomeState extends State<Home> {
     return !startDone? LoadingScreen(): Scaffold(
       backgroundColor: bgColor,
       body: 
-                        SafeArea(
-                          child: Column(
-                            children: [
-                              Header(name: fullname),
-                              Flexible(child: SingleChildScrollView(
-                                //physics: AlwaysScrollableScrollPhysics(),
-                                child: Column(
-                                  children: [
-                                    TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
-                                    Services(serverData: appointments, article: articles![picIndex%articles!.length]),
-                                    TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: false,),
-                                    Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
-                                    child: SizedBox(
-                                      height: size.height*0.18,
-                                      //width: size.width*0.9,
-                                      child: appointments.isEmpty? 
-                                      Center(
-                                        child: Container(
-                                          width: size.width*0.85,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white.withOpacity(0.7),
-                                            borderRadius: BorderRadius.all(Radius.circular(30))
-                                          ),
-                                          child: Center(child: Text("No appointment today.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15),)),
-                                        ),
-                                      )
-                                    : PageView.builder(
-                                        controller: _pageController,
-                                        padEnds: true,
-                                        itemCount: appointments.length,
-                                        physics: const BouncingScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 0),
-                                            child: UpcomingAppointmentCard(appointment: appointments[index]),
-                                          );
-                                        },
-                                      ),
-                                    )),
-                                     Padding(
-                                      padding: EdgeInsets.only(bottom: defaultVerPadding,),
-                                      child: appointments.isEmpty? null : Center(child: SmoothPageIndicator(
-                                      controller: _pageController,
-                                      count: appointments.length,
-                                      effect: ExpandingDotsEffect(
-                                        dotHeight: 6,
-                                        dotWidth: 6,
-                                        dotColor: themeColor.withOpacity(0.4),
-                                        activeDotColor: themeColor),
-                                    ))),
-                                  ],
-                                ),
-                              ))
-                            ]
-                          )
-                        )
+        SafeArea(
+          child: Column(
+            children: [
+              Header(name: fullname),
+              Flexible(child: SingleChildScrollView(
+                //physics: AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    TitleWithMoreBtn(title: "Services", press: () {}, withBtn: false,),
+                    Services(serverData: appointments, article: articles![picIndex%articles!.length]),
+                    TitleWithMoreBtn(title: "Upcoming Appointments", press: () {}, withBtn: false,),
+                    Padding(padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
+                    child: SizedBox(
+                      height: size.height*0.18,
+                      //width: size.width*0.9,
+                      child: appointments.isEmpty? 
+                      Center(
+                        child: Container(
+                          width: size.width*0.85,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.7),
+                            borderRadius: BorderRadius.all(Radius.circular(30))
+                          ),
+                          child: Center(child: Text("No appointment today.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15),)),
+                        ),
+                      )
+                    : PageView.builder(
+                        controller: _pageController,
+                        padEnds: true,
+                        itemCount: appointments.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 0),
+                            child: UpcomingAppointmentCard(appointment: appointments[index]),
+                          );
+                        },
+                      ),
+                    )),
+                      Padding(
+                      padding: EdgeInsets.only(bottom: defaultVerPadding,),
+                      child: appointments.isEmpty? null : Center(child: SmoothPageIndicator(
+                      controller: _pageController,
+                      count: appointments.length,
+                      effect: ExpandingDotsEffect(
+                        dotHeight: 6,
+                        dotWidth: 6,
+                        dotColor: themeColor.withOpacity(0.4),
+                        activeDotColor: themeColor),
+                    ))),
+                  ],
+                ),
+              ))
+            ]
+          )
+        )
     );
   }
 
