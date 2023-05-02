@@ -98,6 +98,16 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
       resizeToAvoidBottomInset: false,
       body: Column(
         children: [
+          SizedBox(
+            height: 40,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              'Symptom Survey',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
           Container(
             padding: EdgeInsets.all(16.0),
             child: Column(
@@ -138,12 +148,26 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Symptoms:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                   TextField(
                     maxLines: 5,
                     keyboardType: TextInputType.multiline,
                     controller: _diagnosisController,
                     decoration: InputDecoration(
-                      hintText: 'Diagnosis',
+                      hintText: 'Symptoms',
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Medication:',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                   TextField(
@@ -152,6 +176,13 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
                     controller: _MedController,
                     decoration: InputDecoration(
                       hintText: 'Medication',
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Extra Notes:',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                   TextField(
