@@ -126,7 +126,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
           padding: EdgeInsets.symmetric(vertical: defaultVerPadding, horizontal: defaultHorPadding/2),
         child: ElevatedButton(
           onPressed: () async {
-            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(selectTime);
+            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, selectTime.hour, selectTime.minute));
             final result = await showConfirmDialog(context, message);
             if (result == true) 
             {makeAppointment(context);}
@@ -206,7 +206,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Dr. ${widget.doctor[0]}', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),),
-                      Text('Family Medicine', style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
+                      Text(widget.doctor[3], style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
                     ],
                   ),
                   Container(
@@ -278,7 +278,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                   weekNumberTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, fontSize: 14)),
                   outsideDaysVisible: false,
                 ),
-                onDaySelected: _onDaySelected,
+                onDaySelected: (selectedDay, focusedDay) => _onDaySelected(selectedDay, focusedDay),
                 onFormatChanged: (format) {
                   if (_calendarFormat != format) {
                     setState(() {
@@ -621,7 +621,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                           ),
                         ),
                         //calendarBuilders: CalendarBuilders(),
-                        firstDay: DateTime(2020),
+                        firstDay: DateTime(kToday.year, kToday.month, kToday.day-1),
                         lastDay: DateTime(2050),
                         focusedDay: _focusedDay,
                         // Todo: Calendar interatives

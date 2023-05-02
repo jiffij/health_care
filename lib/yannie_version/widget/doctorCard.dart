@@ -117,7 +117,7 @@ class DoctorCard extends StatelessWidget {
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
-                    "Family Medicine",
+                    doctor[3],
                     style: GoogleFonts.comfortaa(textStyle: TextStyle(
                         fontSize: 14,
                         color: themeColor)),

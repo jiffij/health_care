@@ -216,7 +216,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                       ),
                                       SizedBox(width: size.width*0.16,),
                                       Text(
-                                        'Family Medicine',
+                                        widget.doctor[3],
                                         style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color(0xff91919F), fontSize: 15)),
                                       )
                                     ]
