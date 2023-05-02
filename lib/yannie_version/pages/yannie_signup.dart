@@ -8,8 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinbox/flutter_spinbox.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:simple_login/helper/alert.dart';
 import 'package:simple_login/helper/loading/loading_popup.dart';
+import 'package:simple_login/yannie_version/pages/yannie_welcome.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../helper/firebase_helper.dart';
@@ -18,7 +20,10 @@ import '../../main.dart';
 import '../color.dart';
 
 class SignUp2 extends StatefulWidget {
-  const SignUp2({Key? key}) : super(key: key);
+  const SignUp2({Key? key,
+  required GoogleSignIn this.google}) : super(key: key);
+
+  final GoogleSignIn google;
 
   @override
   State<SignUp2> createState() => _SignUp2State();
@@ -111,6 +116,7 @@ class _SignUp2State extends State<SignUp2> {
           email: p_emailController.text.trim(),
           password: p_passwordController.text,
         );
+        print(auth.currentUser);
       } on FirebaseAuthException catch (e) {
         if (e.code == 'weak-password') {
           errorText = 'Password provided is too weak.';
@@ -121,12 +127,12 @@ class _SignUp2State extends State<SignUp2> {
         showAlertDialog(context, errorText);
         return;
       }
+      if (!auth.currentUser!.emailVerified) await auth.currentUser!.sendEmailVerification();
     }
     User? user = auth.currentUser;
 
     if (user != null) {
        // await auth.currentUser?.updateDisplayName(_nicknameController.text);
-      if (!user.emailVerified) await user.sendEmailVerification();
       String uid = getUID();
       var respond = await writeToServer("patient/$uid", {
         'first name': p_firstnameController.text.trim(),
@@ -137,6 +143,8 @@ class _SignUp2State extends State<SignUp2> {
       updateAuthInfo(p_firstnameController.text.trim() + p_lastnameController.text.trim());
       
     }
+    if (checkSignedin()) auth.signOut();
+    if (await widget.google.isSignedIn()) await widget.google.signOut();
     Loading().hide();
     
     var result = await Navigator.of(context).pushReplacement(
@@ -147,8 +155,7 @@ class _SignUp2State extends State<SignUp2> {
                 message: 'You have successfully registered.\nPlease verify your email before you login',
               )),
     );
-    auth.signOut();
-    Navigator.of(context).pop(true);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const welcome2()));
   }
 
   Future<void> d_register(BuildContext context) async {
@@ -196,10 +203,10 @@ class _SignUp2State extends State<SignUp2> {
     String url = await uploadImage(imgFile!, d_firstnameController.text + d_lastnameController.text, 'None');
     
     var respond = await writeToServer("doctor/$uid", {
-      'first name': p_firstnameController.text.trim(),
-      'last name': p_lastnameController.text.trim(),
+      'first name': d_firstnameController.text.trim(),
+      'last name': d_lastnameController.text.trim(),
       'email': auth.currentUser!.email,
-      'HKID': p_HKIDController.text.trim(),
+      'HKID': d_HKIDController.text.trim(),
       'profilePic': url,
       'title': specialty,
       'exp': exp.toString() + " years",
@@ -209,6 +216,9 @@ class _SignUp2State extends State<SignUp2> {
       '4': '0',
       '5': '0',
     });
+
+    if (checkSignedin()) auth.signOut();
+    if (await widget.google.isSignedIn()) await widget.google.signOut();
     Loading().hide();
     //auth.signOut();
     var result = await Navigator.of(context).pushReplacement(
@@ -219,8 +229,7 @@ class _SignUp2State extends State<SignUp2> {
                 message: 'You have successfully registered.\nPlease verify your email before you login',
               )),
     );
-    auth.signOut();
-    Navigator.of(context).pop(true);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const welcome2()));
   
 }
 
@@ -684,7 +693,7 @@ class _SignUp2State extends State<SignUp2> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only( bottom: 20),
-                                  child: SpinBox(
+                                  child:SpinBox(
                                     min: 0,
                                     max: 50,
                                     onChanged: (value) {

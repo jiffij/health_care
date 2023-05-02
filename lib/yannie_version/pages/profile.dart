@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:simple_login/helper/firebase_helper.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/yannie_version/pages/yannie_welcome.dart';
 
@@ -21,7 +22,7 @@ class _ProfileState extends State<Profile> {
         body: Center(
           child: ElevatedButton(
             onPressed: () {
-              auth.signOut();
+              if(checkSignedin()) auth.signOut();
               Navigator.pushReplacement(context, MaterialPageRoute(
                                                               builder: (context) => const welcome2()));
             }, 

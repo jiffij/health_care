@@ -37,10 +37,15 @@ class _welcome2State extends State<welcome2> {
       FirebaseFirestore.instance.collection('users');
 
   @override
+  initState() {
+    super.initState();
+    signOut();
+  }
+
+  @override
   void dispose() {
     _usernameController.clear();
     _passwordController.clear();
-    if (auth.currentUser!=null) auth.signOut();
     super.dispose();
   }
 
@@ -60,10 +65,8 @@ class _welcome2State extends State<welcome2> {
       }
     }
     if (credential?.user?.emailVerified == false) {
-      try {
-        await auth.currentUser?.sendEmailVerification();
-        auth.signOut();
-      } catch (e) {return 6;}
+      await auth.currentUser?.sendEmailVerification();
+      signOut();
       return 3;
     }
     return 4;
@@ -90,9 +93,10 @@ class _welcome2State extends State<welcome2> {
   }
 
   Future<void> signOut() async {
-    if (!checkSignedin()) return;
-    await googleSignIn.signOut();
-    await auth.signOut();
+    if (checkSignedin())
+      await auth.signOut();
+    if(await googleSignIn.isSignedIn())
+      await googleSignIn.signOut();
   }
 
   
@@ -115,6 +119,16 @@ class _welcome2State extends State<welcome2> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+
+                          // logo image
+                          // Container(
+                          //   padding: const EdgeInsets.all(35),
+                          //   child: Image.asset(
+                          //   'assets/yoga.png',
+                          //   height: 130,
+                          //   width: 130,
+                          // ),),
+                          
                           //App Name
                           Text(
                             'Dr. UST',
@@ -233,22 +247,51 @@ class _welcome2State extends State<welcome2> {
                                             Loading().hide();
                                             if (msg == 1) {
                                                 await showAlertDialog(context, "Account Not Found").then((_){
-                                                  Navigator.push(context, _createRoute(SignUp2()));
+                                                  Navigator.push(context, _createRoute(SignUp2(google: googleSignIn)));
                                                 });
                                                 
                                                 
                                             } else if (msg == 2) {
                                                 showAlertDialog(context, "Invalid Password");
                                             } else if (msg == 3) {
-                                                await showAlertDialog(context, "Your Email is not verified.\nA new verification is sent, please check yoir junk mail if not found.").then((_){
+                                                await showAlertDialog(context, "Your Email is not verified").then((_){
+                                                  auth
+                                                      .checkActionCode(auth.currentUser!.email!)
+                                                      .then((ActionCodeInfo info) async {
+                                                    if (info.operation ==
+                                                        ActionCodeInfoOperation.verifyEmail) {
+                                                      // The email verification link is still valid
+                                                      // Apply the action by calling the applyActionCode method
+                                                      auth
+                                                          .applyActionCode(auth.currentUser!.email!)
+                                                          .then((value) {
+                                                        // Email verified successfully
+                                                      }).catchError((error) {
+                                                        // Handle any errors that occur during the applyActionCode call
+                                                      });
+                                                    } else {
+                                                      // The link has expired or is invalid
+                                                      // Display an error message or take appropriate action
+                                                      await auth.currentUser!.sendEmailVerification();
+                                                    }
+                                                  }).catchError((error) {
+                                                    // Handle any errors that occur during the checkActionCode call
+                                                  });
+                                                  showAlertDialog(context, 'Please authenticate your email.\nIf you could not find it, please check junk mail.');
+                                                  // Navigator.push(
+                                                  //     context,
+                                                  //     MaterialPageRoute(
+                                                  //         builder: (context) => MessagePage(
+                                                  //             duration: 5,
+                                                  //             color: Colors.blue,
+                                                  //             message:
+                                                  //                 'Please authenticate your email.\nIf you could not find it, please check junk mail.')));
+                                                  return;
                                                 });
 
                                             } 
                                             else if (msg == 5) {
                                               await showAlertDialog(context, "You have tried too many times.\nPlease try again later.");
-                                            }
-                                            else if (msg == 6) {
-                                              await showAlertDialog(context, "Please try again later.");
                                             }
                                             else {
                                                 await showSuccessDialog(context, "Login Success");
@@ -271,10 +314,7 @@ class _welcome2State extends State<welcome2> {
                                                     case ID.ADMIN:
                                                       break;
                                                     case ID.NOBODY:
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) => const SignUp2()));
+                                                      Navigator.of(context).push(_createRoute(SignUp2(google: googleSignIn)));
                                                       break;
                                                   }
                                                 }; 
@@ -333,15 +373,13 @@ class _welcome2State extends State<welcome2> {
                                             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10))
                                             ),
                                         onPressed: () {
-                                            // ScaffoldMessenger.of(context).showSnackBar(
-                                            //   const SnackBar(
-                                            //       content: Text('Logging in with Google')),
-                                            // );
-                                            Loading().show(context: context, text: "Logging in with Google");
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                  content: Text('Logging in with Google')),
+                                            );
 
                                             signInWithGoogle().then((value) async {
                                                 // print(FirebaseAuth.instance.authStateChanges());
-                                                Loading().hide();
                                                 print(FirebaseAuth.instance.currentUser.toString());
                                                 if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
@@ -362,10 +400,7 @@ class _welcome2State extends State<welcome2> {
                                                     case ID.ADMIN:
                                                       break;
                                                     case ID.NOBODY:
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) => const SignUp2()));
+                                                      Navigator.push(context, _createRoute(SignUp2(google: googleSignIn)));
                                                       break;
                                                   }
                                                 }
@@ -387,7 +422,8 @@ class _welcome2State extends State<welcome2> {
                                           ),
                                           TextButton(
                                             onPressed: () {
-                                              Navigator.of(context).push(_createRoute(SignUp2()));
+                                              signOut();
+                                              Navigator.of(context).push(_createRoute(SignUp2(google: googleSignIn)));
                                             },
                                             child: Text(
                                               'Sign Up',
@@ -434,7 +470,7 @@ Route _createRoute(Widget destinition) {
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       const begin = Offset(1.0, 0.0);
       const end = Offset.zero;
-      const curve = Curves.easeIn;
+      const curve = Curves.easeInOut;
 
       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
 

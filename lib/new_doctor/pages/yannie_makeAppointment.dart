@@ -11,13 +11,12 @@ import '../../helper/firebase_helper.dart';
 import '../../modify_timeslot_package/time_slot_from_list.dart';
 import '../color.dart';
 import '../widget/event_for_calendar.dart';
-import 'p_diagnostic_survey.dart';
 
 // Other files
 
 
 class MakeAppointment extends StatefulWidget {
-  final List doctor; //[fullname, id, profilePic, title, fRating, exp]
+  final List doctor;
 
   const MakeAppointment(this.doctor, {super.key});
 
@@ -126,10 +125,13 @@ class _MakeAppointmentState extends State<MakeAppointment> {
           padding: EdgeInsets.symmetric(vertical: defaultVerPadding, horizontal: defaultHorPadding/2),
         child: ElevatedButton(
           onPressed: () async {
-            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, selectTime.hour, selectTime.minute));
+            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(selectTime);
             final result = await showConfirmDialog(context, message);
             if (result == true) 
-            {makeAppointment(context);}
+            {makeAppointment();
+            await showSuccessDialog(context, "Booking Success");
+            Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const BottomNav()),);}
           }, 
           style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll(lighttheme),
@@ -206,7 +208,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Dr. ${widget.doctor[0]}', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),),
-                      Text(widget.doctor[3], style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
+                      Text('Family Medicine', style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
                     ],
                   ),
                   Container(
@@ -278,7 +280,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                   weekNumberTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, fontSize: 14)),
                   outsideDaysVisible: false,
                 ),
-                onDaySelected: (selectedDay, focusedDay) => _onDaySelected(selectedDay, focusedDay),
+                onDaySelected: _onDaySelected,
                 onFormatChanged: (format) {
                   if (_calendarFormat != format) {
                     setState(() {
@@ -375,7 +377,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
             style: const TextStyle(fontWeight: FontWeight.bold)),
         actions: <Widget>[
           TextButton(
-            onPressed: () => makeAppointment(context),
+            onPressed: () => makeAppointment(),
             child: const Text('Confirm'),
           ),
           TextButton(
@@ -543,7 +545,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     return hour.toString();
   }
 
-  void makeAppointment(BuildContext context) async {
+  void makeAppointment() {
     var uid = getUID();
     var date = dateToServer(_selectedDay!);
     var time = DateFormat("HH:mm").format(selectTime);
@@ -559,10 +561,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         'description': '',
       }
     });
-    await showSuccessDialog(context, "Booking Success");
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => DiagnosticSurvey(widget.doctor[1],date, time)),//BottomNav()
-    );
+    //successful_message();
   }
 
 
@@ -621,7 +620,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
                           ),
                         ),
                         //calendarBuilders: CalendarBuilders(),
-                        firstDay: DateTime(kToday.year, kToday.month, kToday.day-1),
+                        firstDay: DateTime(2020),
                         lastDay: DateTime(2050),
                         focusedDay: _focusedDay,
                         // Todo: Calendar interatives
