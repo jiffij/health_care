@@ -39,6 +39,7 @@ class _HomeState extends State<Home> {
   String fullname = '';
   int numOfAppointment = 0;
   List<List> appointments = [];
+  List<List> upcomappointments = [];
   List<List> serverData = [];
   List<Article>? articles;
   ApiService client = ApiService();
@@ -95,7 +96,7 @@ class _HomeState extends State<Home> {
                                     child: SizedBox(
                                       height: size.height*0.18,
                                       //width: size.width*0.9,
-                                      child: appointments.isEmpty? 
+                                      child: upcomappointments.isEmpty? 
                                       Center(
                                         child: Container(
                                           width: size.width*0.85,
@@ -109,21 +110,21 @@ class _HomeState extends State<Home> {
                                     : PageView.builder(
                                         controller: _pageController,
                                         padEnds: true,
-                                        itemCount: appointments.length,
+                                        itemCount: upcomappointments.length,
                                         physics: const BouncingScrollPhysics(),
                                         itemBuilder: (context, index) {
                                           return Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 0),
-                                            child: UpcomingAppointmentCard(appointment: appointments[index]),
+                                            child: UpcomingAppointmentCard(appointment: upcomappointments[index]),
                                           );
                                         },
                                       ),
                                     )),
                                      Padding(
                                       padding: EdgeInsets.only(bottom: defaultVerPadding,),
-                                      child: appointments.isEmpty? null : Center(child: SmoothPageIndicator(
+                                      child: upcomappointments.isEmpty? null : Center(child: SmoothPageIndicator(
                                       controller: _pageController,
-                                      count: appointments.length,
+                                      count: upcomappointments.length,
                                       effect: ExpandingDotsEffect(
                                         dotHeight: 6,
                                         dotWidth: 6,
@@ -158,11 +159,32 @@ class _HomeState extends State<Home> {
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
           var id = anAppointment[time]['doctorID'];
+          var status = anAppointment[time]['status'];
           Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
           var dFirstname = doctor?['first name'];
           var dLastname = doctor?['last name'];
           var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [day, time, dFullname, id]);
+          dailyAppointmentList.insert(0, [day, time, dFullname, id, status]);
+          if(status == 'confirmed') {
+            bool isCompleted= DateTime.now().add(Duration(hours: 1)).isAfter(toDateTime(day, time));
+            if (isCompleted) {
+              writeToServer('patient/$uid/appointment/$day', {
+                time: {
+                  'doctorID': id,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              writeToServer('doctor/$id/appointment/$day', {
+                time: {
+                  'patientID': uid,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+            }
+            else upcomappointments.insert(0, [day, time, dFullname, id, status]);
+          }
         }
         //print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();
@@ -192,5 +214,13 @@ class _HomeState extends State<Home> {
   String dateToServer(DateTime date) {
     var formattedDate = DateFormat('yMMdd').format(date);
     return formattedDate.toString();
+  }
+  DateTime toDateTime(String date, String time) {
+    int year = int.parse(date.substring(0, 4));
+    int month = int.parse(date.substring(4, 6));
+    int day = int.parse(date.substring(6));
+    int hour = int.parse(time.substring(0, 2));
+    int min = int.parse(time.substring(3, 5));
+    return DateTime(year, month, day, hour, min);
   }
 }

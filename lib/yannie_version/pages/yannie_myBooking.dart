@@ -2,7 +2,10 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:simple_login/helper/alert.dart';
+import 'package:simple_login/helper/loading/loading_popup.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
@@ -30,10 +33,14 @@ class _myBookingState extends State<myBooking> {
   void start() {
     for (var booking in widget.serverData) {
       int today = int.parse(todayDateFormatter());
-      if (int.parse(booking[0]) > today)
-        upcoming.add(booking);
-      else
-        completed.add(booking);
+      if (booking[4]=='canceled')
+        canceled.add(booking);
+      else {
+        if (int.parse(booking[0]) > today)
+          upcoming.add(booking);
+        else
+          completed.add(booking);
+      }
     }
   }
 
@@ -42,7 +49,7 @@ class _myBookingState extends State<myBooking> {
   List upcoming = [];
   List completed = [];
   List canceled = [
-    ["20230522", "20:00", "Mike Jackson"]
+    //["20230522", "20:00", "Mike Jackson"]
   ];
 
   @override
@@ -181,9 +188,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? 225 : 150,
+      //height: widget.type <= 1 ? 225 : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
-      padding: EdgeInsets.all(defaultHorPadding / 1.5),
+      padding: EdgeInsets.symmetric(horizontal: defaultHorPadding / 1.5, vertical: defaultVerPadding),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -289,33 +296,56 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 : SizedBox(
               height: 0,
             ),
+
+            widget.type == 0 && DateTime.now().isBefore(bookingTime.subtract(Duration(hours: 24)))
+                ? ElevatedButton(
+                onPressed:() {
+                  cancelBooking(context, widget.appointment);
+                  setState(() {});
+                },
+                style: ButtonStyle(
+                  overlayColor: MaterialStatePropertyAll(lighttheme.withOpacity(0.1)),
+                    minimumSize:
+                    MaterialStatePropertyAll(Size.fromHeight(20)),
+                    backgroundColor: MaterialStatePropertyAll(Colors.white),
+                    shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(10)))),
+                    side: MaterialStatePropertyAll(BorderSide(
+                        color: lighttheme)),
+                    padding: MaterialStatePropertyAll(
+                        EdgeInsets.symmetric(vertical: 15))),
+                child: Text(
+                  "Cancel",
+                  style: GoogleFonts.comfortaa(
+                      color: lighttheme,
+                      fontSize: 18),
+                )):Container(),
+
+                widget.type == 0 && DateTime.now().isBefore(bookingTime.subtract(Duration(hours: 24)))? SizedBox(height: 15,):SizedBox(height: 0,),
+
+            
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
                 },
                 style: ButtonStyle(
-                    overlayColor: disable
-                        ? MaterialStatePropertyAll(Colors.transparent)
-                        : MaterialStatePropertyAll(
-                        lighttheme.withOpacity(0.1)),
+                    overlayColor: MaterialStatePropertyAll(Colors.white.withOpacity(0.1)),
                     minimumSize:
                     MaterialStatePropertyAll(Size.fromHeight(20)),
-                    backgroundColor: disable
-                        ? MaterialStatePropertyAll(
-                        Color.fromARGB(255, 194, 194, 194))
-                        : MaterialStatePropertyAll(Colors.white),
+                    backgroundColor: MaterialStatePropertyAll(lighttheme),
                     shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                         borderRadius:
                         BorderRadius.all(Radius.circular(10)))),
-                    side: MaterialStatePropertyAll(BorderSide(
-                        color: disable ? Colors.transparent : themeColor)),
+                    // side: MaterialStatePropertyAll(BorderSide(
+                    //     color: disable ? Colors.transparent : themeColor)),
                     padding: MaterialStatePropertyAll(
                         EdgeInsets.symmetric(vertical: 15))),
                 child: Text(
                   "Join Video Call",
                   style: GoogleFonts.comfortaa(
-                      color: disable ? Colors.white : lighttheme,
+                      color: Colors.white,
                       fontSize: 18),
                 ))
                 : widget.type == 1 //TODO PDF
@@ -343,6 +373,35 @@ class _AppointmentCardState extends State<AppointmentCard> {
   }
 }
 
+ Future<void> cancelBooking(BuildContext context, List appointment) async {
+  String date = dateFormatter2(appointment[0]);
+  String time = timeFormatter(appointment[1]);
+  String doctor = appointment[2];
+  String uid = getUID();
+  DateTime datetimeform = toDateTime(appointment[0], appointment[1]);
+  String serverDate = DateFormat("yyyMMdd").format(datetimeform);
+  bool? result = await showConfirmDialog(context, "Confirm to cancel this appointment?\n"+"Dr. $doctor"+"\n$date -- $time");
+  if(result == true) {
+    Loading().show(context: context, text: "Loading...");
+    writeToServer('patient/$uid/appointment/$serverDate', {
+      appointment[1]: {
+        'doctorID': appointment[3],
+        'description': '',
+        'status' : 'canceled'
+      }
+    });
+    writeToServer('doctor/${appointment[3]}/appointment/$serverDate', {
+      appointment[1]: {
+        'patientID': uid,
+        'description': '',
+        'status' : 'canceled'
+      }
+    });
+    Loading().hide();
+    showSuccessDialog(context, "Canceled");
+  }
+}
+
 String todayDateFormatter() {
   DateTime today = DateTime.now();
   String year = today.year.toString();
@@ -362,8 +421,9 @@ String timeFormatter(String time) {
     String result = hourInInt.toString() + time.substring(2) + " PM";
     return result;
   }
-
-  return time.substring(1) + " AM";
+  if (hourInInt < 10) return time.substring(1) + " AM";
+  return time + " AM";
+  
 }
 
 String dateFormatter(String date) {

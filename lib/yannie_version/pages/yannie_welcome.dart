@@ -299,18 +299,10 @@ class _welcome2State extends State<welcome2> {
                                                   if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
                                                     case ID.DOCTOR:
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const DoctorNav.BottomNav()));
+                                                      Navigator.pushReplacement(context, _createRoute(const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const BottomNav()));
+                                                      Navigator.pushReplacement(context, _createRoute(const BottomNav()));
                                                       break;
                                                     case ID.ADMIN:
                                                       break;
@@ -374,10 +366,7 @@ class _welcome2State extends State<welcome2> {
                                             padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 10))
                                             ),
                                         onPressed: () {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                  content: Text('Logging in with Google')),
-                                            );
+                                            Loading().show(context: context, text: "Logging in with Google...");
 
                                             signInWithGoogle().then((value) async {
                                                 // print(FirebaseAuth.instance.authStateChanges());
@@ -385,22 +374,19 @@ class _welcome2State extends State<welcome2> {
                                                 if (FirebaseAuth.instance.currentUser != null) {
                                                   switch (await patientOrdoc()) {
                                                     case ID.DOCTOR:
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const DoctorNav.BottomNav()));
+                                                      Loading().hide();
+                                                      await showSuccessDialog(context, "Login Success");
+                                                      Navigator.pushReplacement(context, _createRoute(const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
-                                                      Navigator.pushReplacement(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  const BottomNav()));
+                                                      Loading().hide();
+                                                      await showSuccessDialog(context, "Login Success");
+                                                      Navigator.pushReplacement(context, _createRoute(const BottomNav()));
                                                       break;
                                                     case ID.ADMIN:
                                                       break;
                                                     case ID.NOBODY:
+                                                      Loading().hide();
                                                       Navigator.push(context, _createRoute(SignUp2(google: googleSignIn)));
                                                       break;
                                                   }

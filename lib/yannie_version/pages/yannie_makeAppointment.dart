@@ -551,12 +551,14 @@ class _MakeAppointmentState extends State<MakeAppointment> {
       time: {
         'doctorID': widget.doctor[1],
         'description': '',
+        'status': 'confirmed'
       }
     });
     writeToServer('doctor/${widget.doctor[1]}/appointment/$date', {
       time: {
         'patientID': uid,
         'description': '',
+        'status': 'confirmed'
       }
     });
     await showSuccessDialog(context, "Booking Success");
