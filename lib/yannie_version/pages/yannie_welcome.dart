@@ -7,7 +7,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:simple_login/yannie_version/color.dart';
 import 'package:simple_login/login_screen.dart';
-import 'package:simple_login/patient/p_homepage.dart';
 import 'package:simple_login/register.dart';
 import 'package:simple_login/yannie_version/pages/yannie_home.dart';
 import 'package:simple_login/yannie_version/pages/yannie_signup.dart';
@@ -18,7 +17,9 @@ import '../../helper/loading/loading_popup.dart';
 import '../../helper/alert.dart';
 
 import '../../main.dart';
+import '../../new_doctor/pages/yannie_home.dart';
 import '../widget/navigator.dart';
+import '../../new_doctor/widget/navigator.dart' as DoctorNav;
 
 class welcome2 extends StatefulWidget {
   const welcome2({Key? key}) : super(key: key);
@@ -302,7 +303,7 @@ class _welcome2State extends State<welcome2> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const d_HomePage()));
+                                                                  const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
                                                       Navigator.pushReplacement(
@@ -388,7 +389,7 @@ class _welcome2State extends State<welcome2> {
                                                           context,
                                                           MaterialPageRoute(
                                                               builder: (context) =>
-                                                                  const d_HomePage()));
+                                                                  const DoctorNav.BottomNav()));
                                                       break;
                                                     case ID.PATIENT:
                                                       Navigator.pushReplacement(
