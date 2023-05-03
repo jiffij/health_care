@@ -12,6 +12,7 @@
 - [ ] Profile page edit
 - [ ] hard ware
 - [x] logout
+- [ ] doctor page color
 
 ## Notes for tflite implementation:
 

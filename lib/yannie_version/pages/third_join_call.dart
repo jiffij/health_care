@@ -53,9 +53,7 @@ class _thirdJoinCallState extends State<thirdJoinCall> {
   int? _toggleValue = 0;
   List upcoming = [];
   List completed = [];
-  List canceled = [
-    ["20230522", "20:00", "Mike Jackson"]
-  ];
+  List canceled = [];
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +196,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? 225 : 150,
+      height: widget.type < 1 ? 225 : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.all(defaultHorPadding / 1.5),
       decoration: BoxDecoration(
@@ -299,7 +297,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 )
               ],
             ),
-            widget.type <= 1
+            widget.type < 1
                 ? SizedBox(
               height: 25,
             )
@@ -309,7 +307,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment["doctorID"], time)));
+                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment["doctorID"], time, widget.appointment["token"])));
                 },
                 style: ButtonStyle(
                     overlayColor: disable
@@ -335,25 +333,8 @@ class _AppointmentCardState extends State<AppointmentCard> {
                       color: disable ? Colors.white : lighttheme,
                       fontSize: 18),
                 ))
-                : widget.type == 1 //TODO PDF
-                ? ElevatedButton(
-                onPressed: () async {
-
-                },
-                style: ButtonStyle(
-                    backgroundColor:
-                    MaterialStatePropertyAll(Colors.white),
-                    overlayColor:
-                    MaterialStatePropertyAll(lighttheme.withOpacity(0.1)),
-                    minimumSize: MaterialStatePropertyAll(Size.fromHeight(20)),
-                    shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10)))),
-                    side: MaterialStatePropertyAll(BorderSide(color: themeColor)),
-                    padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 15))),
-                child: Text(
-                  "View Report",
-                  style: GoogleFonts.comfortaa(
-                      color: lighttheme, fontSize: 18),
-                ))
+                : widget.type == 1
+                ? Container()
                 : Container()
           ]),
     );

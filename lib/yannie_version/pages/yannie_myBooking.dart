@@ -349,7 +349,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
+                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1], null)));
                 },
                 style: ButtonStyle(
                     overlayColor: disable
