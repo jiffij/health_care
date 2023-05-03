@@ -403,13 +403,16 @@ class _AppointmentCardState extends State<AppointmentCard> {
 }
 
 String todayDateFormatter() {
-  DateTime today = DateTime.now();
-  String year = today.year.toString();
-  String month =
-  today.month < 10 ? "0" + today.month.toString() : today.month.toString();
-  String day =
-  today.day < 10 ? "0" + today.day.toString() : today.day.toString();
-  return year + month + day;
+  // DateTime today = DateTime.now();
+  // String year = today.year.toString();
+  // String month =
+  // today.month < 10 ? "0" + today.month.toString() : today.month.toString();
+  // String day =
+  // today.day < 10 ? "0" + today.day.toString() : today.day.toString();
+  // return year + month + day;
+  DateTime now = DateTime.now(); // get the current date and time
+  String formattedDateTime = DateFormat('yyyyMMddHHmm').format(now);
+  return formattedDateTime;
 }
 
 String timeFormatter(String time) {

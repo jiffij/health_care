@@ -162,7 +162,7 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
                       fit: BoxFit.scaleDown,
                       child: Text('Personal Emergency Details',
                           style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
+                              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
                   ),
                 ],
@@ -211,7 +211,7 @@ class _MedicalAllergyPageState extends State<p_MedicalAllergyPage> {
                             child: FittedBox(
                               alignment: Alignment.centerLeft,
                               fit: BoxFit.scaleDown,
-                              child: Text('User Full Name: $fullname',
+                              child: Text('Your Name: $fullname',
                                   style: const TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold)),

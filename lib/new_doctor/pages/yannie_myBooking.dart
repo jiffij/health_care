@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
 import 'package:simple_login/new_doctor/pages/dViewSurvey.dart';
@@ -32,7 +33,8 @@ class _myBookingState extends State<myBooking> {
   void start() {
     for (var booking in widget.serverData) {
       int today = int.parse(todayDateFormatter());
-      if (int.parse(booking[0]) > today)
+      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
+      if (int.parse(bookingDateTime) - today > -20)
         upcoming.add(booking);
       else
         completed.add(booking);
@@ -381,13 +383,18 @@ class _AppointmentCardState extends State<AppointmentCard> {
 }
 
 String todayDateFormatter() {
-  DateTime today = DateTime.now();
-  String year = today.year.toString();
-  String month =
-  today.month < 10 ? "0" + today.month.toString() : today.month.toString();
-  String day =
-  today.day < 10 ? "0" + today.day.toString() : today.day.toString();
-  return year + month + day;
+  // DateTime today = DateTime.now();
+  // String year = today.year.toString();
+  // String month =
+  // today.month < 10 ? "0" + today.month.toString() : today.month.toString();
+  // String day =
+  // today.day < 10 ? "0" + today.day.toString() : today.day.toString();
+  // String hour = today.hour.toString();
+  // String minute = today.minute.toString();
+  DateTime now = DateTime.now(); // get the current date and time
+  String formattedDateTime = DateFormat('yyyyMMddHHmm').format(now);
+  return formattedDateTime;
+  // return year + month + day;
 }
 
 String timeFormatter(String time) {

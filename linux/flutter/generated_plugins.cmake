@@ -3,10 +3,14 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  dart_vlc
+  desktop_drop
   fast_rsa
+  file_selector_linux
   flutter_secure_storage_linux
   flutter_webrtc
   flutter_window_close
+  url_launcher_linux
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

@@ -49,13 +49,28 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
   Widget build(BuildContext context) {
     // double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
-    return Scaffold(
+    return
+      // SizedBox(
+      // width: double.infinity,
+      // height: double.infinity,
+      // child:
+      Scaffold(
       // appBar: AppBar(
       //   title: Text('My Page'),
       // ),
 
       body: Column(
         children: [
+          SizedBox(
+            height: 40,
+          ),
+          Align(
+            alignment: Alignment.center,
+            child: Text(
+              'Medical Report',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
           Container(
             padding: EdgeInsets.all(16.0),
             child: Column(
@@ -96,20 +111,41 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Diagnosis:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                   TextField(
-                    maxLines: 5,
+                    maxLines: 4,
                     keyboardType: TextInputType.multiline,
                     controller: _diagnosisController,
                     decoration: InputDecoration(
                       hintText: 'Diagnosis',
                     ),
                   ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Medication:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
                   TextField(
-                    maxLines: 5,
+                    maxLines: 4,
                     keyboardType: TextInputType.multiline,
                     controller: _MedController,
                     decoration: InputDecoration(
                       hintText: 'Medication',
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Extra Notes:',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                   TextField(
@@ -117,7 +153,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
                     decoration: InputDecoration(
                       hintText: 'Extra notes',
                     ),
-                    maxLines: 5,
+                    maxLines: 4,
                     keyboardType: TextInputType.multiline,
                   ),
                   SizedBox(
@@ -189,6 +225,7 @@ class _DiagnosticFormState extends State<DiagnosticForm> {
         ],
       ),
     );
+    // );
   }
 }
 

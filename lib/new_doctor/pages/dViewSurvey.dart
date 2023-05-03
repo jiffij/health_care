@@ -72,8 +72,8 @@ class _viewSurveyState extends State<viewSurvey> {
         diagnosis = survey['diagnosis'];
         medicine = survey['medicine'];
         notes = survey['extra_notes'];
-        prediction = survey['prediction'];
-        probability = survey['probability'];
+        prediction = survey['prediction'] ?? "";
+        probability = survey['probability'] ?? "";
       startDone = true;
     });
   }
@@ -172,7 +172,7 @@ class _viewSurveyState extends State<viewSurvey> {
                             child: FittedBox(
                               alignment: Alignment.centerLeft,
                               fit: BoxFit.scaleDown,
-                              child: Text('Patient Full Name: $fullname',
+                              child: Text('Patient: $fullname',
                                   style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold

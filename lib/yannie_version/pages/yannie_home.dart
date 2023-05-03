@@ -19,21 +19,16 @@ import '../widget/title_with_more_btn.dart';
 import '../widget/upcoming_appointment.dart';
 
 class Home extends StatefulWidget {
-  const Home({
-    Key? key
-  }) : super(key: key);
-  
-  
+  const Home({Key? key}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-
   int picIndex = 0;
   late Timer _timer;
-  
+
   final PageController _pageController = PageController(viewportFraction: 0.9);
   var now = DateTime.now();
   String fullname = '';
@@ -68,6 +63,7 @@ class _HomeState extends State<Home> {
     super.initState();
     start();
   }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -133,28 +129,40 @@ class _HomeState extends State<Home> {
                                     ))),
                                   ],
                                 ),
-                              ))
-                            ]
-                          )
-                        )
-    );
+                        )),
+                    Padding(
+                        padding: EdgeInsets.only(
+                          bottom: defaultVerPadding,
+                        ),
+                        child: appointments.isEmpty
+                            ? null
+                            : Center(
+                                child: SmoothPageIndicator(
+                                controller: _pageController,
+                                count: appointments.length,
+                                effect: ExpandingDotsEffect(
+                                    dotHeight: 6,
+                                    dotWidth: 6,
+                                    dotColor: themeColor.withOpacity(0.4),
+                                    activeDotColor: themeColor),
+                              ))),
+                  ],
+                ),
+              ));
+            //])));
   }
-
-
-  
 
   void start() async {
     String uid = getUID();
-    Map<String, dynamic>? user = await readFromServer('patient/$uid');    
+    Map<String, dynamic>? user = await readFromServer('patient/$uid');
     fullname = user?['first name'] + ' ' + user?['last name'];
-    
+
     List<String> appointmentDays = await getColId('patient/$uid/appointment');
     Map<String, dynamic>? anAppointment;
     if (appointmentDays.isNotEmpty) {
       var date = dateToServer(now);
       for (var day in appointmentDays) {
-        anAppointment =
-            await readFromServer('patient/$uid/appointment/$day');
+        anAppointment = await readFromServer('patient/$uid/appointment/$day');
         List timeList = anAppointment!.keys.toList();
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
@@ -197,15 +205,17 @@ class _HomeState extends State<Home> {
     }
     //setState(() {startDone = true;});
     articles = await client.getArticle();
-    setState(() {startDone = true;});
-    
+    setState(() {
+      startDone = true;
+    });
 
     setState(() {
       for (int i = 0; i < 3; i++) {
         if (articles![i].urlToImage != "") {
           newsUrl[i] = articles![i].urlToImage;
-        }
-        else newsUrl[i] = "https://srinivasgroup.com/img/MedicalDepartment/_home/slider/slide02.jpg";
+        } else
+          newsUrl[i] =
+              "https://srinivasgroup.com/img/MedicalDepartment/_home/slider/slide02.jpg";
       }
       startDone = true;
     });

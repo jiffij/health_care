@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_login/helper/loading_screen.dart';
 import 'package:simple_login/yannie_version/pages/profile.dart';
 
-
-
-import '../pages/yannie_calendar.dart';
 import '../pages/yannie_home.dart';
+import '../pages/yannie_calendar.dart';
+import '../../chat/ChatSetup2.dart';
+import '../pages/profile_home.dart';
 import 'nav_bar/custom_bottom_nav_bar_dash.dart';
-import 'nav_bar/navbar_cubit.dart';class BottomNav extends StatefulWidget {
+import 'nav_bar/navbar_cubit.dart';
+
+class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
 
   @override
@@ -16,12 +18,12 @@ import 'nav_bar/navbar_cubit.dart';class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-
   final List<Widget> _pages = [
     const Home(),
     const CalendarPage(),
-    Container(),
-    const Profile(),
+    const ChatSetup2(),
+    const ProfilePage(),
+    //Container(),
   ];
 
   @override

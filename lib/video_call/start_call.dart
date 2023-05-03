@@ -36,6 +36,7 @@ class _StartCallState extends State<StartCall> {
   @override
   void dispose() {
     super.dispose();
+    databaseReference.set({'ready': 'false'});
   }
 
   void start(context) async {
