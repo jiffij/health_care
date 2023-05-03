@@ -1,13 +1,16 @@
-# simple_login
+# Health Care
 
 ## TODO List 
-1. 3rd party video call
-2. messaging
-3. refresh gesture on booking page
-4. calendar event list
-5. hard ware
-6. Doctor Detail save and message button
-7. Profile page edit
+-[x] 3rd party video call 
+- [x] UI Bugs
+- [x] Record page empty (added invitation page, third party meeting)
+- [x] call dispose handled
+-[ ] messaging
+-[ ] refresh gesture on booking page
+-[ ] calendar event list
+-[ ] Doctor Detail save and message button
+-[ ] Profile page edit
+-[ ] hard ware
 
 ## Notes for tflite implementation:
 
