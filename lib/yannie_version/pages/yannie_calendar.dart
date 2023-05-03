@@ -142,9 +142,16 @@ class _CalendarPageState extends State<CalendarPage> {
                 calendarFormat: _calendarFormat,
                 rangeSelectionMode: _rangeSelectionMode,
                 eventLoader: _getEventsForDay,
+                weekendDays: const [DateTime.sunday],
+                // Calendar days title style
+                    daysOfWeekStyle: const DaysOfWeekStyle(
+                      weekendStyle:
+                          TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
+                    ),     
                 //startingDayOfWeek: StartingDayOfWeek.monday,
                 calendarStyle: CalendarStyle(
                   // Use `CalendarStyle` to customize the UI
+                  // Calendar days style
                   markerDecoration: BoxDecoration(color: themeColor, shape: BoxShape.circle),
                   markerSize: 4,
                   markerMargin: EdgeInsets.only(left: 1, right: 1, top: 5),
@@ -153,7 +160,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   defaultTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black, fontSize: 14)),
                   selectedTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black, fontSize: 14)),
                   todayTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.white, fontSize: 14)),
-                  weekendTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black, fontSize: 14)),
+                  weekendTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.red, fontSize: 14)),
                   weekNumberTextStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: themeColor, fontSize: 14)),
                   outsideDaysVisible: false,
                 ),
