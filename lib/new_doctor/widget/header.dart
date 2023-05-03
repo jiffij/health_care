@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-
+import 'package:simple_login/yannie_version/pages/yannie_welcome.dart';
+import "package:simple_login/main.dart";
+import '../../helper/firebase_helper.dart';
 import '../color.dart';
 
 class Header extends StatelessWidget {
@@ -50,7 +53,20 @@ class Header extends StatelessWidget {
                     Container(margin: EdgeInsets.symmetric(vertical: MediaQuery.of(context).size.height*0.02), child: Text(DateFormat('dd MMMM, yyyy, EEEE').format(DateTime.now()), style: datetime,)),
                     Text("Hi, "+ name + " !", style: greeting,),
                   ],
-                )
+                ),
+                Spacer(),
+                IconButton(onPressed: () async {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const welcome2()));
+                  final GoogleSignIn googleSignIn = GoogleSignIn();
+                  if (checkSignedin()) await auth.signOut();
+                  if (await googleSignIn.isSignedIn()) await googleSignIn.signOut();
+                }, icon: Icon(Icons.logout),
+                  iconSize: 40,
+                ),
               ],
             ),
           ),

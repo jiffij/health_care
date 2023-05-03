@@ -48,6 +48,56 @@ class _myBookingState extends State<myBooking> {
     ["20230522", "20:00", "Mike Jackson"]
   ];
 
+
+  Future<void> refresh() async {
+    print('refreshing');
+    List appointments = [];
+    setState(() {
+      upcoming = [];
+      completed = [];
+    });
+    String uid = getUID();
+    List<String> existdatelist = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? existtimemap;
+    if (existdatelist.isNotEmpty) {
+      for (var existdate in existdatelist) {
+        existtimemap =
+        await readFromServer('patient/$uid/appointment/$existdate');
+        List timeList = existtimemap!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = existtimemap[time]['doctorID'];
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var dFullname = '$dFirstname $dLastname';
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+        }
+        //print(dailyAppointmentList);
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+
+    for (var booking in appointments) {
+      int today = int.parse(todayDateFormatter());
+      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
+      if (int.parse(bookingDateTime) - today > -20)
+        upcoming.add(booking);
+      else
+        completed.add(booking);
+    }
+    print("refreshed");
+    setState(() {
+
+    });
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -112,7 +162,10 @@ class _myBookingState extends State<myBooking> {
               },
             ),
             Expanded(
-              child: ListView.builder(
+              child: RefreshIndicator(
+                onRefresh: refresh,
+                child:
+              ListView.builder(
                 padding: EdgeInsets.symmetric(
                     vertical: defaultVerPadding,
                     horizontal: defaultHorPadding / 2),
@@ -132,6 +185,7 @@ class _myBookingState extends State<myBooking> {
                             appointment: completed[index], type: _toggleValue!)
                         : AppointmentCard(
                             appointment: canceled[index], type: _toggleValue!),
+              ),
               ),
             )
           ])),

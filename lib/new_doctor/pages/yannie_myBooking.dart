@@ -39,6 +39,9 @@ class _myBookingState extends State<myBooking> {
       else
         completed.add(booking);
     }
+    setState(() {
+
+    });
   }
 
   bool ready = false;
@@ -48,6 +51,55 @@ class _myBookingState extends State<myBooking> {
   List canceled = [
     ["20230522", "20:00", "Mike Jackson"]
   ];
+
+  Future<void> refresh() async {
+    List appointments = [];
+    setState(() {
+      upcoming = [];
+      completed = [];
+    });
+    String uid = getUID();
+    List<String> existdatelist = await getColId('doctor/$uid/appointment');
+    Map<String, dynamic>? existtimemap;
+    if (existdatelist.isNotEmpty) {
+      for (var existdate in existdatelist) {
+        existtimemap =
+        await readFromServer('doctor/$uid/appointment/$existdate');
+        List timeList = existtimemap!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = existtimemap[time]['patientID'];
+          Map<String, dynamic>? patient = await readFromServer('patient/$id');
+          var dFirstname = patient?['first name'];
+          var dLastname = patient?['last name'];
+          var dFullname = '$dFirstname $dLastname';
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+        }
+        //print(dailyAppointmentList);
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+
+
+    for (var booking in appointments) {
+      int today = int.parse(todayDateFormatter());
+      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
+      if (int.parse(bookingDateTime) - today > -20)
+        upcoming.add(booking);
+      else
+        completed.add(booking);
+    }
+    print("refreshed");
+    setState(() {
+
+    });
+    return;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +140,8 @@ class _myBookingState extends State<myBooking> {
                 ))),
         leadingWidth: 95,
       ),
-      body: SafeArea(
+      body:
+      SafeArea(
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -113,7 +166,10 @@ class _myBookingState extends State<myBooking> {
                   },
                 ),
                 Expanded(
-                  child: ListView.builder(
+                  child: RefreshIndicator(
+                    onRefresh: refresh,
+                    child:
+                  ListView.builder(
                     padding: EdgeInsets.symmetric(
                         vertical: defaultVerPadding,
                         horizontal: defaultHorPadding / 2),
@@ -134,8 +190,10 @@ class _myBookingState extends State<myBooking> {
                         : AppointmentCard(
                         appointment: canceled[index], type: 2),
                   ),
+                  ),
                 )
               ])),
+
     );
   }
 }

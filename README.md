@@ -6,11 +6,12 @@
 - [x] Record page empty (added invitation page, third party meeting)
 - [x] call dispose handled
 - [ ] messaging
-- [ ] refresh gesture on booking page
+- [x] refresh gesture on booking page
 - [ ] calendar event list
 - [ ] Doctor Detail save and message button
 - [ ] Profile page edit
 - [ ] hard ware
+- [x] logout
 
 ## Notes for tflite implementation:
 
