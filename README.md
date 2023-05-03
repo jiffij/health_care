@@ -1,5 +1,14 @@
 # simple_login
 
+## TODO List 
+1. 3rd party video call
+2. messaging
+3. refresh gesture on booking page
+4. calendar event list
+5. hard ware
+6. Doctor Detail save and message button
+7. Profile page edit
+
 ## Notes for tflite implementation:
 
 https://github.com/shaqian/flutter_tflite/issues/224

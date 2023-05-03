@@ -9,7 +9,7 @@ class LoadingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: lighttheme,
       body: Center(
-        child: LoadingAnimationWidget.threeRotatingDots(color: Colors.white, size: 50),
+        child: LoadingAnimationWidget.inkDrop(color: Colors.white, size: 50),
       ),
     );
   }

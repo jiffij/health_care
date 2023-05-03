@@ -4,40 +4,49 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:simple_login/helper/loading_screen.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
 import 'package:simple_login/yannie_version/color.dart';
-import 'package:simple_login/yannie_version/pages/invite.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 import '../../helper/firebase_helper.dart';
 import '../../video_call/join_call_waiting.dart';
 
-class myBooking extends StatefulWidget {
-  const myBooking({Key? key, required this.serverData}) : super(key: key);
-
-  final List serverData;
+class thirdJoinCall extends StatefulWidget {
+  const thirdJoinCall({Key? key}) : super(key: key);
 
   @override
-  State<myBooking> createState() => _myBookingState();
+  State<thirdJoinCall> createState() => _thirdJoinCallState();
 }
 
-class _myBookingState extends State<myBooking> {
+class _thirdJoinCallState extends State<thirdJoinCall> {
   @override
   void initState() {
     super.initState();
     start();
   }
 
-  void start() {
-    for (var booking in widget.serverData) {
-      int today = int.parse(todayDateFormatter());
-      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
-      if (int.parse(bookingDateTime) - today > -20)
-        upcoming.add(booking);
+  void start() async {
+    var uid = getUID();
+    var files = await getColId("patient/$uid/invitation");
+    if (files == null) return;
+    int today = int.parse(todayDateFormatter());
+    for (var booking in files) {
+      var data = await readFromServer("patient/$uid/invitation/$booking");
+      if(data == null) continue;
+      var doctoruid = data['doctorID'];
+      var doc = await readFromServer("doctor/$doctoruid");
+      if(doc == null) continue;
+      data["doctorName"] = doc["first name"] + " " + doc["last name"];
+      if (int.parse(booking) - today > -20)
+        upcoming.add(data);
       else
-        completed.add(booking);
+        completed.add(data);
     }
+    setState(() {
+      ready = true;
+    });
   }
 
   bool ready = false;
@@ -51,10 +60,11 @@ class _myBookingState extends State<myBooking> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Scaffold(
+    return !ready ? LoadingScreen() :
+      Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        title: Text('My Appointments'),
+        title: Text('Invited Appointments'),
         elevation: 0,
         toolbarHeight: 80,
         backgroundColor: lighttheme,
@@ -91,50 +101,50 @@ class _myBookingState extends State<myBooking> {
           child: Column(
             //crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-            SizedBox(
-              height: 30,
-            ),
-            ToggleSwitch(
-              totalSwitches: 3,
-              initialLabelIndex: _toggleValue,
-              minWidth: MediaQuery.of(context).size.width * 0.8,
-              labels: ['Upcoming', 'Completed', 'Canceled'],
-              radiusStyle: true,
-              cornerRadius: 10,
-              customTextStyles: [GoogleFonts.comfortaa(color: _toggleValue==0?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==1?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==2?Colors.white:Colors.black)],
-              activeBgColor: [lighttheme, lighttheme, lighttheme],
-              activeFgColor: Colors.white,
-              inactiveBgColor: Colors.white,
-              onToggle: (index) {
-                setState(() {
-                  _toggleValue = index;
-                });
-              },
-            ),
-            Expanded(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(
-                    vertical: defaultVerPadding,
-                    horizontal: defaultHorPadding / 2),
-                scrollDirection: Axis.vertical,
-                physics: const BouncingScrollPhysics(),
-                shrinkWrap: true,
-                primary: true,
-                itemCount: _toggleValue == 0
-                    ? upcoming.length
-                    : _toggleValue == 1
+                SizedBox(
+                  height: 30,
+                ),
+                ToggleSwitch(
+                  totalSwitches: 3,
+                  initialLabelIndex: _toggleValue,
+                  minWidth: MediaQuery.of(context).size.width * 0.8,
+                  labels: ['Upcoming', 'Completed', 'Canceled'],
+                  radiusStyle: true,
+                  cornerRadius: 10,
+                  customTextStyles: [GoogleFonts.comfortaa(color: _toggleValue==0?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==1?Colors.white:Colors.black), GoogleFonts.comfortaa(color: _toggleValue==2?Colors.white:Colors.black)],
+                  activeBgColor: [lighttheme, lighttheme, lighttheme],
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.white,
+                  onToggle: (index) {
+                    setState(() {
+                      _toggleValue = index;
+                    });
+                  },
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: EdgeInsets.symmetric(
+                        vertical: defaultVerPadding,
+                        horizontal: defaultHorPadding / 2),
+                    scrollDirection: Axis.vertical,
+                    physics: const BouncingScrollPhysics(),
+                    shrinkWrap: true,
+                    primary: true,
+                    itemCount: _toggleValue == 0
+                        ? upcoming.length
+                        : _toggleValue == 1
                         ? completed.length
                         : canceled.length,
-                itemBuilder: (context, index) => _toggleValue == 0
-                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!)
-                    : _toggleValue == 1
+                    itemBuilder: (context, index) => _toggleValue == 0
+                        ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!)
+                        : _toggleValue == 1
                         ? AppointmentCard(
-                            appointment: completed[index], type: _toggleValue!)
+                        appointment: completed[index], type: _toggleValue!)
                         : AppointmentCard(
-                            appointment: canceled[index], type: _toggleValue!),
-              ),
-            )
-          ])),
+                        appointment: canceled[index], type: _toggleValue!),
+                  ),
+                )
+              ])),
     );
   }
 }
@@ -146,7 +156,7 @@ class AppointmentCard extends StatefulWidget {
   const AppointmentCard(
       {Key? key, required this.appointment, required this.type})
       : super(key: key);
-  final List appointment;
+  final Map<dynamic, dynamic> appointment;
   final int type;
 }
 
@@ -173,18 +183,22 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
 
     Size size = MediaQuery.of(context).size;
-    String time = timeFormatter(widget.appointment[1]);
-    String date = dateFormatter2(widget.appointment[0]);
-    print(widget.appointment);
+    var dateTime = widget.appointment["time"].toString();
+    String time = dateTime.substring(8,10) + ":" + dateTime.substring(10,12);
+    String date = dateTime.substring(0,4) + "-" + dateTime.substring(4,6) + "-" + dateTime.substring(6,8);
+    String doctor = widget.appointment["doctorName"];
 
-    DateTime bookingTime =
-    toDateTime(widget.appointment[0], widget.appointment[1]);
+    // String date = dateFormatter2(widget.appointment[0]);
+
+
+    // DateTime bookingTime =
+    // toDateTime(widget.appointment[0], widget.appointment[1]);
     // bool disable = (bookingTime.compareTo(DateTime.now()) >= 0);//TODO demo purpose
     bool disable = false;
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
+      height: widget.type <= 1 ? 225 : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.all(defaultHorPadding / 1.5),
       decoration: BoxDecoration(
@@ -205,7 +219,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Dr. ${widget.appointment[2]}',
+                  'Dr. ${doctor}',
                   style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),
                 ),
                 Container(
@@ -295,7 +309,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
+                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment["doctorID"], time)));
                 },
                 style: ButtonStyle(
                     overlayColor: disable
@@ -324,7 +338,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                 : widget.type == 1 //TODO PDF
                 ? ElevatedButton(
                 onPressed: () async {
-                  pdfGen(widget.appointment);
+
                 },
                 style: ButtonStyle(
                     backgroundColor:
@@ -340,43 +354,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   style: GoogleFonts.comfortaa(
                       color: lighttheme, fontSize: 18),
                 ))
-                : Container(),
-            if(widget.type == 0)
-              SizedBox(
-                height: 20,
-              ),
-            if(widget.type == 0)
-              ElevatedButton(
-                  onPressed: () {//TODO
-                    var bookingDateTime = widget.appointment[0] + widget.appointment[1].toString().substring(0,2) + widget.appointment[1].toString().substring(3,5);
-                    Navigator.of(context).push(
-                        _createRoute(Invite(widget.appointment[3], bookingDateTime))
-                    );
-                  },
-                  style: ButtonStyle(
-                      overlayColor: disable
-                          ? MaterialStatePropertyAll(Colors.transparent)
-                          : MaterialStatePropertyAll(
-                          lighttheme.withOpacity(0.1)),
-                      minimumSize:
-                      MaterialStatePropertyAll(Size.fromHeight(20)),
-                      backgroundColor: disable
-                          ? MaterialStatePropertyAll(
-                          Color.fromARGB(255, 194, 194, 194))
-                          : MaterialStatePropertyAll(Colors.white),
-                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(10)))),
-                      side: MaterialStatePropertyAll(BorderSide(
-                          color: disable ? Colors.transparent : themeColor)),
-                      padding: MaterialStatePropertyAll(
-                          EdgeInsets.symmetric(vertical: 15))),
-                  child: Text(
-                    "Invite",
-                    style: GoogleFonts.comfortaa(
-                        color: disable ? Colors.white : lighttheme,
-                        fontSize: 18),
-                  ))
+                : Container()
           ]),
     );
   }

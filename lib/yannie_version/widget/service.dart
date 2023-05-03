@@ -8,6 +8,7 @@ import '../../news/model/article_model.dart';
 import '../../patient/p_medical_report_list.dart';
 import '../color.dart';
 import '../pages/p_medical_allergy.dart';
+import '../pages/third_join_call.dart';
 import '../pages/yannie_doctor_search.dart';
 
 class Services extends StatelessWidget {
@@ -41,7 +42,7 @@ class Services extends StatelessWidget {
                 Navigator.of(context).push(_createRoute(const p_MedicalAllergyPage()));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.description,size: 35, color: themeColor), tap: (){
-                Navigator.of(context).push(_createRoute(p_MedicalReportListPage()));
+                Navigator.of(context).push(_createRoute(thirdJoinCall()));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.event_available,size: 35, color: themeColor), tap: (){
                 Navigator.of(context).push(_createRoute(myBooking(serverData: serverData,)));
