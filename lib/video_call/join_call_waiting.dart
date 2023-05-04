@@ -12,8 +12,9 @@ import 'pages/room.dart';
 class JoinCallWaiting extends StatefulWidget {
   String DocId;
   String time;
+  String? token;
 
-  JoinCallWaiting(this.DocId, this.time, {Key? key}) : super(key: key);
+  JoinCallWaiting(this.DocId, this.time, this.token, {Key? key}) : super(key: key);
 
   @override
   _JoinCallWaitingState createState() =>
@@ -78,7 +79,12 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
 
   Future<void> _connect(BuildContext ctx) async {
     if (!ready) return;
-    String roomid = this.DocId + getUID();
+    String roomid;
+    if(widget.token == null){
+      roomid = this.DocId + getUID();
+    }else{
+      roomid = widget.token!;
+    }
     final token = await getVideoToken(roomid);
     try {
       //create new room

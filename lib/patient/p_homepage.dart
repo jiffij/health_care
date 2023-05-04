@@ -613,7 +613,7 @@ class _HomePageState extends State<p_HomePage> {
             child: GestureDetector(
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                    builder: (context) => JoinCallWaiting(appointments[index][3], appointments[index][1])),
+                    builder: (context) => JoinCallWaiting(appointments[index][3], appointments[index][1], null)),
               ),
               child: Row(
                 children: [

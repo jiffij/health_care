@@ -9,6 +9,7 @@ import 'package:simple_login/helper/alert.dart';
 import 'package:simple_login/helper/loading/loading_popup.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
 import 'package:simple_login/yannie_version/color.dart';
+import 'package:simple_login/yannie_version/pages/invite.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -121,6 +122,56 @@ class _myBookingState extends State<myBooking> {
     //["20230522", "20:00", "Mike Jackson"]
   ];
 
+
+  Future<void> refresh() async {
+    print('refreshing');
+    List appointments = [];
+    setState(() {
+      upcoming = [];
+      completed = [];
+    });
+    String uid = getUID();
+    List<String> existdatelist = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? existtimemap;
+    if (existdatelist.isNotEmpty) {
+      for (var existdate in existdatelist) {
+        existtimemap =
+        await readFromServer('patient/$uid/appointment/$existdate');
+        List timeList = existtimemap!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = existtimemap[time]['doctorID'];
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var dFullname = '$dFirstname $dLastname';
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+        }
+        //print(dailyAppointmentList);
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+
+    for (var booking in appointments) {
+      int today = int.parse(todayDateFormatter());
+      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
+      if (int.parse(bookingDateTime) - today > -20)
+        upcoming.add(booking);
+      else
+        completed.add(booking);
+    }
+    print("refreshed");
+    setState(() {
+
+    });
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -185,12 +236,10 @@ class _myBookingState extends State<myBooking> {
               },
             ),
             Expanded(
-              child: 
-              !ready?
-              Center(child: LoadingAnimationWidget.threeRotatingDots(color: lighttheme, size: 50)) :
-              _toggleValue == 0 && upcoming.length == 0 || _toggleValue == 1 && completed.length == 0 || _toggleValue == 2 && canceled.length == 0 ?
-              Center(child: Text("No appointment.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18),),)
-              : ListView.builder(
+              child: RefreshIndicator(
+                onRefresh: refresh,
+                child:
+              ListView.builder(
                 padding: EdgeInsets.symmetric(
                     vertical: defaultVerPadding,
                     horizontal: defaultHorPadding / 2),
@@ -210,6 +259,7 @@ class _myBookingState extends State<myBooking> {
                             appointment: completed[index], type: _toggleValue!, reload: onListsChanged,)
                         : AppointmentCard(
                             appointment: canceled[index], type: _toggleValue!, reload: onListsChanged,),
+              ),
               ),
             )
           ])),
@@ -263,7 +313,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     return Container(
       width: size.width,
-      //height: widget.type <= 1 ? 225 : 150,
+      height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.symmetric(horizontal: defaultHorPadding / 1.5, vertical: defaultVerPadding),
       decoration: BoxDecoration(
@@ -403,7 +453,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
             widget.type == 0
                 ? ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1])));
+                  Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1], null)));
                 },
                 style: ButtonStyle(
                     overlayColor: MaterialStatePropertyAll(Colors.white.withOpacity(0.1)),
@@ -442,7 +492,43 @@ class _AppointmentCardState extends State<AppointmentCard> {
                   style: GoogleFonts.comfortaa(
                       color: lighttheme, fontSize: 18),
                 ))
-                : Container()
+                : Container(),
+            if(widget.type == 0)
+              SizedBox(
+                height: 20,
+              ),
+            if(widget.type == 0)
+              ElevatedButton(
+                  onPressed: () {//TODO
+                    var bookingDateTime = widget.appointment[0] + widget.appointment[1].toString().substring(0,2) + widget.appointment[1].toString().substring(3,5);
+                    Navigator.of(context).push(
+                        _createRoute(Invite(widget.appointment[3], bookingDateTime))
+                    );
+                  },
+                  style: ButtonStyle(
+                      overlayColor: disable
+                          ? MaterialStatePropertyAll(Colors.transparent)
+                          : MaterialStatePropertyAll(
+                          lighttheme.withOpacity(0.1)),
+                      minimumSize:
+                      MaterialStatePropertyAll(Size.fromHeight(20)),
+                      backgroundColor: disable
+                          ? MaterialStatePropertyAll(
+                          Color.fromARGB(255, 194, 194, 194))
+                          : MaterialStatePropertyAll(Colors.white),
+                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(10)))),
+                      side: MaterialStatePropertyAll(BorderSide(
+                          color: disable ? Colors.transparent : themeColor)),
+                      padding: MaterialStatePropertyAll(
+                          EdgeInsets.symmetric(vertical: 15))),
+                  child: Text(
+                    "Invite",
+                    style: GoogleFonts.comfortaa(
+                        color: disable ? Colors.white : lighttheme,
+                        fontSize: 18),
+                  ))
           ]),
     );
   }

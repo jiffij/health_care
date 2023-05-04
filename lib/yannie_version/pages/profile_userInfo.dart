@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import '../color.dart';
 import 'package:icon_badge/icon_badge.dart';
 import '../../helper/firebase_helper.dart';
+import 'package:flutter/services.dart';
+
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -17,6 +19,7 @@ class UserInfoPage extends StatefulWidget {
 
 class _UserInfoPageState extends State<UserInfoPage> {
   String fullname = '';
+  String UID = "";
 
   @override
   void initState() {
@@ -29,7 +32,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
     String uid = getUID();
     Map<String, dynamic>? user = await readFromServer('patient/$uid');
     fullname = user?['first name'] + ' ' + user?['last name'];
-
+    UID = getUID();
     //setState(() {print(user);});
     setState(() {});
   }
@@ -103,30 +106,31 @@ class _UserInfoPageState extends State<UserInfoPage> {
                         child: Column(
                           children: [
                             Text(
-                              '$fullname',
+                              fullname,
                               //'Abbie Wilson',
                               style: GoogleFonts.comfortaa(
                                   color: lighttheme, fontSize: 24),
                             ),
-                            /*
-                            Text(
-                              "Abbie Wilson",
-                              style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 47, 106, 173)),
-                            ),*/
-                            /*
-                            SizedBox(
-                              height: 10,
+                            Row(
+                              children: [
+                                Expanded(
+                                    child: Text(
+                                      "User ID",
+                                      style: GoogleFonts.comfortaa(
+                                          color: lighttheme, fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    )),
+                                Expanded(
+                                    child: IconButton(
+                                      icon: Icon(Icons.copy),
+                                      onPressed: () async {
+                                        await Clipboard.setData(ClipboardData(text: UID));
+                                      },
+                                    )
+                                ),
+                              ],
                             ),
-                            Text(
-                              "Software Developer",
-                              style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                  color: black),
-                            ),*/
+
                           ],
                         ),
                       )

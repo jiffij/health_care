@@ -577,6 +577,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.4.1"
+  fitbitter:
+    dependency: "direct main"
+    description:
+      name: fitbitter
+      sha256: "0f3acfba59c4e08fae58ba708c0336fb9263477d2ec3c545f9614e4e49cfc394"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   fixnum:
     dependency: transitive
     description:
@@ -739,6 +747,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_auth:
+    dependency: transitive
+    description:
+      name: flutter_web_auth
+      sha256: "8c364d8157b299c95f062bbd7bf428bb80c272d7ed3b8f0e6c7028e037e82c76"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
