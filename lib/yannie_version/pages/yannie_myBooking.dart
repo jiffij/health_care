@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/alert.dart';
@@ -24,24 +25,92 @@ class myBooking extends StatefulWidget {
 }
 
 class _myBookingState extends State<myBooking> {
+  List<List> appointments = [];
   @override
   void initState() {
     super.initState();
-    start();
+    prepare();
   }
 
-  void start() {
-    for (var booking in widget.serverData) {
-      int today = int.parse(todayDateFormatter());
+  Future<void> prepare() async {
+    await start();
+    setState(() {
+      ready=true;
+    });
+  }
+
+  Future<void> start() async {
+    String uid = getUID();
+
+    List<String> appointmentDays = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? anAppointment;
+    if (appointmentDays.isNotEmpty) {
+      var date = DateFormat('yMMdd').format(DateTime.now());
+      for (var day in appointmentDays) {
+        anAppointment = await readFromServer('patient/$uid/appointment/$day');
+        List timeList = anAppointment!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = anAppointment[time]['doctorID'];
+          var status = anAppointment[time]['status'];
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var dFullname = '$dFirstname $dLastname';
+          
+          if(status == 'confirmed') {
+            bool isCompleted= DateTime.now().add(Duration(hours: 1)).isAfter(toDateTime(day, time));
+            if (isCompleted) {
+              writeToServer('patient/$uid/appointment/$day', {
+                time: {
+                  'doctorID': id,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              writeToServer('doctor/$id/appointment/$day', {
+                time: {
+                  'patientID': uid,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              status = 'completed';
+            } 
+          }
+          dailyAppointmentList.insert(0, [day, time, dFullname, id, status]);
+        }
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+
+    upcoming.clear();
+    completed.clear();
+    canceled.clear();
+
+    //classify bookings
+    for (var booking in appointments) {
+      int today = int.parse(todayDateFormatter().substring(0,8));
       if (booking[4]=='canceled')
         canceled.add(booking);
-      else {
-        if (int.parse(booking[0]) > today)
-          upcoming.add(booking);
-        else
-          completed.add(booking);
-      }
+      else if (booking[4]=='confirmed') 
+        upcoming.add(booking);
+      else
+        completed.add(booking);
     }
+  }
+
+  void onListsChanged(List appointment) {
+    setState(() {ready = false;});
+    setState(() {
+      upcoming.remove(appointment);
+      canceled.add(appointment);
+    });
+    setState(() {ready = true;});
   }
 
   bool ready = false;
@@ -116,7 +185,12 @@ class _myBookingState extends State<myBooking> {
               },
             ),
             Expanded(
-              child: ListView.builder(
+              child: 
+              !ready?
+              Center(child: LoadingAnimationWidget.threeRotatingDots(color: lighttheme, size: 50)) :
+              _toggleValue == 0 && upcoming.length == 0 || _toggleValue == 1 && completed.length == 0 || _toggleValue == 2 && canceled.length == 0 ?
+              Center(child: Text("No appointment.", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18),),)
+              : ListView.builder(
                 padding: EdgeInsets.symmetric(
                     vertical: defaultVerPadding,
                     horizontal: defaultHorPadding / 2),
@@ -130,12 +204,12 @@ class _myBookingState extends State<myBooking> {
                         ? completed.length
                         : canceled.length,
                 itemBuilder: (context, index) => _toggleValue == 0
-                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!)
+                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!, reload: onListsChanged,)
                     : _toggleValue == 1
                         ? AppointmentCard(
-                            appointment: completed[index], type: _toggleValue!)
+                            appointment: completed[index], type: _toggleValue!, reload: onListsChanged,)
                         : AppointmentCard(
-                            appointment: canceled[index], type: _toggleValue!),
+                            appointment: canceled[index], type: _toggleValue!, reload: onListsChanged,),
               ),
             )
           ])),
@@ -148,10 +222,11 @@ class AppointmentCard extends StatefulWidget {
   State<AppointmentCard> createState() => _AppointmentCardState();
 
   const AppointmentCard(
-      {Key? key, required this.appointment, required this.type})
+      {Key? key, required this.appointment, required this.type, required this.reload})
       : super(key: key);
   final List appointment;
   final int type;
+   final Function reload;
 }
 
 class _AppointmentCardState extends State<AppointmentCard> {
@@ -299,9 +374,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
             widget.type == 0 && DateTime.now().isBefore(bookingTime.subtract(Duration(hours: 24)))
                 ? ElevatedButton(
-                onPressed:() {
-                  cancelBooking(context, widget.appointment);
-                  setState(() {});
+                onPressed:() async {
+                  await cancelBooking(context, widget.appointment);
+                  widget.reload(widget.appointment);
                 },
                 style: ButtonStyle(
                   overlayColor: MaterialStatePropertyAll(lighttheme.withOpacity(0.1)),
