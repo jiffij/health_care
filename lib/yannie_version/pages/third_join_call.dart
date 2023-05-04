@@ -27,7 +27,13 @@ class _thirdJoinCallState extends State<thirdJoinCall> {
     start();
   }
 
-  void start() async {
+  Future<void> start() async {
+    setState(() {
+      upcoming = [];
+      completed = [];
+      canceled = [];
+    });
+
     var uid = getUID();
     var files = await getColId("patient/$uid/invitation");
     if (files == null) return;
@@ -120,6 +126,8 @@ class _thirdJoinCallState extends State<thirdJoinCall> {
                   },
                 ),
                 Expanded(
+                  child: RefreshIndicator(
+                      onRefresh: start,
                   child: ListView.builder(
                     padding: EdgeInsets.symmetric(
                         vertical: defaultVerPadding,
@@ -141,6 +149,7 @@ class _thirdJoinCallState extends State<thirdJoinCall> {
                         : AppointmentCard(
                         appointment: canceled[index], type: _toggleValue!),
                   ),
+                ),
                 )
               ])),
     );

@@ -169,13 +169,13 @@ class _DoctorSearchState extends State<DoctorSearch> {
                                                 BorderRadius.all(Radius.circular(20))),
                                         prefixIcon: Icon(
                                           Icons.search,
-                                          color: Color.fromARGB(255, 47, 106, 173),
+                                          color: themeColor,
                                         ),
                                         filled: true,
                                         fillColor: Colors.white,
                                         labelText: "Enter Doctor's Name",
-                                        labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
-                                        hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
+                                        labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: redOrange)),
+                                        hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: redOrange)),
                                         suffixIcon: !searchNull? IconButton(
                                                         onPressed: () {
                                                           _doctorNameController.clear();

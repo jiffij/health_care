@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import '../../helper/loading_screen.dart';
+import '../widget/loading_screen.dart';
 import '../../helper/firebase_helper.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

@@ -3,10 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 
-const themeColor = Color.fromARGB(255, 47, 106, 173);
-const lighttheme = Color.fromARGB(255, 27, 89, 161);
-const bgColor = Color(0xFFE6EFF9);
-const goodColor = Color.fromARGB(97, 47, 106, 173);
+// const themeColor = Color.fromARGB(255, 47, 106, 173);
+const themeColor = Color.fromARGB(255, 240, 84, 49);
+const lighttheme = Color.fromARGB(255, 161, 56, 27);
+// const lighttheme = Color.fromARGB(255, 27, 89, 161);
+// const bgColor = Color(0xFFE6EFF9);
+const bgColor = Color(0xF5FFE5DF);
+const goodColor = Color.fromARGB(97, 173, 81, 47);
+// const goodColor = Color.fromARGB(97, 47, 106, 173);
 const double defaultHorPadding = 30;
 const double defaultVerPadding = 25;
 
@@ -47,6 +51,7 @@ Color medGrey = const Color(0xffB0B0B0);
 Color lightGrey = const Color(0xffEAEAEA);
 Color whitishGrey = const Color(0xffF2F2F2);
 Color redColor = const Color(0xffFF5C5C);
+Color redOrange = const Color(0xffFF5349);
 
 
 // Color constant
@@ -65,3 +70,17 @@ const kGreyColor600 = Color(0xFFEAEAEA);
 const kGreyColor500 = Color(0xFFF6F6F6);
 const kGreyColor400 = Color(0x50CACCCF);
 const kYellowColor = Color(0xFFFFE848);
+
+
+// Profile UI Test
+const Color primary = Color(0xfff2f9fe);
+const Color secondary = Color(0xFFdbe4f3);
+const Color black = Color(0xFF000000);
+const Color white = Color(0xFFFFFFFF);
+const Color grey = Colors.grey;
+const Color red = Color(0xFFec5766);
+const Color green = Color(0xFF43aa8b);
+const Color blue = Color(0xFF28c2ff);
+const Color buttoncolor = Color(0xff3e4784);
+const Color mainFontColor = Color(0xff565c95);
+const Color arrowbgColor = Color(0xffe4e9f7);

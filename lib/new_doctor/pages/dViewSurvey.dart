@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
 
-import '../../helper/loading_screen.dart';
+import '../widget/loading_screen.dart';
 
 
 class viewSurvey extends StatefulWidget {
