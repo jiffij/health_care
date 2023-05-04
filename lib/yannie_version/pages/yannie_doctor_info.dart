@@ -160,7 +160,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text('Exp', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 14),),
-                                            Text('7 yrs', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
+                                            Text('${int.parse(widget.doctor[5].replaceAll(RegExp(r'[^0-9]'),''))} yrs', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
                                           ],
                                         ),
                                       ),
@@ -178,7 +178,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             Text('Rating', style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 14),),
-                                            Text('⭐ 4.1', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
+                                            Text('⭐ ${widget.doctor[4]}', style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 18)),
                                           ],
                                         ),
                                       ),
@@ -332,18 +332,18 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                               child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Container(
-                                  child: TextButton(
-                                    style: ButtonStyle(
-                                      side: MaterialStatePropertyAll(BorderSide(color: lighttheme)),
-                                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20)))),
-                                      minimumSize: MaterialStatePropertyAll(Size(size.width*0.15, parentHeight*0.1)),
-                                      backgroundColor: MaterialStatePropertyAll(Colors.white)
-                                    ),
-                                    onPressed: (){}, 
-                                    child: Icon(Icons.message, color: lighttheme,)
-                                  ),
-                                ),
+                                // Container(
+                                //   child: TextButton(
+                                //     style: ButtonStyle(
+                                //       side: MaterialStatePropertyAll(BorderSide(color: lighttheme)),
+                                //       shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20)))),
+                                //       minimumSize: MaterialStatePropertyAll(Size(size.width*0.15, parentHeight*0.1)),
+                                //       backgroundColor: MaterialStatePropertyAll(Colors.white)
+                                //     ),
+                                //     onPressed: (){}, 
+                                //     child: Icon(Icons.message, color: lighttheme,)
+                                //   ),
+                                // ),
                                 ElevatedButton(
                                   onPressed: () async {
                                     final result = await showConfirmDialog(context, "Are you sure to make appointment?");

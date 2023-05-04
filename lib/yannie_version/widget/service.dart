@@ -43,7 +43,7 @@ class Services extends StatelessWidget {
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Health', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.description,size: 35, color: themeColor), tap: (){
                 Navigator.of(context).push(_createRoute(thirdJoinCall()));
-              }),Container(margin: EdgeInsets.only(top: 15),child: Text('Record', style: label,))]),
+              }),Container(margin: EdgeInsets.only(top: 15),child: Text('Invited', style: label,))]),
               Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [ServiceButton(icon: Icon(Icons.event_available,size: 35, color: themeColor), tap: (){
                 Navigator.of(context).push(_createRoute(myBooking(serverData: serverData,)));
               }),Container(margin: EdgeInsets.only(top: 15),child: Text('Booking', style: label,))]),
