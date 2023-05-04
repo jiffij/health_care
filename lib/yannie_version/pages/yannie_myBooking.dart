@@ -236,9 +236,18 @@ class _myBookingState extends State<myBooking> {
               },
             ),
             Expanded(
-              child: RefreshIndicator(
+              child: !ready? Center(child: LoadingAnimationWidget.inkDrop(color: lighttheme, size: 50),): RefreshIndicator(
                 onRefresh: refresh,
                 child:
+                
+              _toggleValue == 0 && upcoming.length == 0 || _toggleValue == 1 && completed.length == 0 || _toggleValue == 2 && canceled.length == 0 ? 
+              Center(child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.5),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Text("No Appointment", style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15),),)) : 
               ListView.builder(
                 padding: EdgeInsets.symmetric(
                     vertical: defaultVerPadding,
