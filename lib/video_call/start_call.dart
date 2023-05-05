@@ -75,7 +75,7 @@ class _StartCallState extends State<StartCall> {
         //temp token
         token!,
       );
-      await Navigator.push<void>(
+      await Navigator.pushReplacement(
         ctx,
         MaterialPageRoute(builder: (_) => RoomPage(room, listener)),
       );

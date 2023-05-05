@@ -100,7 +100,7 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
         //temp token
         token,
       );
-      await Navigator.push<void>(
+      await Navigator.pushReplacement(
         ctx,
         MaterialPageRoute(builder: (_) => RoomPage(room, listener)),
       );
