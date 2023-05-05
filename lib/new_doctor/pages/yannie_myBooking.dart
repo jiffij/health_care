@@ -31,13 +31,19 @@ class _myBookingState extends State<myBooking> {
   }
 
   void start() {
+    int today = int.parse(todayDateFormatter());
     for (var booking in widget.serverData) {
-      int today = int.parse(todayDateFormatter());
-      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
+
+      if (booking[4] == 'completed') {
+        completed.add(booking);
+      } else {
+      var bookingDateTime = booking[0] + booking[1].toString().substring(0, 2) +
+          booking[1].toString().substring(3, 5);
       if (int.parse(bookingDateTime) - today > -20)
         upcoming.add(booking);
       else
         completed.add(booking);
+      }
     }
     setState(() {
 
@@ -73,7 +79,8 @@ class _myBookingState extends State<myBooking> {
           var dFirstname = patient?['first name'];
           var dLastname = patient?['last name'];
           var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+          var status = existtimemap[time]['status'];
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id, status]);
         }
         //print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();
@@ -85,14 +92,19 @@ class _myBookingState extends State<myBooking> {
       appointments = appointments.reversed.toList();
     }
 
-
+    int today = int.parse(todayDateFormatter());
     for (var booking in appointments) {
-      int today = int.parse(todayDateFormatter());
-      var bookingDateTime = booking[0] + booking[1].toString().substring(0,2) + booking[1].toString().substring(3,5);
-      if (int.parse(bookingDateTime) - today > -20)
-        upcoming.add(booking);
-      else
+      if(booking[4] == 'completed'){
         completed.add(booking);
+      }else {
+        var bookingDateTime = booking[0] +
+            booking[1].toString().substring(0, 2) +
+            booking[1].toString().substring(3, 5);
+        if (int.parse(bookingDateTime) - today > -20)
+          upcoming.add(booking);
+        else
+          completed.add(booking);
+      }
     }
     print("refreshed");
     setState(() {

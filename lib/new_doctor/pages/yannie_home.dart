@@ -165,7 +165,8 @@ class _DoctorHomeState extends State<DoctorHome> {
           var dFirstname = patient?['first name'];
           var dLastname = patient?['last name'];
           var dFullname = '$dFirstname $dLastname';
-          dailyAppointmentList.insert(0, [existdate, time, dFullname, id]);
+          var status = existtimemap[time]['status'];
+          dailyAppointmentList.insert(0, [existdate, time, dFullname, id, status]);
         }
         //print(dailyAppointmentList);
         dailyAppointmentList = dailyAppointmentList.reversed.toList();

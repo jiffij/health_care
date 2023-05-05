@@ -82,13 +82,15 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         List<List> dailyAppointmentList = [];
         for (var time in timeList) {
           var id = anAppointment[time]['doctorID'];
-          var status = anAppointment[time]['status'];
+          var status = anAppointment[time]['status'] ?? 'canceled';
           Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
-          var dFirstname = doctor?['first name'];
-          var dLastname = doctor?['last name'];
-          var specialty = doctor?['title'];
+          if(doctor == null) continue;
+          var dFirstname = doctor['first name'] ?? "";
+          var dLastname = doctor['last name'] ?? "";
+          var specialty = doctor['title'] ?? "";
           var dFullname = '$dFirstname $dLastname';
-          
+          print("speciality");
+          print(specialty);
           if(status == 'confirmed') {
             bool isCompleted= DateTime.now().add(Duration(hours: 1)).isAfter(toDateTime(day, time));
             if (isCompleted) {

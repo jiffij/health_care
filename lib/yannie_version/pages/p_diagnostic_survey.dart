@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../helper/alert.dart';
 import '../../helper/firebase_helper.dart';
-import '../../new_doctor/color.dart';
+import '../color.dart';
 
 class DiagnosticSurvey extends StatefulWidget {
   String docId;
@@ -351,10 +351,12 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
 
                                           var uid = getUID();
                                           // Map<String, String>? result;
+                                          String? imgURL;
                                           if (imgFile != null) {
                                             await predict();
+                                            imgURL = await uploadImage(imgFile!, "", "skin");
                                           }
-                                          var imgURL = await uploadImage(imgFile!, "", "skin");
+
                                           // final now = getDateTime();
                                           // print('medical_history/$uid/$appointTime/$now');
                                           var data = {
