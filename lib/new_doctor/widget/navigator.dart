@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_login/helper/loading_screen.dart';
 
-
-
 import '../pages/profile_home.dart';
 import '../pages/yannie_calendar.dart';
+import '../../chat/ChatSetup2D.dart';
 import '../pages/yannie_home.dart';
 import 'nav_bar/custom_bottom_nav_bar_dash.dart';
-import 'nav_bar/navbar_cubit.dart';class BottomNav extends StatefulWidget {
+import 'nav_bar/navbar_cubit.dart';
+
+import '../../helper/firebase_helper.dart';
+
+class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
 
   @override
@@ -16,13 +19,33 @@ import 'nav_bar/navbar_cubit.dart';class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
+  List<Widget> _pages = [];
 
-  final List<Widget> _pages = [
-    const DoctorHome(),
-    const CalendarPage(),
-    Container(),
-    const ProfilePage(),
-  ];
+  String fullname = '';
+  String UID = "";
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  // Test
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? user = await readFromServer('doctor/$uid');
+    fullname = user?['first name'] + ' ' + user?['last name'];
+    UID = getUID();
+    setState(() {});
+
+    _pages = [
+      const DoctorHome(),
+      const CalendarPage(),
+      ChatSetup2D(fullname),
+      const ProfilePage(),
+    ];
+  }
+  // Test
 
   @override
   Widget build(BuildContext context) {

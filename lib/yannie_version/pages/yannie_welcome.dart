@@ -375,6 +375,18 @@ class _welcome2State extends State<welcome2> {
                                                 null) {
                                               switch (await patientOrdoc()) {
                                                 case ID.DOCTOR:
+                                                  // Chat - Authentication
+                                                  // Get Stream user token
+                                                  final callable =
+                                                      functions.httpsCallable(
+                                                          'getStreamUserToken');
+                                                  final results =
+                                                      await callable();
+                                                  print(
+                                                      'Stream user token retrieved: ${results.data}');
+
+                                                  userToken = '${results.data}';
+                                                  // Chat - Authentication
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
@@ -383,6 +395,18 @@ class _welcome2State extends State<welcome2> {
                                                                   .BottomNav()));
                                                   break;
                                                 case ID.PATIENT:
+                                                  // Chat - Authentication
+                                                  // Get Stream user token
+                                                  final callable =
+                                                      functions.httpsCallable(
+                                                          'getStreamUserToken');
+                                                  final results =
+                                                      await callable();
+                                                  print(
+                                                      'Stream user token retrieved: ${results.data}');
+
+                                                  userToken = '${results.data}';
+                                                  // Chat - Authentication
                                                   Navigator.pushReplacement(
                                                       context,
                                                       MaterialPageRoute(
@@ -479,6 +503,7 @@ class _welcome2State extends State<welcome2> {
 
                                         signInWithGoogle().then((value) async {
                                           // print(FirebaseAuth.instance.authStateChanges());
+                                          /*
                                           // Chat - Authentication
                                           // Get Stream user token
                                           final callable =
@@ -490,6 +515,7 @@ class _welcome2State extends State<welcome2> {
 
                                           userToken = '${results.data}';
                                           // Chat - Authentication
+                                          */
                                           print(FirebaseAuth
                                               .instance.currentUser
                                               .toString());
@@ -498,6 +524,18 @@ class _welcome2State extends State<welcome2> {
                                               null) {
                                             switch (await patientOrdoc()) {
                                               case ID.DOCTOR:
+                                                // Chat - Authentication
+                                                // Get Stream user token
+                                                final callable =
+                                                    functions.httpsCallable(
+                                                        'getStreamUserToken');
+                                                final results =
+                                                    await callable();
+                                                print(
+                                                    'Stream user token retrieved: ${results.data}');
+
+                                                userToken = '${results.data}';
+                                                // Chat - Authentication
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
@@ -506,6 +544,18 @@ class _welcome2State extends State<welcome2> {
                                                                 .BottomNav()));
                                                 break;
                                               case ID.PATIENT:
+                                                // Chat - Authentication
+                                                // Get Stream user token
+                                                final callable =
+                                                    functions.httpsCallable(
+                                                        'getStreamUserToken');
+                                                final results =
+                                                    await callable();
+                                                print(
+                                                    'Stream user token retrieved: ${results.data}');
+
+                                                userToken = '${results.data}';
+                                                // Chat - Authentication
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(

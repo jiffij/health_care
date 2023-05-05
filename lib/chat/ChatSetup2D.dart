@@ -8,41 +8,44 @@ import '../helper/firebase_helper.dart';
 import '../yannie_version/pages/yannie_welcome.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
-class ChatSetup2 extends StatefulWidget {
-  const ChatSetup2({
-    super.key,
-  });
+class ChatSetup2D extends StatefulWidget {
+  const ChatSetup2D(this.fullname, {Key? key}) : super(key: key);
 
   @override
-  State<ChatSetup2> createState() => _ChatSetup2State();
+  State<ChatSetup2D> createState() => _ChatSetup2DState();
+
+  final String fullname;
 }
 
-class _ChatSetup2State extends State<ChatSetup2> {
+class _ChatSetup2DState extends State<ChatSetup2D> {
   late final Future<OwnUser> connectionFuture;
   late final client = StreamChat.of(context).client;
-  String fullname = '';
+  //String fullname = 'Ivy';
 
   String userID = getUID();
 
   @override
   void initState() {
-    start();
     super.initState();
+    //start();
     connectionFuture = client.connectUser(
       User(id: '$userID', extraData: {
-        "name": "$fullname",
+        "name": "${widget.fullname}",
       }),
       '$userToken',
     );
   }
 
+  /*
   void start() async {
-    Map<String, dynamic>? user = await readFromServer('patient/$userID');
+    Map<String, dynamic>? user = await readFromServer('doctor/$userID');
     fullname = user?['first name'] + ' ' + user?['last name'];
     userID = getUID();
     //setState(() {print(user);});
     setState(() {});
   }
+  */
+
   /* Work
   @override
   void initState() {

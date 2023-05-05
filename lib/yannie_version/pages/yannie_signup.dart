@@ -128,12 +128,6 @@ class _SignUp2State extends State<SignUp2> {
         } else if (e.code == 'email-already-in-use') {
           errorText = 'Account already exists.';
         }
-        // Chat - Authentication
-        // Create Stream user and get token
-        final callable = functions.httpsCallable('createStreamUserAndGetToken');
-        final results = await callable();
-        print('Stream account created, token: ${results.data}');
-        // Chat - Authentication
         Loading().hide();
         showAlertDialog(context, errorText);
         return;
@@ -155,6 +149,14 @@ class _SignUp2State extends State<SignUp2> {
       updateAuthInfo(
           p_firstnameController.text.trim() + p_lastnameController.text.trim());
     }
+
+    // Chat - Authentication
+    // Create Stream user and get token
+    final callable = functions.httpsCallable('createStreamUserAndGetToken');
+    final results = await callable();
+    print('Stream account created, token: ${results.data}');
+    // Chat - Authentication
+
     if (checkSignedin()) auth.signOut();
     if (await widget.google.isSignedIn()) await widget.google.signOut();
     Loading().hide();
@@ -208,12 +210,6 @@ class _SignUp2State extends State<SignUp2> {
         } else if (e.code == 'email-already-in-use') {
           errorText = 'Account already exists.';
         }
-        // Chat - Authentication
-        // Create Stream user and get token
-        final callable = functions.httpsCallable('createStreamUserAndGetToken');
-        final results = await callable();
-        print('Stream account created, token: ${results.data}');
-        // Chat - Authentication
         Loading().hide();
         showAlertDialog(context, errorText);
         return;
@@ -222,6 +218,7 @@ class _SignUp2State extends State<SignUp2> {
 
     User? user = auth.currentUser;
     final String uid = getUID();
+
     String url = await uploadImage(imgFile!,
         d_firstnameController.text + d_lastnameController.text, 'None');
 
@@ -239,6 +236,13 @@ class _SignUp2State extends State<SignUp2> {
       '4': '0',
       '5': '0',
     });
+
+    // Chat - Authentication
+    // Create Stream user and get token
+    final callable = functions.httpsCallable('createStreamUserAndGetToken');
+    final results = await callable();
+    print('Stream account created, token: ${results.data}');
+    // Chat - Authentication
 
     if (checkSignedin()) auth.signOut();
     if (await widget.google.isSignedIn()) await widget.google.signOut();

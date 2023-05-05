@@ -5,10 +5,12 @@ import 'package:simple_login/yannie_version/pages/profile.dart';
 
 import '../pages/yannie_home.dart';
 import '../pages/yannie_calendar.dart';
-import '../../chat/ChatSetup2.dart';
+import '../../chat/ChatSetup2D.dart';
 import '../pages/profile_home.dart';
 import 'nav_bar/custom_bottom_nav_bar_dash.dart';
 import 'nav_bar/navbar_cubit.dart';
+
+import '../../helper/firebase_helper.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -18,13 +20,33 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  final List<Widget> _pages = [
-    const Home(),
-    const CalendarPage(),
-    const ChatSetup2(),
-    const ProfilePage(),
-    //Container(),
-  ];
+  List<Widget> _pages = [];
+
+  String fullname = '';
+  String UID = "";
+
+  @override
+  void initState() {
+    super.initState();
+    start();
+  }
+
+  // Test
+  void start() async {
+    String uid = getUID();
+    Map<String, dynamic>? user = await readFromServer('patient/$uid');
+    fullname = user?['first name'] + ' ' + user?['last name'];
+    UID = getUID();
+    setState(() {});
+
+    _pages = [
+      const Home(),
+      const CalendarPage(),
+      ChatSetup2D(fullname),
+      const ProfilePage(),
+    ];
+  }
+  // Test
 
   @override
   Widget build(BuildContext context) {
