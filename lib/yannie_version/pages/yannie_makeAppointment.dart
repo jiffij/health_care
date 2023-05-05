@@ -1,8 +1,11 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:simple_login/helper/alert.dart';
+import 'package:simple_login/helper/loading_screen.dart';
 import 'package:simple_login/yannie_version/pages/yannie_home.dart';
 import 'package:simple_login/yannie_version/widget/navigator.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -43,13 +46,124 @@ class _MakeAppointmentState extends State<MakeAppointment> {
   DateTime _selectedDay = DateTime.now();
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  List appointments = [];
+  bool ready = false;
+  dynamic events;
 
-  
+  @override
+  void initState() {
+    super.initState();
+    prepare();
+  }
+
+  @override
+  void dispose() {
+    _selectedEvents.dispose();
+    super.dispose();
+  }
+
+  void prepare() async {
+    await start();
+    setState(() {
+      ready = true;
+    });
+  }
+
+  Future<void> start() async {
+    String uid = getUID();
+
+    List<String> appointmentDays = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? anAppointment;
+    if (appointmentDays.isNotEmpty) {
+      var date = DateFormat('yMMdd').format(DateTime.now());
+      for (var day in appointmentDays) {
+        anAppointment = await readFromServer('patient/$uid/appointment/$day');
+        List timeList = anAppointment!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = anAppointment[time]['doctorID'];
+          var status = anAppointment[time]['status'];
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var specialty = doctor?['title'];
+          var dFullname = '$dFirstname $dLastname';
+          
+          if(status == 'confirmed') {
+            bool isCompleted= DateTime.now().add(Duration(hours: 1)).isAfter(toDateTime(day, time));
+            if (isCompleted) {
+              writeToServer('patient/$uid/appointment/$day', {
+                time: {
+                  'doctorID': id,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              writeToServer('doctor/$id/appointment/$day', {
+                time: {
+                  'patientID': uid,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              status = 'completed';
+            } 
+          }
+          dailyAppointmentList.insert(0, [toDateTime(day, time), time, dFullname, status, specialty]);
+        }
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+    //making map
+    final Map<DateTime, List<Event>> eventSource = Map.fromIterable(
+      appointments, 
+      key: (item) => item[0], 
+      value: (item) {
+        List<Event> temp = [];
+        for (var booking in appointments) {
+          DateTime date = booking[0];
+          if (date.year == item[0].year && date.month == item[0].month && date.day == item[0].day) {
+            temp.add(Event(item[0],booking[2], booking[4], booking[1], booking[3]));
+          }
+        }
+        return temp;
+      }
+    );
+
+    events = LinkedHashMap<DateTime, List<Event>>(
+  equals: isSameDay,
+  hashCode: getHashCode,
+)..addAll(eventSource);
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
+  }
 
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    return events[day] ?? [];
   }
+  DateTime toDateTime(String date, String time) {
+  int year = int.parse(date.substring(0, 4));
+  int month = int.parse(date.substring(4, 6));
+  int day = int.parse(date.substring(6));
+  int hour = int.parse(time.substring(0, 2));
+  int min = int.parse(time.substring(3, 5));
+  return DateTime(year, month, day, hour, min);
+}
+
+Future<List> checkConflict() {
+  for (var event in _selectedEvents.value) {
+    if (event.dateTime.isAfter(selectTime) && event.dateTime.isBefore(selectTime.add(Duration(minutes: 30))) || event.dateTime.isAtSameMomentAs(selectTime)) {
+      return Future.value([true, event]);
+    }
+  }
+  return Future.value([false]);
+}
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     //if (!isSameDay(_selectedDay, selectedDay)) {
@@ -61,8 +175,8 @@ class _MakeAppointmentState extends State<MakeAppointment> {
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
 
-      //_selectedEvents.value = _getEventsForDay(selectedDay);
-    //}
+      _selectedEvents.value = _getEventsForDay(selectedDay);
+
     showModalBottomSheet(
       context: context,
       enableDrag: true,
@@ -126,10 +240,19 @@ class _MakeAppointmentState extends State<MakeAppointment> {
           padding: EdgeInsets.symmetric(vertical: defaultVerPadding, horizontal: defaultHorPadding/2),
         child: ElevatedButton(
           onPressed: () async {
-            String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, selectTime.hour, selectTime.minute));
-            final result = await showConfirmDialog(context, message);
-            if (result == true) 
-            {makeAppointment(context);}
+            List isConflict = await checkConflict();
+            if (isConflict[0]==false) {
+               String message = "Please confirm your timeslot:\n\n"+DateFormat("d MMMM y  - ").add_jm().format(DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day, selectTime.hour, selectTime.minute));
+              final result = await showConfirmDialog(context, message);
+              if (result == true) 
+              {makeAppointment(context);}
+            }
+            else {
+              Event e = isConflict[1];
+              String message = "There is time conflict with an exist appointment:\n\n" + e.doctorName + "\n\n" + DateFormat("d MMMM y -- HH:mm").format(e.dateTime);
+              await showAlertDialog(context, message);
+            }
+           
           }, 
           style: ButtonStyle(
             backgroundColor: MaterialStatePropertyAll(lighttheme),
@@ -149,7 +272,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     double width = MediaQuery.of(context).size.width;
 
     return SafeArea(
-      child: Scaffold(
+      child: !ready? LoadingScreen(): Scaffold(
         backgroundColor: bgColor,
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
@@ -241,7 +364,7 @@ class _MakeAppointmentState extends State<MakeAppointment> {
               ),
               child: TableCalendar<Event>(
                 availableCalendarFormats: {CalendarFormat.month : 'Month'},
-                firstDay: kFirstDay,
+                firstDay: DateTime.now(),
                 lastDay: kLastDay,
                 focusedDay: _focusedDay,
                 selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
@@ -301,247 +424,12 @@ class _MakeAppointmentState extends State<MakeAppointment> {
       )
     );
   }
-  
-  // Todo: Decide hard code access data one by one
-  bool tlshow = false;
-  List<List> timeslotslist = [
-      ['00:00', true, '00:20', true, '00:40', true],
-      ['01:00', true, '01:20', true, '01:40', true],
-      ['02:00', true, '02:20', true, '02:40', true],
-      ['03:00', true, '03:20', true, '03:40', true],
-      ['04:00', true, '04:20', true, '04:40', true],
-      ['05:00', true, '05:20', true, '05:40', true],
-      ['06:00', true, '06:20', true, '06:40', true],
-      ['07:00', true, '07:20', true, '07:40', true],
-      ['08:00', true, '08:20', true, '08:40', true],
-      ['09:00', true, '09:20', true, '09:40', true],
-      ['10:00', true, '10:20', true, '10:40', true],
-      ['11:00', true, '11:20', true, '11:40', true],
-      ['12:00', true, '12:20', true, '12:40', true],
-      ['13:00', true, '13:20', true, '13:40', true],
-      ['14:00', true, '14:20', true, '14:40', true],
-      ['15:00', true, '15:20', true, '15:40', true],
-      ['16:00', true, '16:20', true, '16:40', true],
-      ['17:00', true, '17:20', true, '17:40', true],
-      ['18:00', true, '18:20', true, '18:40', true],
-      ['19:00', true, '19:20', true, '19:40', true],
-      ['20:00', true, '20:20', true, '20:40', true],
-      ['21:00', true, '21:20', true, '21:40', true],
-      ['22:00', true, '22:20', true, '22:40', true],
-      ['23:00', true, '23:20', true, '23:40', true],
-    ];
-
-  @override
-  void initState() {
-    super.initState();
-    start();
-  }
-
-  void start() async {
-    Map<String, dynamic>? data = await readFromServer('doctor/${widget.doctor[1]}');
-    setState(() {
-      print(data);
-    });
-  }
-
-  void changeTimeslot(String newTimeslot) {
-    selected_timeslot = newTimeslot;
-    setState(() {});
-  }
-
-  // Pop out when selecting the unavailable tiimeslot
-  void warning_message() {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: const Text('Oops! The timeslot you selected is unavailable!'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Exit'),
-            child: const Text('Exit'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Pop out before the user finalize their booking
-  void confirm_message() {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: Text(
-            'Please confirm your booking timeslot:\n${getDate(_focusedDay)} - $selected_timeslot',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => makeAppointment(context),
-            child: const Text('Confirm'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, 'Exit'),
-            child: const Text('Exit'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Pop out successful after the user finalize their booking
-  void successful_message() {
-    showDialog<String>(
-      context: context,
-      builder: (BuildContext context) => AlertDialog(
-        content: Text(
-            'Your booking of appintment:\n${getDate(_focusedDay)} - $selected_timeslot\n is successful!',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {},
-            child: const Text('Exit'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void changeTimeslotlist() {
-    tlshow = !tlshow;
-    setState(() {});
-  }
-
-  void checkExist(String date) async {
-    List<List> templist = [
-      ['00:00', true, '00:20', true, '00:40', true],
-      ['01:00', true, '01:20', true, '01:40', true],
-      ['02:00', true, '02:20', true, '02:40', true],
-      ['03:00', true, '03:20', true, '03:40', true],
-      ['04:00', true, '04:20', true, '04:40', true],
-      ['05:00', true, '05:20', true, '05:40', true],
-      ['06:00', true, '06:20', true, '06:40', true],
-      ['07:00', true, '07:20', true, '07:40', true],
-      ['08:00', true, '08:20', true, '08:40', true],
-      ['09:00', true, '09:20', true, '09:40', true],
-      ['10:00', true, '10:20', true, '10:40', true],
-      ['11:00', true, '11:20', true, '11:40', true],
-      ['12:00', true, '12:20', true, '12:40', true],
-      ['13:00', true, '13:20', true, '13:40', true],
-      ['14:00', true, '14:20', true, '14:40', true],
-      ['15:00', true, '15:20', true, '15:40', true],
-      ['16:00', true, '16:20', true, '16:40', true],
-      ['17:00', true, '17:20', true, '17:40', true],
-      ['18:00', true, '18:20', true, '18:40', true],
-      ['19:00', true, '19:20', true, '19:40', true],
-      ['20:00', true, '20:20', true, '20:40', true],
-      ['21:00', true, '21:20', true, '21:40', true],
-      ['22:00', true, '22:20', true, '22:40', true],
-      ['23:00', true, '23:20', true, '23:40', true],
-    ];
-
-    // The booking is unavailable 1 hour before the required meeting timeslot
-    var time = getOneHourAfterAsServer(DateTime.now());
-    bool timecheck = false;
-    if (_selectedDay!.year <= DateTime.now().year) {
-      print('Year');
-      print(_selectedDay!.year);
-      print(DateTime.now().year);
-      if (_selectedDay!.month <= DateTime.now().month) {
-        print('Month:');
-        print(_selectedDay!.month);
-        print(DateTime.now().month);
-        print('Day:');
-        print(_selectedDay!.day);
-        print(DateTime.now().day);
-        print('Hour:');
-        print(time);
-        // Passed day
-        if (_selectedDay!.day < DateTime.now().day) {
-          for (int i = 0; i < templist.length; i++) {
-            for (int j = 0; j < templist[i].length; j = j + 2) {
-              templist[i][j+1] = 'false';
-            }
-          }
-        }
-        // Selected day = today
-        else if (_selectedDay!.day == DateTime.now().day) {
-          for (int i = 0; i < templist.length; i++) {
-            for (int j = 0; j < templist[i].length; j = j + 2) {
-              print(templist[i][j]);
-              if (templist[i][j] != time)
-              {
-                templist[i][j+1] = 'false';
-              }
-              else {
-                timecheck = true;
-                break;
-              }
-            }
-            if (timecheck == true) {
-              break;
-            }
-          }
-        }
-      }
-    }
-    List<String> existdatelist = await getColId('doctor/${widget.doctor[1]}/appointment');
-    print(existdatelist);
-    Map<String, dynamic>? existtimemap;
-    // Get current exist datelist if available
-    if (existdatelist.isNotEmpty) {
-      for (var existdate in existdatelist) {
-        if (existdate == dateToServer(_selectedDay!)) {
-          print(existdate);
-          existtimemap = await readFromServer('doctor/${widget.doctor[1]}/appointment/$existdate');
-          print(existtimemap);
-        }
-      }
-      if (existtimemap != null) {
-        final keyList = existtimemap.keys.toList();
-        for (var existtime in keyList) {
-          for (int i = 0; i < templist.length; i++) {
-            for (int j = 0; j < templist[i].length; j = j + 2) {
-              // The timeslot has been booked
-              if (existtime == templist[i][j]) {
-                templist[i][j + 1] = 'false';
-              }       
-            }
-          }
-        }
-      }
-    }
-    //print('checkpoint 1');
-    setState(() {timeslotslist = templist;});
-    //print(timeslotslist);
-  }
-
-  String getDate(DateTime date) {
-    var formattedDate = DateFormat('EEEE, d MMM yyyy').format(date);
-    return formattedDate.toString();
-  }
 
   String dateToServer(DateTime date) {
     var formattedDate = DateFormat('yMMdd').format(date);
     return formattedDate.toString();
   }
 
-  String getOneHourAfterAsServer(DateTime date) {
-    var tempH = date.hour;
-    var tempM = date.minute;
-    tempH = tempH + 1;
-    var hour = tempH.toString();
-    if (tempM >= 0 && tempM <= 20) {
-      tempM = 00;
-    }
-    else if (tempM >= 21 && tempM <= 40) {
-      tempM = 20;
-    }
-    else {
-      tempM = 40;
-    }
-    var minute = tempM.toString();
-    hour = '$hour:$minute';
-    return hour.toString();
-  }
 
   void makeAppointment(BuildContext context) async {
     var uid = getUID();
@@ -567,97 +455,6 @@ class _MakeAppointmentState extends State<MakeAppointment> {
     );
   }
 
-
-  Widget calendar(double globalwidth, double globalheight) => Card(
-        child: Expanded(
-          child: SizedBox(
-            child: Stack(
-              alignment: Alignment.bottomCenter,
-              children: [
-                SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      TableCalendar(
-                        weekendDays: const [DateTime.sunday],
-                        rowHeight: globalheight * 0.08,
-                        headerStyle: HeaderStyle(
-                          headerPadding:
-                              const EdgeInsets.symmetric(vertical: 2),
-                          formatButtonVisible: false,
-                          titleCentered: true,
-                          titleTextFormatter: (date, locale) =>
-                              DateFormat.yMMM(locale).format(date),
-                          // Calendar title style
-                          titleTextStyle: TextStyle(
-                              color: const Color.fromARGB(255, 74, 84, 94),
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.07),
-                          leftChevronIcon: Icon(
-                            Icons.chevron_left,
-                            color: const Color.fromARGB(255, 74, 84, 94),
-                            size: MediaQuery.of(context).size.width * 0.07,
-                          ),
-                          rightChevronIcon: Icon(
-                            Icons.chevron_right,
-                            color: const Color.fromARGB(255, 74, 84, 94),
-                            size: MediaQuery.of(context).size.width * 0.07,
-                          ),
-                        ),
-                        // Calendar days title style
-                        daysOfWeekStyle: const DaysOfWeekStyle(
-                          weekendStyle:
-                              TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                        ),
-                        // Calendar days style
-                        calendarStyle: const CalendarStyle(
-                          weekendTextStyle:
-                              TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
-                          todayDecoration: BoxDecoration(
-                            color: Color.fromARGB(165, 35, 185, 59),
-                            shape: BoxShape.rectangle,
-                          ),
-                          // highlighted color for selected day
-                          selectedDecoration: BoxDecoration(
-                            color: Color.fromARGB(255, 65, 95, 185),
-                            shape: BoxShape.rectangle,
-                          ),
-                        ),
-                        //calendarBuilders: CalendarBuilders(),
-                        firstDay: DateTime(kToday.year, kToday.month, kToday.day-1),
-                        lastDay: DateTime(2050),
-                        focusedDay: _focusedDay,
-                        // Todo: Calendar interatives
-                        selectedDayPredicate: (day) {
-                          return isSameDay(_selectedDay, day);
-                        },
-                        onDaySelected: (selectedDay, focusedDay) {
-                          // Update the timeslotslist
-                          checkExist(dateToServer(selectedDay));
-                          setState(() {
-                            _selectedDay = selectedDay;
-                            _focusedDay = focusedDay; // update `_focusedDay` here as well
-                            tlshow = !tlshow;
-                            // print('checkpoint 3');
-                            // print(_selectedDay);
-                            // print(tlshow);
-                            // print('checkpoint 4');
-                          });
-                        },
-                        onPageChanged: (focusedDay) {
-                          _focusedDay = focusedDay;
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                tlshow
-                    ? timeslotlist(globalwidth, globalheight, _focusedDay)
-                    : Container(),
-              ],
-            ),
-          ),
-        ),
-      );
 
   Widget guide(double globalwidth, double globalheight) => Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -711,280 +508,4 @@ class _MakeAppointmentState extends State<MakeAppointment> {
           ),
         ],
       );
-
-  Widget timeslotlist(double globalwidth, double globalheight, DateTime selectedDay) =>
-      DefaultTextStyle.merge(
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          width: globalwidth,
-          height: globalheight * 0.5,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(25), topRight: Radius.circular(25)),
-            color: Color.fromARGB(255, 28, 107, 164),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () => changeTimeslotlist(),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    height: globalheight * 0.06,
-                    width: globalheight * 0.06,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: const Color.fromARGB(255, 255, 255, 255),
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Container(
-                        margin: const EdgeInsets.all(5),
-                        child: const Icon(Icons.arrow_back_rounded),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: globalheight * 0.1,
-                width: globalwidth * 0.8,
-                margin: const EdgeInsets.only(left: 15),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: Row(
-                    children: [
-                      const FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text(
-                          'Selected Date:',
-                          style: TextStyle(
-                              fontSize: 50,
-                              color: Color.fromARGB(255, 255, 255, 255),
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      SizedBox(
-                        height: globalheight * 0.1,
-                        width: globalwidth * 0.1,
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Container(
-                            //margin: const EdgeInsets.only(left: 12, bottom: 5),
-                            height: globalheight * 0.1,
-                            width: globalwidth,
-                            padding: const EdgeInsets.all(15),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: const Color.fromARGB(255, 255, 255, 255),
-                              boxShadow: const [
-                                BoxShadow(
-                                    color: Color.fromARGB(100, 28, 107, 164),
-                                    spreadRadius: 2),
-                              ],
-                            ),
-                            child: FittedBox(
-                              alignment: Alignment.centerLeft,
-                              fit: BoxFit.scaleDown,
-                              child: Text(getDate(selectedDay),
-                                  style: const TextStyle(
-                                      fontSize: 50,
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              // The list of the timeslots
-              Align(
-                alignment: Alignment.center,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: SizedBox(
-                    height: globalheight * 0.2,
-                    width: globalwidth * 0.8,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Color.fromARGB(255, 28, 107, 164),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Color.fromARGB(0, 0, 0, 0),
-                              spreadRadius: 2),
-                        ],
-                      ),
-                      child: ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        // The number of itemCount depends on the number of appointment
-                        // 5 is the number of appointment for testing only
-                        itemCount: 24,
-                        separatorBuilder: (context, index) {
-                          return SizedBox(height: globalheight * 0.04);
-                        },
-                        itemBuilder: (context, index) {
-                          //check_exist(DateToServer(_selectedDay!));
-                          return timeslot(index, globalwidth, globalheight,
-                              timeslotslist[index]);
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () => confirm_message(),
-                child: Align(
-                  alignment: Alignment.center,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Container(
-                      height: globalheight * 0.08,
-                      width: globalwidth * 0.7,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: Color.fromARGB(150, 255, 255, 255),
-                              spreadRadius: 2),
-                        ],
-                      ),
-                      child: const Text('Make Appointment',
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Color.fromARGB(255, 28, 107, 164),
-                              fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  Widget timeslot(
-          int index, double globalwidth, double globalheight, List list) =>
-      Align(
-        //alignment: Alignment.center,
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () => list[1] == true
-                    ? changeTimeslot(list[0])
-                    : warning_message(),
-                child: Container(
-                  height: globalheight * 0.08,
-                  width: globalwidth * 0.22,
-                  padding: EdgeInsets.all(globalheight * 0.02),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: list[1] == true
-                        ? list[0] == selected_timeslot
-                            ? const Color.fromARGB(255, 224, 159, 31)
-                            : const Color.fromARGB(255, 28, 107, 164)
-                        : const Color.fromARGB(255, 123, 141, 158),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Color.fromARGB(255, 190, 202, 218),
-                          spreadRadius: 2),
-                    ],
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text('${list[0]}',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 255, 255, 255))),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: globalwidth * 0.06,
-              ),
-              GestureDetector(
-                onTap: () => list[3] == true
-                    ? changeTimeslot(list[2])
-                    : warning_message(),
-                child: Container(
-                  height: globalheight * 0.08,
-                  width: globalwidth * 0.22,
-                  padding: EdgeInsets.all(globalheight * 0.02),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: list[3] == true
-                        ? list[2] == selected_timeslot
-                            ? const Color.fromARGB(255, 224, 159, 31)
-                            : const Color.fromARGB(255, 28, 107, 164)
-                        : const Color.fromARGB(255, 123, 141, 158),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Color.fromARGB(255, 190, 202, 218),
-                          spreadRadius: 2),
-                    ],
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text('${list[2]}',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 255, 255, 255))),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: globalwidth * 0.06,
-              ),
-              GestureDetector(
-                onTap: () => list[5] == true
-                    ? changeTimeslot(list[4])
-                    : warning_message(),
-                child: Container(
-                  height: globalheight * 0.08,
-                  width: globalwidth * 0.22,
-                  padding: EdgeInsets.all(globalheight * 0.02),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: list[5] == true
-                        ? list[4] == selected_timeslot
-                            ? const Color.fromARGB(255, 224, 159, 31)
-                            : const Color.fromARGB(255, 28, 107, 164)
-                        : const Color.fromARGB(255, 123, 141, 158),
-                    boxShadow: const [
-                      BoxShadow(
-                          color: Color.fromARGB(255, 190, 202, 218),
-                          spreadRadius: 2),
-                    ],
-                  ),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text('${list[4]}',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 255, 255, 255))),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  
 }

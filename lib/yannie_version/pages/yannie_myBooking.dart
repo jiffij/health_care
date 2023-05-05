@@ -322,7 +322,7 @@ class _AppointmentCardState extends State<AppointmentCard> {
 
     return Container(
       width: size.width,
-      height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
+      //height: widget.type <= 1 ? (widget.type == 0? 300 : 225) : 150,
       margin: const EdgeInsets.only(top: defaultVerPadding / 2),
       padding: EdgeInsets.symmetric(horizontal: defaultHorPadding / 1.5, vertical: defaultVerPadding),
       decoration: BoxDecoration(

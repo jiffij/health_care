@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'dart:collection';
 
 import 'package:intl/intl.dart';
 
+import '../../helper/firebase_helper.dart';
 import '../color.dart';
 import '../widget/event_for_calendar.dart';
 
@@ -25,13 +27,16 @@ class _CalendarPageState extends State<CalendarPage> {
   DateTime? _selectedDay;
   // DateTime? _rangeStart;
   // DateTime? _rangeEnd;
+  List appointments = [];
+  dynamic events;
+  bool ready = false;
 
   @override
   void initState() {
     super.initState();
-
-    _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    prepare();
+    
+    
   }
 
   @override
@@ -40,9 +45,89 @@ class _CalendarPageState extends State<CalendarPage> {
     super.dispose();
   }
 
+  void prepare() async {
+    await start();
+    setState(() {
+      ready = true;
+    });
+  }
+  Future<void> start() async {
+    String uid = getUID();
+
+    List<String> appointmentDays = await getColId('patient/$uid/appointment');
+    Map<String, dynamic>? anAppointment;
+    if (appointmentDays.isNotEmpty) {
+      var date = DateFormat('yMMdd').format(DateTime.now());
+      for (var day in appointmentDays) {
+        anAppointment = await readFromServer('patient/$uid/appointment/$day');
+        List timeList = anAppointment!.keys.toList();
+        List<List> dailyAppointmentList = [];
+        for (var time in timeList) {
+          var id = anAppointment[time]['doctorID'];
+          var status = anAppointment[time]['status'];
+          Map<String, dynamic>? doctor = await readFromServer('doctor/$id');
+          var dFirstname = doctor?['first name'];
+          var dLastname = doctor?['last name'];
+          var specialty = doctor?['title'];
+          var dFullname = '$dFirstname $dLastname';
+          
+          if(status == 'confirmed') {
+            bool isCompleted= DateTime.now().add(Duration(hours: 1)).isAfter(toDateTime(day, time));
+            if (isCompleted) {
+              writeToServer('patient/$uid/appointment/$day', {
+                time: {
+                  'doctorID': id,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              writeToServer('doctor/$id/appointment/$day', {
+                time: {
+                  'patientID': uid,
+                  'description': '',
+                  'status': 'completed'
+                }
+              });
+              status = 'completed';
+            } 
+          }
+          dailyAppointmentList.insert(0, [toDateTime(day, time), time, dFullname, status, specialty]);
+        }
+        dailyAppointmentList = dailyAppointmentList.reversed.toList();
+        for (var list in dailyAppointmentList) {
+          appointments.insert(0, list);
+        }
+      }
+      appointments = appointments.reversed.toList();
+    }
+    //making map
+    final Map<DateTime, List<Event>> eventSource = Map.fromIterable(
+      appointments, 
+      key: (item) => item[0], 
+      value: (item) {
+        List<Event> temp = [];
+        for (var booking in appointments) {
+          DateTime date = booking[0];
+          if (date.year == item[0].year && date.month == item[0].month && date.day == item[0].day) {
+            temp.add(Event(item[0],booking[2], booking[4], booking[1], booking[3]));
+          }
+        }
+        return temp;
+      }
+    );
+
+    events = LinkedHashMap<DateTime, List<Event>>(
+  equals: isSameDay,
+  hashCode: getHashCode,
+)..addAll(eventSource);
+    _selectedDay = _focusedDay;
+    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+
+  }
+
   List<Event> _getEventsForDay(DateTime day) {
     // Implementation example
-    return kEvents[day] ?? [];
+    return events[day] ?? [];
   }
 
   // List<Event> _getEventsForRange(DateTime start, DateTime end) {
@@ -53,6 +138,15 @@ class _CalendarPageState extends State<CalendarPage> {
   //     for (final d in days) ..._getEventsForDay(d),
   //   ];
   // }
+  DateTime toDateTime(String date, String time) {
+  int year = int.parse(date.substring(0, 4));
+  int month = int.parse(date.substring(4, 6));
+  int day = int.parse(date.substring(6));
+  int hour = int.parse(time.substring(0, 2));
+  int min = int.parse(time.substring(3, 5));
+  return DateTime(year, month, day, hour, min);
+}
+
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
@@ -70,7 +164,7 @@ class _CalendarPageState extends State<CalendarPage> {
         useSafeArea: true,
         isScrollControlled: true,
         constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height*0.5,
+          maxHeight: MediaQuery.of(context).size.height*0.65,
           minHeight: MediaQuery.of(context).size.height*0.3,
         ),
         shape: RoundedRectangleBorder(
@@ -114,9 +208,9 @@ class _CalendarPageState extends State<CalendarPage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
-                          height: MediaQuery.of(context).size.height*0.4, // set a max height for the ListView
+                          height: MediaQuery.of(context).size.height*0.65, // set a max height for the ListView
                           child: Scrollbar(child: ListView.builder(
-                            itemCount: 5, // replace with your actual item count
+                            itemCount: _selectedEvents.value.length, // replace with your actual item count
                             itemBuilder: (context, index) => Material(
                               color: Colors.transparent,
                               child: InkWell(
@@ -141,9 +235,9 @@ class _CalendarPageState extends State<CalendarPage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    Text("Dr. Name", style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),),
+                                    Text("Dr. ${_selectedEvents.value[index].doctorName}", style: GoogleFonts.comfortaa(color: lighttheme, fontSize: 18),),
                                     SizedBox(height: 10,),
-                                    Text("Specialty", style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
+                                    Text(_selectedEvents.value[index].specialty, style: GoogleFonts.comfortaa(color: Color(0xff91919F), fontSize: 15),),
                                     SizedBox(height: 5,),
                                     Divider(
                                       color: lighttheme,
@@ -163,7 +257,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                               width: 10,
                                             ),
                                             Text(
-                                              'date',
+                                              DateFormat("dd/MM/yyy").format(selectedDay),
                                               style: GoogleFonts.comfortaa(
                                                   color: lighttheme, fontSize: 16),
                                             )
@@ -180,7 +274,7 @@ class _CalendarPageState extends State<CalendarPage> {
                                               width: 10,
                                             ),
                                             Text(
-                                              'time',
+                                              _selectedEvents.value[index].time,
                                               style: GoogleFonts.comfortaa(
                                                   color: lighttheme, fontSize: 16),
                                             )
@@ -239,26 +333,10 @@ class _CalendarPageState extends State<CalendarPage> {
                   centerTitle: true,
                   title: Text('My Calendar'),
                   //shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
-                  leading: Padding(
-                    padding: EdgeInsets.symmetric(vertical: defaultVerPadding/2, horizontal: defaultHorPadding/1.5),
-                    child: ElevatedButton(
-                    style: ButtonStyle(
-                      //minimumSize: MaterialStatePropertyAll(Size(60, 60)),
-                      elevation: MaterialStatePropertyAll(1),
-                      shadowColor: MaterialStatePropertyAll(themeColor),
-                      side: MaterialStatePropertyAll(BorderSide(
-                          width: 1,
-                          color: themeColor,
-                        )),
-                      backgroundColor: MaterialStatePropertyAll(Colors.white),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(20))))
-                    ),
-                      onPressed: () => Navigator.of(context).pop(true),
-                      child: Icon(Icons.arrow_back, size: 23,color: themeColor,)
-                    )),
-                  leadingWidth: 95,
+                  
                 ),
-      body: Column(
+      body: !ready? Center(child: LoadingAnimationWidget.inkDrop(color: lighttheme, size: 50),
+): Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

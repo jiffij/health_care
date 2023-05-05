@@ -117,7 +117,7 @@ class _HomeState extends State<Home> {
                                       ),
                                     )),
                                      Padding(
-                                      padding: EdgeInsets.only(bottom: defaultVerPadding,),
+                                      padding: EdgeInsets.only(bottom: upcomappointments.isEmpty? 0:defaultVerPadding,),
                                       child: upcomappointments.isEmpty? null : Center(child: SmoothPageIndicator(
                                       controller: _pageController,
                                       count: upcomappointments.length,
@@ -130,22 +130,6 @@ class _HomeState extends State<Home> {
                                   ],
                                 ),
                         )),
-                    Padding(
-                        padding: EdgeInsets.only(
-                          bottom: defaultVerPadding,
-                        ),
-                        child: appointments.isEmpty
-                            ? null
-                            : Center(
-                                child: SmoothPageIndicator(
-                                controller: _pageController,
-                                count: appointments.length,
-                                effect: ExpandingDotsEffect(
-                                    dotHeight: 6,
-                                    dotWidth: 6,
-                                    dotColor: themeColor.withOpacity(0.4),
-                                    activeDotColor: themeColor),
-                              ))),
                   ],
                 ),
               ));

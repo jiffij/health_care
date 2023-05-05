@@ -1,7 +1,12 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
+import '../../helper/alert.dart';
 import '../../helper/firebase_helper.dart';
+import '../../new_doctor/color.dart';
 
 class DiagnosticSurvey extends StatefulWidget {
   String docId;
@@ -94,201 +99,321 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
   Widget build(BuildContext context) {
     // double width = MediaQuery.of(context).size.width;
     // double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: Column(
-        children: [
-          SizedBox(
-            height: 40,
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              'Symptom Survey',
-              style: TextStyle(fontSize: 20),
-            ),
-          ),
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      'Appointment date:',
-                      style: TextStyle(fontSize: 18),
-                    )),
-                    Expanded(
-                        child: Text(
-                      'Appointment time:',
-                      style: TextStyle(fontSize: 18),
-                    )),
+    return GestureDetector(
+      onTap: (){FocusScope.of(context).requestFocus(FocusNode());},
+      child: Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+                  //title: Text('Search For Doctor'),
+                  automaticallyImplyLeading: false,
+                  elevation: 0,
+                  toolbarHeight: 80,
+                  backgroundColor: lighttheme,
+                  titleTextStyle: GoogleFonts.comfortaa(textStyle: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w500)),
+                  centerTitle: true,
+                  title: Text('Symptom Survey'),),
+                  
+      body: 
+                        SafeArea(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Flexible(child: SingleChildScrollView(
+                                physics: BouncingScrollPhysics(),
+                                child: Container(
+                                  padding: EdgeInsets.all(defaultHorPadding),
+                                  child: Column(
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(vertical: defaultHorPadding, horizontal: defaultHorPadding*1.5),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: const Offset(0, 8),
+                                            blurRadius: 5,
+                                            color: goodColor.withOpacity(0.13),
+                                          ),
+                                        ]
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.calendar_month_rounded,
+                                                color: lighttheme,
+                                                size: 23,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                DateFormat("d MMMM y").format(toDateTime(appointDate, appointTime)),
+                                                style: GoogleFonts.comfortaa(
+                                                    color: lighttheme, fontSize: 16),
+                                              )
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.schedule_rounded,
+                                                color: lighttheme,
+                                                size: 23,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                DateFormat("HH:mm").format(toDateTime(appointDate, appointTime)),
+                                                style: GoogleFonts.comfortaa(
+                                                    color: lighttheme, fontSize: 16),
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.symmetric(vertical: defaultVerPadding),
+                                      padding: EdgeInsets.symmetric(vertical: defaultHorPadding, horizontal: defaultHorPadding),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.5),
+                                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            offset: const Offset(0, 8),
+                                            blurRadius: 5,
+                                            color: goodColor.withOpacity(0.13),
+                                          ),
+                                        ]
+                                      ),
+                                      child: Column(children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 20),
+                                          child: TextFormField(
+                                            controller: _diagnosisController,
+                                            maxLines: 5,
+                                            style: GoogleFonts.comfortaa(
+                                                textStyle:
+                                                    TextStyle(color: Colors.black)),
+                                            decoration: InputDecoration(
+                                              focusedBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              enabledBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: "Symtoms",
+                                              //hintText: 'Write down your symptoms',
+                                              labelStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: themeColor)),
+                                              hintStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 148, 148, 148))),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 20),
+                                          child: TextFormField(
+                                            controller: _MedController,
+                                            maxLines: 5,
+                                            style: GoogleFonts.comfortaa(
+                                                textStyle:
+                                                    TextStyle(color: Colors.black)),
+                                            decoration: InputDecoration(
+                                              focusedBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              enabledBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: "Mediacation",
+                                              //hintText: 'Write down your symptoms',
+                                              labelStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: themeColor)),
+                                              hintStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 148, 148, 148))),
+                                            ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom: 20),
+                                          child: TextFormField(
+                                            controller: _noteController,
+                                            maxLines: 5,
+                                            style: GoogleFonts.comfortaa(
+                                                textStyle:
+                                                    TextStyle(color: Colors.black)),
+                                            decoration: InputDecoration(
+                                              focusedBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              enabledBorder: const OutlineInputBorder(
+                                                  borderSide:
+                                                      BorderSide(color: themeColor),
+                                                  borderRadius: BorderRadius.all(
+                                                      Radius.circular(10))),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              labelText: "Extra Notes",
+                                              //hintText: 'Write down your notes.',
+                                              labelStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: themeColor)),
+                                              hintStyle: GoogleFonts.comfortaa(
+                                                  textStyle: const TextStyle(
+                                                      color: Color.fromARGB(
+                                                          255, 148, 148, 148))),
+                                            ),
+                                          ),
+                                        ),
+                                        InkWell(
+                                      onTap: () async {
+                                        String? option =
+                                            await showOptionDialog(context);
+                                        await getImg(option!);
+                                      },
+                                      splashColor: lighttheme.withOpacity(0.1),
+                                      borderRadius:
+                                                BorderRadius.circular(20),
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        // width: MediaQuery.of(context).size.width *
+                                        //     0.3,
+                                        height:
+                                            MediaQuery.of(context).size.width *
+                                                0.4,
+                                        // margin: EdgeInsets.only(
+                                        //     bottom: defaultHorPadding,
+                                        //     top: defaultHorPadding / 2),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            //border: Border.all(color: themeColor),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            image: imgFile != null
+                                                ? DecorationImage(
+                                                    image: FileImage(imgFile!),
+                                                    fit: BoxFit.cover)
+                                                : null),
+                                        child: imgFile == null
+                                            ? Icon(
+                                                Icons.add_a_photo,
+                                                color: lighttheme,
+                                                size: 40,
+                                              )
+                                            : null,
+                                      )),
+                                      Container(
+                                        //height: 100,
+                                        width: double.infinity,
+                                        color: Colors.transparent,
+                                        margin: EdgeInsets.only(top: defaultVerPadding),
+                                        //padding: EdgeInsets.symmetric(vertical: defaultVerPadding),
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                            final diagnosis = _diagnosisController.text;
+                                            final medicine = _MedController.text;
+                                            final notes = _noteController.text;
+
+                                            if (diagnosis.isEmpty ||
+                                                medicine.isEmpty ||
+                                                notes.isEmpty) {
+                                              return;
+                                            }
+
+                                            var uid = getUID();
+                                            // Map<String, String>? result;
+                                            if (imgFile != null) {
+                                              await predict();
+                                            }
+                                            // final now = getDateTime();
+                                            // print('medical_history/$uid/$appointTime/$now');
+                                            var data = {
+                                              appointTime: {
+                                                'diagnosis': diagnosis,
+                                                'medicine': medicine,
+                                                'extra_notes': notes,
+                                                if(cancerType != '') 'prediction': cancerType,
+                                                if(percentage != '') 'probability': percentage,
+                                                // if (result != null)
+                                                //   'a': result['0'],
+                                                //   if (result != null)
+                                                //   'b': result['1'],
+                                                //   if (result != null)
+                                                //   'c': result['2'],
+                                                //   if (result != null)
+                                                //   'd': result['3'],
+                                                //   if (result != null)
+                                                //   'e': result['4'],
+                                                //   if (result != null)
+                                                //   'f': result['5'],
+                                                //   if (result != null)
+                                                //   'g': result['6'],
+                                                //   if (result != null)
+                                                //   'h': result['7'],
+                                              }
+                                            };
+                                            print(data);
+                                            // Handle submit button press
+                                            var res1 = await writeToServer(
+                                                'doctor/$docId/appointment/$appointDate/survey/$appointTime', data);
+                                            var res2 = await writeToServer(
+                                                'patient/$uid/appointment/$appointDate/survey/$appointTime', data);
+                                            if (res2.statusCode != 200 || res2.statusCode != 200) {
+                                              print('history upload error');
+                                            } else {
+                                              Navigator.of(context).pop();
+                                            }
+                                        }, 
+                                        style: ButtonStyle(
+                                          padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: defaultVerPadding/1.5)),
+                                          backgroundColor: MaterialStatePropertyAll(lighttheme),
+                                          shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(10))))
+                                        ),
+                                        child: Text("Submit", style: GoogleFonts.comfortaa(fontSize: 18),),),
+                                      )
+                                      ]),
+                                    ),
+                                    
+                                    
+                                  ],
+                                ),)
+                        )),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: Text(
-                      appointDate,
-                      style: TextStyle(fontSize: 16),
-                    )),
-                    Expanded(
-                        child: Text(
-                      appointTime,
-                      style: TextStyle(fontSize: 16),
-                    )),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Symptoms:',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  TextField(
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                    controller: _diagnosisController,
-                    decoration: InputDecoration(
-                      hintText: 'Symptoms',
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Medication:',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  TextField(
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                    controller: _MedController,
-                    decoration: InputDecoration(
-                      hintText: 'Medication',
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Extra Notes:',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  TextField(
-                    controller: _noteController,
-                    decoration: InputDecoration(
-                      hintText: 'Extra notes',
-                    ),
-                    maxLines: 5,
-                    keyboardType: TextInputType.multiline,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(7.0),
-                        child: ElevatedButton.icon(
-                            onPressed: () async => await getImg('camera'),
-                            icon: const Icon(Icons.camera),
-                            label: const Text('camera')),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(7.0),
-                        child: ElevatedButton.icon(
-                            onPressed: () async => await getImg('gallery'),
-                            icon: const Icon(Icons.library_add),
-                            label: const Text('Gallery')),
-                      ),
-                    ],
-                  ),
-                  if (imgFile != null)
-                    Container(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        child: Image.file(imgFile!)),
-                  // INITIALIZE. RESULT IS A WIDGET, SO IT CAN BE DIRECTLY USED IN BUILD METHOD
-                  Spacer(),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final diagnosis = _diagnosisController.text;
-                        final medicine = _MedController.text;
-                        final notes = _noteController.text;
-
-                        if (diagnosis.isEmpty ||
-                            medicine.isEmpty ||
-                            notes.isEmpty) {
-                          return;
-                        }
-
-                        var uid = getUID();
-                        // Map<String, String>? result;
-                        if (imgFile != null) {
-                          await predict();
-                        }
-                        // final now = getDateTime();
-                        // print('medical_history/$uid/$appointTime/$now');
-                        var data = {
-                          appointTime: {
-                            'diagnosis': diagnosis,
-                            'medicine': medicine,
-                            'extra_notes': notes,
-                            if(cancerType != '') 'prediction': cancerType,
-                            if(percentage != '') 'probability': percentage,
-                            // if (result != null)
-                            //   'a': result['0'],
-                            //   if (result != null)
-                            //   'b': result['1'],
-                            //   if (result != null)
-                            //   'c': result['2'],
-                            //   if (result != null)
-                            //   'd': result['3'],
-                            //   if (result != null)
-                            //   'e': result['4'],
-                            //   if (result != null)
-                            //   'f': result['5'],
-                            //   if (result != null)
-                            //   'g': result['6'],
-                            //   if (result != null)
-                            //   'h': result['7'],
-                          }
-                        };
-                        print(data);
-                        // Handle submit button press
-                        var res1 = await writeToServer(
-                            'doctor/$docId/appointment/$appointDate/survey/$appointTime', data);
-                        var res2 = await writeToServer(
-                            'patient/$uid/appointment/$appointDate/survey/$appointTime', data);
-                        if (res2.statusCode != 200 || res2.statusCode != 200) {
-                          print('history upload error');
-                        } else {
-                          Navigator.of(context).pop();
-                        }
-                      },
-                      child: Text('Submit'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+              )));
   }
+}
+ DateTime toDateTime(String date, String time) {
+  int year = int.parse(date.substring(0, 4));
+  int month = int.parse(date.substring(4, 6));
+  int day = int.parse(date.substring(6));
+  int hour = int.parse(time.substring(0, 2));
+  int min = int.parse(time.substring(3, 5));
+  return DateTime(year, month, day, hour, min);
 }
