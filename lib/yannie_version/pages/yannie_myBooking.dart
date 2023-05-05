@@ -105,11 +105,20 @@ class _myBookingState extends State<myBooking> {
     }
   }
 
-  void onListsChanged(List appointment) {
+  void onCanceled(List appointment) {
     setState(() {ready = false;});
     setState(() {
       upcoming.remove(appointment);
       canceled.add(appointment);
+    });
+    setState(() {ready = true;});
+  }
+
+  void onJoined(List appointment) {
+    setState(() {ready = false;});
+    setState(() {
+      upcoming.remove(appointment);
+      completed.add(appointment);
     });
     setState(() {ready = true;});
   }
@@ -262,12 +271,12 @@ class _myBookingState extends State<myBooking> {
                         ? completed.length
                         : canceled.length,
                 itemBuilder: (context, index) => _toggleValue == 0
-                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!, reload: onListsChanged,)
+                    ? AppointmentCard(appointment: upcoming[index], type: _toggleValue!, reload: onCanceled, joined: onJoined)
                     : _toggleValue == 1
                         ? AppointmentCard(
-                            appointment: completed[index], type: _toggleValue!, reload: onListsChanged,)
+                            appointment: completed[index], type: _toggleValue!, reload: onCanceled, joined: onJoined)
                         : AppointmentCard(
-                            appointment: canceled[index], type: _toggleValue!, reload: onListsChanged,),
+                            appointment: canceled[index], type: _toggleValue!, reload: onCanceled, joined: onJoined),
               ),
               ),
             )
@@ -281,11 +290,12 @@ class AppointmentCard extends StatefulWidget {
   State<AppointmentCard> createState() => _AppointmentCardState();
 
   const AppointmentCard(
-      {Key? key, required this.appointment, required this.type, required this.reload})
+      {Key? key, required this.appointment, required this.type, required this.reload, required this.joined})
       : super(key: key);
   final List appointment;
   final int type;
    final Function reload;
+   final Function joined;
 }
 
 class _AppointmentCardState extends State<AppointmentCard> {
@@ -461,7 +471,9 @@ class _AppointmentCardState extends State<AppointmentCard> {
             
             widget.type == 0
                 ? ElevatedButton(
-                onPressed: () {
+                onPressed: () async{
+                  await joinedBooking(context, widget.appointment);
+                  widget.joined(widget.appointment);
                   Navigator.of(context).push(_createRoute(JoinCallWaiting(widget.appointment[3], widget.appointment[1], null)));
                 },
                 style: ButtonStyle(
@@ -569,6 +581,34 @@ class _AppointmentCardState extends State<AppointmentCard> {
     });
     Loading().hide();
     showSuccessDialog(context, "Canceled");
+  }
+}
+
+Future<void> joinedBooking(BuildContext context, List appointment) async {
+  String date = dateFormatter2(appointment[0]);
+  String time = timeFormatter(appointment[1]);
+  String doctor = appointment[2];
+  String uid = getUID();
+  DateTime datetimeform = toDateTime(appointment[0], appointment[1]);
+  String serverDate = DateFormat("yyyMMdd").format(datetimeform);
+  bool? result = await showConfirmDialog(context, "Confirm to join this appointment?\n"+"Dr. $doctor"+"\n$date -- $time");
+  if(result == true) {
+    Loading().show(context: context, text: "Loading...");
+    writeToServer('patient/$uid/appointment/$serverDate', {
+      appointment[1]: {
+        'doctorID': appointment[3],
+        'description': '',
+        'status' : 'completed'
+      }
+    });
+    writeToServer('doctor/${appointment[3]}/appointment/$serverDate', {
+      appointment[1]: {
+        'patientID': uid,
+        'description': '',
+        'status' : 'completed'
+      }
+    });
+    Loading().hide();
   }
 }
 
