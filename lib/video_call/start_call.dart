@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
+import 'package:simple_login/new_doctor/color.dart';
 import 'package:simple_login/video_call/pages/connect.dart';
 import 'package:livekit_client/livekit_client.dart';
 import 'exts.dart';
@@ -30,7 +31,7 @@ class _StartCallState extends State<StartCall> {
 
   _StartCallState(this.PatientId, this.time) {
     // start();
-    _displayText = 'Start my meeting at time $time';
+    _displayText = 'Start my meeting at $time';
   }
 
   @override
@@ -87,6 +88,7 @@ class _StartCallState extends State<StartCall> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       body: Center(
         child: Text(
           _displayText,
@@ -94,18 +96,11 @@ class _StartCallState extends State<StartCall> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: themeColor,
         onPressed: () {
           start(context);
         },
-        child: Icon(Icons.add),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 50.0,
-          child: Center(
-            child: Text('Join call'),
-          ),
-        ),
+        child: Icon(Icons.video_call),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );

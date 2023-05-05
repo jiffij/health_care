@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:simple_login/yannie_version/color.dart';
+import '../color.dart';
 
 class AnimatedToggle extends StatefulWidget {
   final List<String> values;

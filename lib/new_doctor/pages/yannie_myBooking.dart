@@ -7,7 +7,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:simple_login/helper/pdf_generator.dart';
 import 'package:simple_login/new_doctor/pages/dViewSurvey.dart';
 import 'package:simple_login/video_call/start_call.dart';
-import 'package:simple_login/yannie_version/color.dart';
+import '../color.dart';
 import 'package:simple_login/yannie_version/widget/toggle.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 

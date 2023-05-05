@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../yannie_version/color.dart';
 import 'package:simple_login/video_call/pages/connect.dart';
 import 'package:livekit_client/livekit_client.dart';
 import '../helper/firebase_helper.dart';
@@ -70,11 +71,9 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
         _displayText =
             'Your meeting at $time is ' + (ready ? 'ready' : 'not ready');
       });
-      print(ready);
     });
     _displayText =
         'Your meeting at $time is ' + (ready ? 'ready' : 'not ready');
-    print(ready);
   }
 
   Future<void> _connect(BuildContext ctx) async {
@@ -114,26 +113,32 @@ class _JoinCallWaitingState extends State<JoinCallWaiting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       body: Center(
-        child: Text(
-          _displayText,
-          style: TextStyle(fontSize: 24.0),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _connect(context);
-        },
-        child: Icon(Icons.add),
-      ),
-      bottomNavigationBar: BottomAppBar(
         child: Container(
-          height: 50.0,
-          child: Center(
-            child: Text('Join call'),
+          width: 280,
+          child:
+          Text(
+            _displayText,
+            style: TextStyle(fontSize: 24.0),
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: lighttheme,
+        onPressed: () {
+          _connect(context);
+        },
+        child: Icon(Icons.video_call),
+      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   child: Container(
+      //     height: 50.0,
+      //     child: Center(
+      //       child: Text('Join call'),
+      //     ),
+      //   ),
+      // ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

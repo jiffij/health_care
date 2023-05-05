@@ -4,6 +4,7 @@ import 'package:simple_login/helper/loading_screen.dart';
 
 
 
+import '../pages/profile_home.dart';
 import '../pages/yannie_calendar.dart';
 import '../pages/yannie_home.dart';
 import 'nav_bar/custom_bottom_nav_bar_dash.dart';
@@ -20,7 +21,7 @@ class _BottomNavState extends State<BottomNav> {
     const DoctorHome(),
     const CalendarPage(),
     Container(),
-    Container(),
+    const ProfilePage(),
   ];
 
   @override

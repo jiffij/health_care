@@ -141,54 +141,54 @@ class _DoctorSearchState extends State<DoctorSearch> {
                child: ready? Column(
                 children: [ 
                   Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: defaultHorPadding, vertical: defaultVerPadding),
-                                  child: Form(
-                                    onChanged: () {
-                                      
-                                      setState(() {
-                                        
-                                        if (_doctorNameController.text.isEmpty) searchNull = true;
-                                        else {
-                                          searchNull = false;
-                                          doctorFilter(_doctorNameController.text);
-                                          filteredDoctorList = ratingSort(filteredDoctorList);
-                                        }
-                                      });
-                                    },
-                                    child: TextFormField(
-                                      controller: _doctorNameController,
-                                      style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black)),
-                                      decoration: InputDecoration(
-                                        focusedBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none,
-                                            borderRadius:
-                                                BorderRadius.all(Radius.circular(20))),
-                                        enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide.none,
-                                            borderRadius:
-                                                BorderRadius.all(Radius.circular(20))),
-                                        prefixIcon: Icon(
-                                          Icons.search,
-                                          color: Color.fromARGB(255, 47, 106, 173),
-                                        ),
-                                        filled: true,
-                                        fillColor: Colors.white,
-                                        labelText: "Enter Doctor's Name",
-                                        labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
-                                        hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
-                                        suffixIcon: !searchNull? IconButton(
-                                                        onPressed: () {
-                                                          _doctorNameController.clear();
-                                                          FocusScopeNode currentFocus = FocusScope.of(context);
-                                                          if (!currentFocus.hasPrimaryFocus) {
-                                                            currentFocus.unfocus();
-                                                          }
-                                                        },
-                                                        icon: Icon(Icons.dangerous_outlined), color: Color.fromARGB(255, 148, 148, 148),iconSize: 25,):null,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                    padding: const EdgeInsets.symmetric(horizontal: defaultHorPadding, vertical: defaultVerPadding),
+                    child: Form(
+                      onChanged: () {
+                        
+                        setState(() {
+                          
+                          if (_doctorNameController.text.isEmpty) searchNull = true;
+                          else {
+                            searchNull = false;
+                            doctorFilter(_doctorNameController.text);
+                            filteredDoctorList = ratingSort(filteredDoctorList);
+                          }
+                        });
+                      },
+                      child: TextFormField(
+                        controller: _doctorNameController,
+                        style: GoogleFonts.comfortaa(textStyle: TextStyle(color: Colors.black)),
+                        decoration: InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide.none,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20))),
+                          prefixIcon: Icon(
+                            Icons.search,
+                            color: Color.fromARGB(255, 47, 106, 173),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelText: "Enter Doctor's Name",
+                          labelStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 47, 106, 173))),
+                          hintStyle: GoogleFonts.comfortaa(textStyle: TextStyle(color: Color.fromARGB(255, 148, 148, 148))),
+                          suffixIcon: !searchNull? IconButton(
+                            onPressed: () {
+                              _doctorNameController.clear();
+                              FocusScopeNode currentFocus = FocusScope.of(context);
+                              if (!currentFocus.hasPrimaryFocus) {
+                                currentFocus.unfocus();
+                              }
+                            },
+                            icon: Icon(Icons.dangerous_outlined), color: Color.fromARGB(255, 148, 148, 148),iconSize: 25,):null,
+                        ),
+                      ),
+                    ),
+                  ),
             TitleWithMoreBtn(title: _doctorNameController.text.isEmpty? "Recommended": "Search for \"" + _doctorNameController.text + "\":", press: (){}, withBtn: false),
             SizedBox(height: 20,),
             
