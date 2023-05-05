@@ -24,6 +24,7 @@ class _BottomNavState extends State<BottomNav> {
 
   String fullname = '';
   String UID = "";
+  bool ready = false;
 
   @override
   void initState() {
@@ -45,6 +46,9 @@ class _BottomNavState extends State<BottomNav> {
       ChatSetup2D(fullname),
       const ProfilePage(),
     ];
+    setState(() {
+      ready = true;
+    });
   }
   // Test
 
@@ -79,7 +83,8 @@ class _BottomNavState extends State<BottomNav> {
               ],
             ),
             extendBody: true,
-            body: Container(
+            body: !ready? Container() :
+            Container(
               child: Center(
                 child: _pages[cubit.currentIndex],
               ),
