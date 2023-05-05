@@ -38,7 +38,6 @@ class _BottomNavState extends State<BottomNav> {
     Map<String, dynamic>? user = await readFromServer('patient/$uid');
     fullname = user?['first name'] + ' ' + user?['last name'];
     UID = getUID();
-    setState(() {});
 
     _pages = [
       const Home(),
@@ -83,7 +82,7 @@ class _BottomNavState extends State<BottomNav> {
               ],
             ),
             extendBody: true,
-            body: !ready? Container() :
+            body: !ready? LoadingScreen() :
             Container(
               child: Center(
                 child: _pages[cubit.currentIndex],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:simple_login/helper/loading_screen.dart';
+import 'loading_screen.dart';
 
 import '../pages/profile_home.dart';
 import '../pages/yannie_calendar.dart';
@@ -23,6 +23,7 @@ class _BottomNavState extends State<BottomNav> {
 
   String fullname = '';
   String UID = "";
+  bool ready = false;
 
   @override
   void initState() {
@@ -36,7 +37,6 @@ class _BottomNavState extends State<BottomNav> {
     Map<String, dynamic>? user = await readFromServer('doctor/$uid');
     fullname = user?['first name'] + ' ' + user?['last name'];
     UID = getUID();
-    setState(() {});
 
     _pages = [
       const DoctorHome(),
@@ -44,6 +44,9 @@ class _BottomNavState extends State<BottomNav> {
       ChatSetup2D(fullname),
       const ProfilePage(),
     ];
+    setState(() {
+      ready = true;
+    });
   }
   // Test
 
@@ -78,7 +81,8 @@ class _BottomNavState extends State<BottomNav> {
               ],
             ),
             extendBody: true,
-            body: Container(
+            body: !ready? LoadingScreen() :
+            Container(
               child: Center(
                 child: _pages[cubit.currentIndex],
               ),
