@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:simple_login/helper/firebase_helper.dart';
-
+import 'package:syncfusion_flutter_charts/charts.dart';
 import '../widget/loading_screen.dart';
 
+
+class ChartData {
+  final String lesion;
+  final double acc;
+
+  ChartData(this.lesion, this.acc);
+}
 
 class viewSurvey extends StatefulWidget {
   String date;
@@ -23,6 +30,8 @@ class _viewSurveyState extends State<viewSurvey> {
   String time;
   String fullname;
   String PID;
+  Map<String, dynamic>? results;
+  String? imgURL;
 
   _viewSurveyState(this.date, this.time, this.fullname, this.PID);
 
@@ -42,6 +51,7 @@ class _viewSurveyState extends State<viewSurvey> {
         children: [
           heading(width, height),
           detaillist(width, height),
+
         ],
       ),
     );
@@ -54,13 +64,14 @@ class _viewSurveyState extends State<viewSurvey> {
  String prediction= '';
  String probability= '';
 
+
   @override
   void initState() {
     super.initState();
     start();
   }
 
-  void start() async {
+  Future<void> start() async {
     String uid = getUID();
     Map<String, dynamic>? data =
     await readFromServer('doctor/$uid/appointment/$date/survey/$time');
@@ -68,12 +79,16 @@ class _viewSurveyState extends State<viewSurvey> {
     if(data == null) return;
     var survey = data[time];
     print(survey);
+    String url = '';
+    if(survey['imgURL'] != null){
+      url = await loadStorageUrl(survey['imgURL']);
+    }
     setState(() {
         diagnosis = survey['diagnosis'];
         medicine = survey['medicine'];
         notes = survey['extra_notes'];
-        prediction = survey['prediction'] ?? "";
-        probability = survey['probability'] ?? "";
+        results = survey['prediction'];
+        imgURL = url == ''? null : url;
       startDone = true;
     });
   }
@@ -193,37 +208,17 @@ class _viewSurveyState extends State<viewSurvey> {
   Widget detaillist(double globalwidth, double globalheight) =>
       DefaultTextStyle.merge(
         child:
+            SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child:
             Column(
               children: [
-                // Align(
-                //   alignment: Alignment.centerLeft,
-                //   child: FittedBox(
-                //     fit: BoxFit.scaleDown,
-                //     child: Container(
-                //       margin:
-                //       const EdgeInsets.only(left: 12, top: 12, bottom: 5),
-                //       height: globalheight * 0.05,
-                //       width: globalwidth,
-                //       child: const FittedBox(
-                //         fit: BoxFit.scaleDown,
-                //         alignment: Alignment.centerLeft,
-                //         child: Text('Emergency Details',
-                //             style: TextStyle(
-                //                 fontSize: 20, fontWeight: FontWeight.bold)),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Container(
+                  Container(
                       margin: const EdgeInsets.only(left: 12, bottom: 12),
                       width: globalwidth,
-                      height: globalheight * 0.6,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
+                      // height: globalheight * 0.3,
+                      // child: SingleChildScrollView(
+                        // scrollDirection: Axis.vertical,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -244,19 +239,52 @@ class _viewSurveyState extends State<viewSurvey> {
                                     fontSize: 16, fontWeight: FontWeight.bold)),
                             const Text('Skin Cancer Prediction:',
                                 style: TextStyle(fontSize: 18)),
-                            Text(prediction + " " + probability,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            // Text(prediction + " " + probability,
+                            //     style: const TextStyle(
+                            //         fontSize: 16, fontWeight: FontWeight.bold)),
+                            if (imgURL != null)
+                              Container(
+                                  width: MediaQuery.of(context).size.width * 0.8,
+                                  height: MediaQuery.of(context).size.height * 0.2,
+                                  child: Image.network(imgURL!)),
+                            if (results != null)
+                              SfCartesianChart(
+                                title: ChartTitle(text: 'Likelyhood by Skin Lesion'),
+                                legend: Legend(isVisible: true),
+                                series: <ChartSeries>[
+                                  BarSeries<ChartData, String>(
+                                    name: 'Acc',
+                                    dataSource: <ChartData>[
+                                      ChartData('Acti(akiec)', double.parse(results?['0']) ?? 0),
+                                      ChartData('Basal(bcc)', double.parse(results?['1']) ?? 0),
+                                      ChartData('Benign(bkl)', double.parse(results?['2']) ?? 0),
+                                      ChartData('Derm(df)', double.parse(results?['3']) ?? 0),
+                                      ChartData('Mel(mel)', double.parse(results?['4']) ?? 0),
+                                      ChartData('Mel_nevi(nv)', double.parse(results?['5']) ?? 0),
+                                      ChartData('Vas(vasc)', double.parse(results?['6']) ?? 0),
+                                      ChartData('Unknown', double.parse(results?['7']) ?? 0),
+                                    ],
+                                    xValueMapper: (ChartData acc, _) => acc.lesion,
+                                    yValueMapper: (ChartData acc, _) => acc.acc,
+                                    dataLabelSettings: DataLabelSettings(isVisible: true),
+                                  ),
+                                ],
+                                primaryXAxis: CategoryAxis(),
+                                primaryYAxis: NumericAxis(
+                                  title: AxisTitle(text: 'Probability'),
+                                  maximum: 1,
+                                ),
+                              ),
                           ],
                         ),
-                      ),
+                      // ),
                     ),
-                  ),
-                ),
+
+
 
               ],
             ),
-
+        ),
       );
   
 }

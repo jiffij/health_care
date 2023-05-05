@@ -21,6 +21,7 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
   File? imgFile;
   String cancerType = '';
   String percentage = '';
+  Map? stringMap;
 
   _DiagnosticSurveyState(this.docId, this.appointDate, this.appointTime);
 
@@ -47,45 +48,47 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
 
   Future<void> predict() async {
     var predResult = await cancerPredict(imgFile!);
+    if (predResult == null) return;
     // Map<String, String>? stringMap =
     //     predResult?.map((key, value) => MapEntry(key, value.toString()));
 
-    int maxIndex = -1;
-    double maxValue = double.negativeInfinity;
+    // int maxIndex = -1;
+    // double maxValue = double.negativeInfinity;
+    //
+    // predResult?.forEach((key, value) {
+    //   List<double> doubleList = List.castFrom<dynamic, double>(value);
+    //   doubleList.forEach((doubleValue) {
+    //     if (doubleValue > maxValue) {
+    //       maxValue = doubleValue;
+    //       maxIndex = doubleList.indexOf(doubleValue);
+    //     }
+    //   });
+    // });
+    //
+    // cancerType = maxIndex.toString();
+    // percentage = maxValue.toString();
+    // print(cancerType);
+    // print(percentage);
 
-    predResult?.forEach((key, value) {
-      List<double> doubleList = List.castFrom<dynamic, double>(value);
-      doubleList.forEach((doubleValue) {
-        if (doubleValue > maxValue) {
-          maxValue = doubleValue;
-          maxIndex = doubleList.indexOf(doubleValue);
-        }
-      });
-    });
+    String res0 = (predResult?['result'][0] ?? 0).toString();
+    String res1 = (predResult?['result'][1] ?? 0).toString();
+    String res2 = (predResult?['result'][2] ?? 0).toString();
+    String res3 = (predResult?['result'][3] ?? 0).toString();
+    String res4 = (predResult?['result'][4] ?? 0).toString();
+    String res5 = (predResult?['result'][5] ?? 0).toString();
+    String res6 = (predResult?['result'][6] ?? 0).toString();
+    String res7 = (predResult?['result'][7] ?? 0).toString();
+    stringMap = {
+      '0': res0,
+      '1': res1,
+      '2': res2,
+      '3': res3,
+      '4': res4,
+      '5': res5,
+      '6': res6,
+      '7': res7,
+    };
 
-    cancerType = maxIndex.toString();
-    percentage = maxValue.toString();
-    print(cancerType);
-    print(percentage);
-    // String res0 = (predResult?['result'][0] ?? 0).toString();
-    // String res1 = (predResult?['result'][1] ?? 0).toString();
-    // String res2 = (predResult?['result'][2] ?? 0).toString();
-    // String res3 = (predResult?['result'][3] ?? 0).toString();
-    // String res4 = (predResult?['result'][4] ?? 0).toString();
-    // String res5 = (predResult?['result'][5] ?? 0).toString();
-    // String res6 = (predResult?['result'][6] ?? 0).toString();
-    // String res7 = (predResult?['result'][7] ?? 0).toString();
-    // Map<String, String> stringMap = {
-    //   '0': res0,
-    //   '1': res1,
-    //   '2': res2,
-    //   '3': res3,
-    //   '4': res4,
-    //   '5': res5,
-    //   '6': res6,
-    //   '7': res7,
-    // };
-    // if (predResult == null) return null;
     // print(stringMap);
     // return stringMap;
   }
@@ -218,7 +221,7 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
                   if (imgFile != null)
                     Container(
                         width: MediaQuery.of(context).size.width * 0.8,
-                        height: MediaQuery.of(context).size.height * 0.2,
+                        height: MediaQuery.of(context).size.height * 0.1,
                         child: Image.file(imgFile!)),
                   // INITIALIZE. RESULT IS A WIDGET, SO IT CAN BE DIRECTLY USED IN BUILD METHOD
                   Spacer(),
@@ -241,6 +244,7 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
                         if (imgFile != null) {
                           await predict();
                         }
+                        var imgURL = await uploadImage(imgFile!, "", "skin");
                         // final now = getDateTime();
                         // print('medical_history/$uid/$appointTime/$now');
                         var data = {
@@ -248,8 +252,11 @@ class _DiagnosticSurveyState extends State<DiagnosticSurvey> {
                             'diagnosis': diagnosis,
                             'medicine': medicine,
                             'extra_notes': notes,
-                            if(cancerType != '') 'prediction': cancerType,
-                            if(percentage != '') 'probability': percentage,
+                            if(stringMap != null) 'prediction': stringMap,
+                            if(imgURL != null) "imgURL": imgURL,
+                            // if(cancerType != '') 'prediction': cancerType,
+                            // if(percentage != '') 'probability': percentage,
+
                             // if (result != null)
                             //   'a': result['0'],
                             //   if (result != null)
