@@ -3,6 +3,9 @@ The mobile app Dr. UST mainly targets medical staff and patients and is a suppor
 
 If you would like to known more of the project, you could view the [paper](https://drive.google.com/file/d/1N4W2iM2GKBxj5PLLNTmIGMv5g0VzcdLz/view?usp=sharing) or the [video](https://drive.google.com/file/d/1LkSA3A6bsWz6N9-kJrihpkCVTU9BoRqY/view?usp=sharing).
 
+## Related repositories
+The implementation of the [proxy flask server](https://github.com/jiffij/skin_ml_flask.git) and the [skin-lesion classification model](https://github.com/jiffij/skin_cancer_model.git).
+
 ## TODO List 
 - [x] 3rd party video call 
 - [x] UI Bugs
