@@ -1,18 +1,19 @@
 # Health Care
+The mobile app Dr. UST mainly targets medical staff and patients and is a supportive tool in medical consultation. Our telemedicine system is a comprehensive platform designed to benefit immobile individuals and others, particularly during pandemics. It offers advantages to clinics by improving booking processes, reducing contact, and minimizing the aggregation of infectious patients. Patients, especially those who are immobile or have busy schedules, can benefit from time and cost savings. The application utilizes machine learning for medical image predictions, symptom surveys, and video meetings, leveraging resources available on most mobile devices. Additionally, its messaging function enables seamless follow-up for medical problems. Overall, this telemedicine system represents a significant advancement in healthcare delivery, with the potential to improve lives during and after pandemics.
 
 ## TODO List 
 - [x] 3rd party video call 
 - [x] UI Bugs
 - [x] Record page empty (added invitation page, third party meeting)
 - [x] call dispose handled
-- [ ] messaging
+- [x] messaging
 - [x] refresh gesture on booking page
-- [ ] calendar event list
-- [ ] Doctor Detail save and message button
-- [ ] Profile page edit
+- [x] calendar event list
+- [x] Doctor Detail save and message button
+- [x] Profile page edit
 - [ ] hard ware
 - [x] logout
-- [ ] doctor page color
+- [x] doctor page color
 
 ## Notes for tflite implementation:
 
